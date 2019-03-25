@@ -1,0 +1,1 @@
+console.log('06_requires4.js');
