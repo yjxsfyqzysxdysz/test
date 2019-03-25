@@ -1,0 +1,1 @@
+console.log('./06_requires3/01.js');
