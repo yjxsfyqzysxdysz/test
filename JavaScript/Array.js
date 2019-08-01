@@ -59,6 +59,6 @@ var b = [{
 var c = b.filter(e => {
   return a.some(f => e.id === f.id)
 })
-console.log('使用es6，数组过滤,并保持顺序')
+console.log('使用es6，数组过滤,')
 console.log('c', JSON.stringify(c))
 console.log('----------------------------------------')
