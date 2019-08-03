@@ -53,9 +53,15 @@ console.log('res', res)
 console.log('----------------------------------------')
 
 // 复杂数组排序
-arr = _arr.arr2.concat(_arr.arr1)
-res = arr.filter((e, i) => {
-  return _arr.arr1.find((f, j) => e.id === f.id && i === j)
+arr = _arr.arr2.concat(_arr.arr1) //合并成一个数组
+obj = {} //用于id判断重复
+res = [] //最后的新数组
+//遍历c数组，将每个item.id在temp中是否存在值做判断， 
+arr.map(e=>{
+  if(!obj[e.id]){
+    res.push(e)
+    obj[e.id] = true
+  }
 })
 console.log(JSON.stringify(res))
 console.log('----------------------------------------')
