@@ -1,64 +1,61 @@
-var _ = require('lodash')
+const _ = require('lodash')
+const _arr = require('./data_array.js')
+const _obj = require('./data_object.js')
+const _str = require('./data_string.js')
+let res
+let arr
 // 使用Lodash，将对象的value放入数组中
-var a = {
-  '1': {
-    a: 1
-  },
-  '2': {
-    a: 2
-  },
-  '3': {
-    a: 3
-  },
-  '4': {
-    a: 4
-  }
-}
-var b = _.toArray(a)
+res = _.toArray(_obj.obj1)
 console.log('使用Lodash，将对象【a】的value放入数组【b】中')
-console.log('a', JSON.stringify(a))
-console.log('b', JSON.stringify(b))
+console.log('obj1', JSON.stringify(_obj.obj1))
+console.log('res', JSON.stringify(res))
 console.log('----------------------------------------')
 
 // 使用es6，数组过滤
-var a = [{
-    id: 1
-  },
-  {
-    id: 2
-  },
-  {
-    id: 3
-  },
-  {
-    id: 4
-  },
-  {
-    id: 5
-  },
-  {
-    id: 6
-  },
-  {
-    id: 7
-  },
-  {
-    id: 8
-  }
-]
-var b = [{
-    id: 6
-  },
-  {
-    id: 1
-  },
-  {
-    id: 8
-  }
-]
-var c = b.filter(e => {
-  return a.some(f => e.id === f.id)
-})
+res = _arr.arr2.filter(e => _arr.arr1.some(f => e.id === f.id))
 console.log('使用es6，数组过滤,')
-console.log('c', JSON.stringify(c))
+console.log('res', JSON.stringify(res))
+console.log('----------------------------------------')
+
+// 使用set()方法，简单数组去重
+/**
+ * Set 对象允许你存储任何类型的 唯一值 ，无论是原始值或者是对象引用。 
+ * Set对象是值的集合，你可以按照插入的顺序迭代它的元素。
+ * Set中的元素只会出现一次，即 Set 中的元素是唯一的。
+ */
+console.log('使用es6【Set】，数组去重,')
+console.log(Array.from(new Set(_arr.arr5)))
+console.log([...new Set(_arr.arr6)])
+console.log('----------------------------------------')
+
+// 使用Array.from()方法
+// Array.from() 方法从一个类似数组或可迭代的对象(包括 Array，Map，Set，String，TypedArray，arguments 对象等等) 中创建一个新的数组实例
+console.log('使用se6【from】方法，生成数组')
+console.log(Array.from(_arr.arr7))
+console.log(Array.from(_arr.arr8))
+console.log(Array.from(_str.str1))
+console.log('----------------------------------------')
+
+
+
+// 利用对象的属性不会重复这一特性，校验数组元素是否重复
+// 超高效率
+arr = _arr.arr4.concat(_arr.arr5)
+res = []
+var obj = {}
+for (let i of arr) {
+  if (!obj[i]) {
+    res.push(i)
+    obj[i] = 1
+  }
+}
+console.log('res', res)
+console.log('----------------------------------------')
+
+// 复杂数组排序
+arr = _arr.arr2.concat(_arr.arr1)
+res = arr.filter((e, i) => {
+  return _arr.arr1.find((f, j) => e.id === f.id && i === j)
+})
+console.log(JSON.stringify(res))
 console.log('----------------------------------------')
