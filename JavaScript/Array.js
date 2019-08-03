@@ -12,7 +12,7 @@ console.log('res', JSON.stringify(res))
 console.log('----------------------------------------')
 
 // 使用es6，数组过滤
-res = _arr.arr2.filter(e => _arr.arr1.some(f => e.id === f.id))
+res = [].filter(e => _arr.arr2.some(f => e.id === f.id))
 console.log('使用es6，数组过滤,')
 console.log('res', JSON.stringify(res))
 console.log('----------------------------------------')
@@ -57,11 +57,20 @@ arr = _arr.arr2.concat(_arr.arr1) //合并成一个数组
 obj = {} //用于id判断重复
 res = [] //最后的新数组
 //遍历c数组，将每个item.id在temp中是否存在值做判断， 
-arr.map(e=>{
-  if(!obj[e.id]){
+arr.map(e => {
+  if (!obj[e.id]) {
     res.push(e)
     obj[e.id] = true
   }
 })
 console.log(JSON.stringify(res))
+console.log('----------------------------------------')
+
+// 
+arr = JSON.parse(JSON.stringify(_arr.arr1))
+// let tmp1 = arr.splice(5, 1)
+// let tmp2 = arr.splice(0, 1, tmp1)
+// arr.splice(5, 0, tmp2)
+arr.splice(5, 0, arr.splice(0, 1, arr.splice(5, 1)))
+console.log(JSON.stringify(arr))
 console.log('----------------------------------------')
