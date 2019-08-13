@@ -52,7 +52,7 @@ for (let i of arr) {
 console.log('res', res)
 console.log('----------------------------------------')
 
-// 复杂数组排序
+// 复杂数组排序 / 去重
 arr = _arr.arr2.concat(_arr.arr1) //合并成一个数组
 obj = {} //用于id判断重复
 res = [] //最后的新数组
@@ -64,10 +64,18 @@ arr.map(e => {
   }
 })
 console.log(JSON.stringify(res))
+res = [] //最后的新数组
+//遍历c数组，将每个item.id在temp中是否存在值做判断， 
+_arr.arr9.map(e => {
+  if (!obj[e.startTime]) {
+    res.push(e)
+    obj[e.startTime] = true
+  }
+})
+console.log(JSON.stringify(res))
 console.log('----------------------------------------')
-
 // 
-arr = JSON.parse(JSON.stringify(_arr.arr1))
+arr = _.cloneDeep(_arr.arr1)
 // let tmp1 = arr.splice(5, 1)
 // let tmp2 = arr.splice(0, 1, tmp1)
 // arr.splice(5, 0, tmp2)
