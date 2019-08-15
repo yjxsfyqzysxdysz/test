@@ -82,3 +82,15 @@ arr = _.cloneDeep(_arr.arr1)
 arr.splice(5, 0, arr.splice(0, 1, arr.splice(5, 1)))
 console.log(JSON.stringify(arr))
 console.log('----------------------------------------')
+
+// sort 自动排序
+let a = []
+let b = []
+_arr.arr9.map(e => {
+  a.push(e.startTime)
+  b.push(e.endTime)
+})
+a.sort()
+b.sort()
+console.log(JSON.stringify(a))
+console.log(JSON.stringify(b))

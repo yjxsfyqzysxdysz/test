@@ -52,7 +52,6 @@ console.log(result)
 // async函数返回的是一个Promise对象，async函数（包括函数语句、函数表达式、Lambda表达式）会返回一个Promise对象，如果在函数中return一个直接量，async会把这个直接量通过Promise.resolve() 封装成 Promise 对象；
 
 // async函数返回的是一个Promise对象，所以在最外层不能用await获取其返回值的情况，应该使用原始的方式：then()链来处理这个Promise对象
-testAsync()
-  .then(v => {
+testAsync().then(v => {
   console.log(v) // 输出 hello async
 })
