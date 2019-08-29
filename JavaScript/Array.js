@@ -94,3 +94,8 @@ a.sort()
 b.sort()
 console.log(JSON.stringify(a))
 console.log(JSON.stringify(b))
+
+// 字符串转数组
+res = _.words(_str.str2).map(e => parseInt(e))
+console.log(res)
+console.log('----------------------------------------')
