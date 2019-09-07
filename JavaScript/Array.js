@@ -99,3 +99,6 @@ console.log(JSON.stringify(b))
 res = _.words(_str.str2).map(e => parseInt(e))
 console.log(res)
 console.log('----------------------------------------')
+
+res = _arr.arr5.filter(e => !_arr.arr4.includes(e))
+console.log(res)
