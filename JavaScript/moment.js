@@ -125,7 +125,7 @@ console.log('------------------------------------------')
 
 console.log('格式化设置')
 t = moment().format('X') // 返回值为字符串类型
-t = moment().unix() // 返回值为数值型
+// t = moment().unix() // 返回值为数值型
 console.log('获取时间戳(秒)', t)
 t = moment().format('x') // 返回值为字符串类型
 t = moment().valueOf() // 返回值为数值型
