@@ -8,3 +8,11 @@ where a.ReportType=5
 	and b.UserId!=10739
 group by a.DeliveryId, a.FileId, a.GeneratedTime, a.OwnerId, a.ReportType, a.ZoneId, b.FileId, b.ActionType, b.UserId, b.AppName, c.UserId, c.Email
 order by a.GeneratedTime
+
+
+select a.ProviderDeliveryId, a.DeliveryName, DeliverySetting.value('(/DeliverySetting/Team)[1]','int') as Team, c.Email
+	from SupportData_DMWkspaceDB.dbo.ProviderDelivery a with(nolock)
+	join SupportData_DMWkspaceDB.dbo.UserIdMapping b with(nolock)
+	on a.ProviderDeliveryId = b.Id
+	join SupportData_DMWkspaceDB.dbo.UserSearch c with(nolock)
+on b.UserId = c.UserId
