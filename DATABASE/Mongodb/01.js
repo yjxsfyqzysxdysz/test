@@ -15,11 +15,7 @@ let T = new Test({ //实例化模型 传入增加的数据
 })
 // T.save();
 
-Test.updateOne({
-  name: 'lisi2222333'
-}, {
-  name: '哈哈哈'
-}, function (err, res) {
+Test.updateOne({ name: 'lisi2222333' }, { name: '哈哈哈' }, function (err, res) {
   if (err) {
     console.log(err);
     return;
