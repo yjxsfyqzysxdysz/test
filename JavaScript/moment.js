@@ -102,6 +102,7 @@ t = moment().add(1, 'weeks') // +1week
 t = moment().subtract(1, 'weeks').format('YYYY-MM-DD HH:mm:ss:SSS') // -1week
 console.log('设置某个星期中的某一天', t)
 t = moment().hours(12)
+console.log(t.format('YYYY-MM-DD HH:mm:ss:SSS'))
 t = moment().set('hours', 12)
 t = moment().add(1, 'hours') // +1h
 t = moment().subtract(1, 'hours').format('HH') // -1h
@@ -125,7 +126,7 @@ console.log('------------------------------------------')
 
 console.log('格式化设置')
 t = moment().format('X') // 返回值为字符串类型
-// t = moment().unix() // 返回值为数值型
+t = moment().unix() // 返回值为数值型
 console.log('获取时间戳(秒)', t)
 t = moment().format('x') // 返回值为字符串类型
 t = moment().valueOf() // 返回值为数值型
@@ -247,3 +248,13 @@ for (let i = 0; i < 10; i++) {
     console.log('闰年', d.format('YYYY'))
   }
 }
+
+// console.log(
+//   moment('2019-09-16 20:00:00:0').isSame(moment('2019-09-16 20:00:00:0'))
+// )
+
+console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
+console.log(moment().add(10, 'seconds').format('YYYY-MM-DD HH:mm:ss'))
+console.log(moment().diff(moment().add(10, 'seconds')))
+console.log(moment().add(10, 'seconds').diff(moment()))
+

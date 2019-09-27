@@ -16,3 +16,10 @@ select a.ProviderDeliveryId, a.DeliveryName, DeliverySetting.value('(/DeliverySe
 	on a.ProviderDeliveryId = b.Id
 	join SupportData_DMWkspaceDB.dbo.UserSearch c with(nolock)
 on b.UserId = c.UserId
+
+Select [InvestmentId], [InvestmentType], [PriceType], MAX[EffectiveDate], [Price], [LastUpdate]
+	FROM [MasterData_DMPerformDB].[dbo].[InvestmentPrice]
+	Where InvestmentId in ('0P00019O4Y')
+Group by [InvestmentId], [InvestmentType], [PriceType], [Price], [LastUpdate]
+
+Msg 207, Level 16, State 1, Line 1 Invalid column name 'max'.
