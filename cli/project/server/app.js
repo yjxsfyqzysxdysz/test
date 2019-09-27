@@ -1,4 +1,5 @@
 // 使用 express 框架
+require('./global')
 var app = require('express')();
 var express = require('express');
 var server = require('http').Server(app);
