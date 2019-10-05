@@ -9,22 +9,17 @@ mongoose.connect('mongodb://localhost:27017/test');
 let UserSchema = mongoose.Schema({
   name: String,
   age: Number,
-  sex: Boolean
+  status: Boolean
 })
 
 // 定义模型——操作数据表
-let Test = mongoose.model('Test', UserSchema);
+let Test = mongoose.model('Test', UserSchema, 'Tests');
 
-// 增加数据
-let params = new Test({
-  name: 'ceshi',
-  age: 88,
-  status: false
-})
-params.save(function (err) {
+// 查询数据
+Test.find({}, function (err, res) {
   if (err) {
     console.log(err)
     return
   }
-  console.log('success')
+  console.log(res)
 })
