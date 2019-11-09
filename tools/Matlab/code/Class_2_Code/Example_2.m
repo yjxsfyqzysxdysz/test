@@ -50,7 +50,7 @@ plot(x_coordinate,y_coordinate,'r-*')
 % 9. 循环体的调试    断点调试
 a = 1:100;
 b = [];
-for i =1:21       %原来i是i=1:21    想找到循环的错误爆发点  怎么调试技巧   ii=21:21
+for i =21:21       %原来i是i=1:21    想找到循环的错误爆发点  怎么调试技巧   ii=21:21
     index = 105 - 5*i;
     b = [b a(index)];
 end
