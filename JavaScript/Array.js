@@ -102,3 +102,9 @@ console.log('----------------------------------------')
 
 res = _arr.arr5.filter(e => !_arr.arr4.includes(e))
 console.log(res)
+
+let aaa = { b: [] }
+aaa.b.map(e => {
+  console.log('map', e)
+})
+console.log('aaa')
