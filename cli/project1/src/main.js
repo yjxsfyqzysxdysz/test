@@ -1,15 +1,15 @@
 import Vue from 'vue'
+import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
 import iView from 'bs-iview'
-import App from './App.vue'
 
-
+Vue.config.productionTip = false
 Vue.prototype.$http = Vue.http = axios
 
-Vue.use(iView)
 
+Vue.use(iView)
 new Vue({
   router,
   store,
