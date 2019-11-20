@@ -1,4 +1,4 @@
-// 1、ts中的累
+// 1、ts中的类
 
 class Person {
   public name: string; // 属性

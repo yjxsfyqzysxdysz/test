@@ -1,5 +1,5 @@
 "use strict";
-// 1、ts中的累
+// 1、ts中的类
 var Person = /** @class */ (function () {
     function Person(n) {
         // 构造函数 实例化类的时候触发的方法

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../JavaScriptTool/jquery-3.4.1.min.js"></script>
+  <style>
+    #app {
+      display: inline-block;
+      width: 500px;
+      height: 500px;
+      padding: 10px;
+      border: solid #258 1px;
+      background: rgb(133, 238, 147);
+    }
+    .item {
+      display: flex;
+      margin-bottom: 5px;
+    }
+    .cell {
+      text-align: center;
+      display: inline-block;
+    }
+    .cell1 {
+      width: 110px;
+    }
+    .cell2{
+      margin: 0 5px;
+    }
+    .cell3 {
+      text-align: left;
+      max-width: 341px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- <div class="item">
+      <div class="cell cell1">清明套餐</div>
+      <div class="cell cell2"><button>+</button></div>
+      <div class="cell cell3">宫保鸡丁、麻婆豆腐、毛血旺、油焖大虾、干煸辣子鸡、蒜蓉粉丝开背虾、盐煎肉、小鸡炖蘑菇</div>
+    </div> -->
+  </div>
+
+  <script>
+    $().ready(() => {
+      let list = [
+        { title: '清明套餐', content: '宫保鸡丁、麻婆豆腐、毛血旺、油焖大虾、干煸辣子鸡、蒜蓉粉丝开背虾、盐煎肉、小鸡炖蘑菇' },
+        { title: '除夕套餐', content: '蒜蓉粉丝开背虾' },
+        { title: '白露套餐', content: '干煸豆角、麻婆豆腐、毛血旺、油焖大虾、剁椒鱼头、水煮肉片、盐煎肉、小鸡炖蘑菇' },
+      ]
+      let _html =''
+      list.map(e => {
+        _html += `<div class="item">
+          <div class="cell cell1">${e.title}</div>
+          <div class="cell cell2"><button>+</button></div>
+          <div class="cell cell3" style="display: none;">${e.content}</div>
+        </div>`
+      })
+      $('#app').empty().append($(_html))
+      $('#app > .item button').on('click', (e) => {
+        let btn = $(e.target)
+        btn.parent().parent().siblings().children('.cell3').slideUp(100)
+        btn.parent().next().slideToggle(100)
+      })
+    })
+  </script>
+</body>
+</html>
