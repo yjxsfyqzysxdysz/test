@@ -3,7 +3,7 @@ const moment = require('moment')
 const _arr = require('./data_array.js')
 
 let t
-
+/*
 console.log('获取时间')
 console.log('')
 t = moment().year()
@@ -140,6 +140,7 @@ t = moment().format('hh:mm:ss a')
 console.log('12小时制', t)
 t = moment().format('YYYY年MM月DD日 HH时mm分ss秒')
 t = moment().format('YYYY-MM-DD hh:mm:ss:SSS a')
+t = moment().format('YYYY-MM-DD hh:mm:ss:SSS A')
 console.log(t)
 console.log('------------------------------------------')
 
@@ -258,3 +259,9 @@ console.log(moment().add(10, 'seconds').format('YYYY-MM-DD HH:mm:ss'))
 console.log(moment().diff(moment().add(10, 'seconds')))
 console.log(moment().add(10, 'seconds').diff(moment()))
 
+*/
+// t = moment('2019-11-15 14:34:21').subtract(30, 's').format('YYYY-MM-DD HH:mm:ss')
+// console.log(t)
+// t = moment('2019-11-15 14:34:21').add(270, 's').format('YYYY-MM-DD HH:mm:ss')
+t = moment('').valueOf()
+console.log(t)
