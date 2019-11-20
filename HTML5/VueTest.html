@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>VueTest</title>
+  <!-- vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <!-- element -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <style>
+    #app {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      border: 0;
+    }
+
+    .el-row {
+      margin-bottom: 20px;
+    }
+
+    .el-row :last-child {
+      margin-bottom: 0;
+    }
+
+    .el-col {
+      border-radius: 4px;
+    }
+
+    .bg-purple-dark {
+      background: #99a9bf;
+    }
+
+    .bg-purple {
+      background: #d3dce6;
+    }
+
+    .bg-purple-light {
+      background: #e5e9f2;
+    }
+
+    .grid-content {
+      border-radius: 4px;
+      min-height: 36px;
+    }
+
+    .row-bg {
+      padding: 10px 0;
+      background-color: #f9fafc;
+    }
+    .logo {
+      background: #91b4e6;
+      text-align: center;
+      line-height: 50px;
+      font-weight: bold;
+      color: #ffd000;
+      height: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <el-container>
+      <el-header>
+        <el-row>
+          <el-col :span="4" class="logo">
+            <span>Logo</span>
+          </el-col>
+          <el-col :span="4" :offset="2">
+            <router-link to="find">探索</router-link>
+          </el-col>
+          <el-col :span="4">
+            <router-link to="fit">运动</router-link>
+          </el-col>
+          <el-col :span="4" :offset="2">
+            <router-link to="myInfo">个人中心</router-link>
+          </el-col>
+          <el-col :span="4">
+            <router-link to="logAndReg">登录/注销</router-link>
+          </el-col>
+        </el-row>
+      </el-header>
+      <el-container>
+        <el-aside width="200px">
+          <news></news>
+        </el-aside>
+        <el-main>Main</el-main>
+      </el-container>
+    </el-container>
+  </div>
+  <script>
+    let vm = new Vue({
+      el: "#app",
+      data: {
+      }
+    })
+  </script>
+</body>
+
+</html>
