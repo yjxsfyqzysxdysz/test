@@ -11,12 +11,20 @@ let _a = _.throttle(a, 1000, {
     })
 
 
-setInterval(() => {
-  let _t = new Date().getTime()
-  console.log(_t)
-  _a(_t)
-}, 500)
+// setInterval(() => {
+//   let _t = new Date().getTime()
+//   console.log(_t)
+//   _a(_t)
+// }, 500)
 
+/**
+ * 需求
+ * 根据返回的数据
+ * 同一通道的同一Code作为判断
+ * status -2 -一次性  每次都显示
+ * status -1 -开始    每30min显示一次，当出现 status 为0，不再显示
+ * status -0 -停止    每次都显示
+ */
 let alarmInfoFilter = []
 let alarmInfoList = []
 let once = true
@@ -74,52 +82,20 @@ function ttt (res) {
     }, 1000)
   }
 }
-
-
-
-setInterval(() => {
-  res = { 
-    channel: 1,
-    evtSub: parseInt(`100${parseInt(Math.random() * 10 / 3)}`),
-    status: parseInt(Math.random() * 10 / 3),
-    time: moment(res.time).add(10, 'm').format('YYYY-MM-DD HH:mm:ss')
-    // channel: parseInt(`${parseInt(Math.random() * 10)}${parseInt(Math.random() * 10)}`) || -1,
-    // evtSub: parseInt(`${parseInt(Math.random() * 10 / 7) || 1}0${parseInt(Math.random() * 10 / 5)}${parseInt(Math.random() * 10)}`),
-    // status: parseInt(Math.random() * 10 / 3),
-    // time: moment(res.time).add(10, 'm').format('YYYY-MM-DD HH:mm:ss')
-  }
-  // console.log(_.cloneDeep(res))
-  ttt(res)
-}, 500)
-
-let myMap = new Map()
-let mapKey
-let mapValue
-function mmm (res) {
-  mapKey = `${res.channel}_${res.evtSub}_1`
-  switch (res.status) {
-    case 0: // 停止
-    myMap.delete(mapKey)
-    break
-    case 1: // 开始
-    mapValue = myMap.get(mapKey)
-    if (mapValue) { // 有
-      if (moment(mapValue.time).add(30, 'm').isBefore(res.time)) {
-        myMap.set(mapKey, res)
-      }
-    } else { // 无
-      myMap.set(mapKey, res)
+/*
+  setInterval(() => {
+    res = { 
+      channel: 1,
+      evtSub: parseInt(`100${parseInt(Math.random() * 10 / 3)}`),
+      status: parseInt(Math.random() * 10 / 3),
+      time: moment(res.time).add(10, 'm').format('YYYY-MM-DD HH:mm:ss')
+      // channel: parseInt(`${parseInt(Math.random() * 10)}${parseInt(Math.random() * 10)}`) || -1,
+      // evtSub: parseInt(`${parseInt(Math.random() * 10 / 7) || 1}0${parseInt(Math.random() * 10 / 5)}${parseInt(Math.random() * 10)}`),
+      // status: parseInt(Math.random() * 10 / 3),
+      // time: moment(res.time).add(10, 'm').format('YYYY-MM-DD HH:mm:ss')
     }
-      break
-    case 2: // 一次性
-      break
-    default:
-      break
-  }
-  console.log('-----------------------------------')
-  myMap.forEach((value, key, map) => {
-    console.log(`${key} --- ${JSON.stringify(value)}`)
-  })
-}
-
+    // console.log(_.cloneDeep(res))
+    ttt(res)
+  }, 500)
+*/
 
