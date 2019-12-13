@@ -49,7 +49,11 @@
           <div style="height: 600px; text-align: left;">
             <p class="center">Content</p>
             <Button type="error" @click="click" title="菜单">点击</Button>
+            <div style="margin-top: 10px;width: 200px;">
+              <Input v-for="(item, index) of inputVal" :key="index" v-model="item.val" :maxlength="item.val.indexOf('\n') > 0 ? 65 : 64" type="textarea" :autosize="{ minRows: 2, maxRows: 6 }" placeholder="请输入" @on-keyup="channelChange(index)" @on-keydown="channelChange(index)"/>
+            </div>
           </div>
+
         </Card>
       </Content>
     </Layout>
@@ -96,6 +100,10 @@ export default {
           title: '白露套餐',
           content: '干煸豆角、麻婆豆腐、毛血旺、油焖大虾、剁椒鱼头、水煮肉片、盐煎肉、小鸡炖蘑菇'
         },
+      ],
+      inputVal: [
+        { val: '' },
+        { val: '' }
       ]
     }
   },
@@ -112,6 +120,42 @@ export default {
     },
     skip() {
       this.$router.push({ path: '/baiHome' })
+    },
+    chkstrlen(data) { // 限制长度
+      let strlen = 0
+      let enter = false
+      if (data.indexOf('\n') > 0) { // 是否有折行
+        strlen = -1
+      }
+      let str = data
+      let count = 0
+      let i
+      for (i = 0; i < data.length; i++) {
+        if (str.charCodeAt(i) === 10) { // 如果有折行
+          if (enter) {
+            str = str.substring(0, i - count) + str.substring(i + 1 - count, str.length - count)
+            count++
+          }
+          enter = true
+          continue
+        }
+        if (str.charCodeAt(i) > 255 || str.charCodeAt(i) === 183) { // 如果是汉字，则字符串长度加2(0-255 字母 183 点)
+          strlen += 2
+        } else {
+          strlen++
+        }
+        if (strlen > 64) {
+          break
+        }
+      }
+      str = str.substr(0, i - count) // 抽取从 start 下标开始的指定数目的字符
+      return str
+    },
+    channelChange(index) { // 限制只允许折行一次
+      this.inputVal[index].val = this.chkstrlen(this.inputVal[index].val)
+      if (this.chkstrlen(this.inputVal[index].val).replace(/[\r\n]/g, '').length > 64) {
+        this.inputVal[index].val = this.inputVal[index].val.substr(0, this.inputVal[index].val.length - 1)
+      }
     }
   }
 }
