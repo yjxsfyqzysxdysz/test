@@ -12,7 +12,6 @@ Vue.config.productionTip = false
 Vue.prototype.$lodash = Vue.lodash = lodash
 Vue.prototype.$moment = moment
 
-
 new Vue({
   router,
   store,
