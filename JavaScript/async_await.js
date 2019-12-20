@@ -55,3 +55,16 @@ console.log(result)
 testAsync().then(v => {
   console.log(v) // 输出 hello async
 })
+
+/**
+ * async
+ */
+const async = require("async")
+async.series([
+  function (callback) {}, //如果想使程序提前结束,不再进行下去就callback(err, null)或者callback("err", null)
+  function (callback) {}
+], function (err, result) {
+  if (err || err == "err") {
+    callback(err, null)
+  }
+})
