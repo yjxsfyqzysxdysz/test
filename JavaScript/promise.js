@@ -337,7 +337,6 @@ let fun6 = () => {
  * return 至 then()
  * Promise.reject || throw 至 catch
  */
-
 // 下面编写的sleep 函数，是同步的，执行完延时阻塞之后，才执行下面的代码：
 let sleep = delay => {
   let start = new Date().getTime()
@@ -392,4 +391,68 @@ let fun7_2 = n => {
       console.log('err', err)
     })
 */
+
+/**
+ * session: 8
+ * Promise
+ * 使用 while 或 do-while 来进行不确定循环次数的循环
+ * 通过back跳出
+ * 将需要调用的方法及处理函数放置声明的变量中，将其逐个放进数组中
+ * 使用async的series方法
+ * 当 有/无 错误时，全部执行
+ */
+const async = require("async")
+let fun8 = () => {
+  return new Promise((resolve, reject) => {
+    resolve()
+  })
+}
+let fun8_1 = n => {
+  return new Promise((resolve, reject) => {
+    let num = Math.round(Math.random() * 20)
+    console.log(n, num)
+    if (num > 0) {
+      resolve({ n, num })
+    } else {
+      reject({ n, num })
+    }
+  })
+}
+
+fun8()
+  .then(() => {
+    let arr = []
+    let i = 0
+    do {
+      if (i === 10) {
+        break
+      }
+      const fun8_2 = callback => {
+        fun8_1(i)
+          .then(res => {
+            callback(null, res)
+          })
+          .catch(err => {
+            callback(err, null) // 如果想使程序提前结束,不再进行下去就callback(err, null)或者callback("err", null)
+          })
+      }
+      arr.push(fun8_2)
+      i++
+    } while (true)
+    return new Promise((resolve, reject) => {
+      async.series(arr, (err, res) => { // 串行且无关联
+        if (err) {
+          reject(err)
+        } else {
+          resolve(res)
+        }
+      })
+    })
+  })
+  .then(res => {
+    console.log(res)
+  })
+  .catch(err => {
+    console.log(err)
+  })
 
