@@ -1,65 +1,46 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import index from '../views/index.vue'
+import notFinde from '../views/notFinde.vue'
 import ModuleRouter from './module.js'
-import find from '../views/baiSir/find.vue'
-import fit from '../views/baiSir/fit.vue'
-import myInfo from '../views/baiSir/myInfo.vue'
-import logAndReg from '../views/baiSir/logAndReg.vue'
-import login from '../views/baiSir/login.vue'
-import register from '../views/baiSir/register.vue'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: Home,
-    children: [
-      ...ModuleRouter
-    ]
-  },
-  {
-    path: '/baiHome',
-    component: () => import('../views/baiSir/index.vue'),
-    children: [{
-        path: '/find',
-        name: 'find',
-        component: find
-      },
-      {
-        path: '/fit',
-        name: 'fit',
-        component: fit
-      },
-      {
-        path: '/myInfo',
-        name: 'myInfo',
-        component: myInfo
-      },
-      {
-        path: '/logAndReg',
-        name: 'logAndReg',
-        component: logAndReg,
-        children: [{
-            path: '/login',
-            name: 'login',
-            component: login
-          },
-          {
-            path: '/register',
-            name: 'register',
-            component: register
-          }
-        ]
-      }
-    ]
-  }
-]
-
 const router = new VueRouter({
-  routes
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      redirect: '/index',
+      component: Home,
+      children: [
+        ...ModuleRouter
+      ]
+    },
+    {
+      path: '/index',
+      component: index,
+      meta: {
+        skipAuth: true
+      }
+    },
+    {
+      path: '/notFinde',
+      component: notFinde,
+      meta: {
+        skipAuth: true
+      }
+    }
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.length === 0) {  //如果未匹配到路由
+    from.name ? next({ name: from.name }) : next({ path: '/notFinde' })   //如果上级也未匹配到路由则跳转登录页面，如果上级能匹配到则转上级路由
+  } else {
+    next() //如果匹配到正确跳转
+  }
 })
 
 export default router

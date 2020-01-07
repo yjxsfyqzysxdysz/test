@@ -1,14 +1,14 @@
 <template>
-  <div class="home">
-    home
+  <div class="notFinde">
+    notFinde
   </div>
 </template>
 
 <script>
 export default {
-  name: 'home',
+  name: 'notFinde',
   mounted () {
-    console.log('home')
+    console.log('notFinde')
   },
   data () {
     return {
@@ -22,6 +22,6 @@ export default {
 </script>
 
 <style lang="less" scope>
-  .home {
+  .notFinde {
   }
 </style>
