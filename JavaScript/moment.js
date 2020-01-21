@@ -249,11 +249,14 @@ for (let i = 0; i < 10; i++) {
     console.log('闰年', d.format('YYYY'))
   }
 }
-
 // console.log(
 //   moment('2019-09-16 20:00:00:0').isSame(moment('2019-09-16 20:00:00:0'))
+//   moment('2019-09-16 20:00:00:0').isBefore(moment('2019-09-16 20:01:00:0')) // 前一个在后一个之前
+//   moment('2019-09-16 20:00:00:0').isAfter(moment('2019-09-16 20:00:00:0'))
+//   moment('2019-09-16 20:00:00:0').isBetween(moment('2019-09-16 20:00:00:0', undefined)) // Moment|String|Number|Date|Array
+//   moment('2019-09-16 20:00:00:0').isSameOrAfter(moment('2019-09-16 20:00:00:0')) // 2.11.0+
+//   moment('2019-09-16 20:00:00:0').isSameOrBefore(moment('2019-09-16 20:00:00:0')) // 2.11.0+
 // )
-
 console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
 console.log(moment().add(10, 'seconds').format('YYYY-MM-DD HH:mm:ss'))
 console.log(moment().diff(moment().add(10, 'seconds')))
@@ -263,3 +266,4 @@ console.log(moment().add(10, 'seconds').diff(moment()))
 // t = moment('2019-11-15 14:34:21').subtract(30, 's').format('YYYY-MM-DD HH:mm:ss')
 // console.log(t)
 // t = moment('2019-11-15 14:34:21').add(270, 's').format('YYYY-MM-DD HH:mm:ss')
+
