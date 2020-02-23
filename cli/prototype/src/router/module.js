@@ -1,7 +1,6 @@
 export default [
-  {
-    path: '/contents',
-    component: () => import('../views/contents/content.vue'),
-    children: []
-  }
+  // {
+  //   path: '/test1',
+  //   component: () => import('../views/contents/test1.vue')
+  // }
 ]

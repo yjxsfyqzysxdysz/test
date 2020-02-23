@@ -152,6 +152,4 @@ var tmp8 = new class17('class17')
 var tmp9 = new class18('class18')
 // consoleValue = tmp9.name // 类外部无法访问私有类型的属性
 
-
-
 console.log(consoleValue)

@@ -77,8 +77,47 @@ Fun7.prototype.sex = 'Man';
 Fun7.prototype.work = function () {
     return this.name + ' - work';
 };
-function Fun8() { }
+function Fun8(name, age) { }
 Fun8.prototype = new Fun7(); // 原型链实现继承
-var class5 = new Fun8();
-// consoleValue = class5.run('B', 20) // 实例化时，无法给父类传参
+var class5 = new Fun8('B', 20);
+// consoleValue = class5.run() // 实例化子类时，无法给父类传参
+// consoleValue = class5.work()
+// 7、原型链+构造函数的组合继承模式
+function Fun9(name, age) {
+    this.name = name;
+    this.age = age;
+    this.run = function () {
+        return this.name + ' - run';
+    };
+}
+Fun9.prototype.sex = 'Man';
+Fun9.prototype.work = function () {
+    return this.name + ' - work';
+};
+function Fun10(name, age) {
+    Fun9.call(this, name, age); // 对象冒充继承 实例化子类可以给父类传参
+}
+Fun10.prototype = new Fun9(); // 原型链实现继承
+var class6 = new Fun10('B', 20);
+// consoleValue = class6.run() // 实例化子类时，无法给父类传参
+// consoleValue = class6.work()
+// 8、原型链+对象冒充继承的另一种方式
+function Fun11(name, age) {
+    this.name = name;
+    this.age = age;
+    this.run = function () {
+        return this.name + ' - run';
+    };
+}
+Fun11.prototype.sex = 'Man';
+Fun11.prototype.work = function () {
+    return this.name + ' - work';
+};
+function Fun12(name, age) {
+    Fun11.call(this, name, age); //对象冒充继承  可以继承构造函数里面的属性和方法、实例化子类可以给父类传参
+}
+Fun12.prototype = Fun11.prototype; // 原型链实现继承
+var class7 = new Fun12('B', 20);
+// consoleValue = class7.run() // 实例化子类时，无法给父类传参
+// consoleValue = class7.work()
 console.log(consoleValue);
