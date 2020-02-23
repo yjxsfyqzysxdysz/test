@@ -1,7 +1,7 @@
 <template>
   <div class="index">
     <div class="main">
-      <Button type="warning" shape="circle" icon="md-star">进入</Button>
+      <Button type="warning" shape="circle" icon="md-star" @click="clickBtn">进入</Button>
     </div>
   </div>
 </template>
@@ -33,6 +33,10 @@ export default {
          * 所以需要增加新的层级
          */
       }, 1e4)
+    },
+    clickBtn() {
+      sessionStorage.setItem('login', 'true')
+      this.$router.push('/')
     }
   },
   beforeDestroy() {
