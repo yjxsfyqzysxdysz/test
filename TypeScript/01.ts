@@ -111,9 +111,9 @@ n = undefined
 var o: null
 o = null
 var p: never
-p = () => {
-  throw new Error('error')
-}
+// p = () => {
+//   throw new Error('error')
+// }
 // p()
 
 

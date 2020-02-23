@@ -11,6 +11,7 @@ console.log('hello ts');
     枚举类型（enum）
     任意类型（any）
     null 和 undefined
+    非原始类型（object）
     void类型
     never类型
 */
@@ -109,7 +110,7 @@ n = undefined;
 var o;
 o = null;
 var p;
-p = function () {
-    throw new Error('error');
-};
+// p = () => {
+//   throw new Error('error')
+// }
 // p()
