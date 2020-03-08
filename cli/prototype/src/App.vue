@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style lang="less">
-  @import './assets/css/common';
+  @import 'assets/css/common';
   html {
     font-size: 16px;
     font-family: 'Helvetica Neue', Helvetica, Tahoma, 'PingFang SC', 'Hiragino Sans GB', 'Heiti SC', 'Microsoft YaHei', '微软雅黑', 'WenQuanYi Micro Hei', Arial, sans-serif;
