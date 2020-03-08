@@ -1,0 +1,18 @@
+li {
+  list-style: none;
+}
+
+::placeholder {
+  color: red;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: darkcyan;
+  background-image: url('../image/001.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
