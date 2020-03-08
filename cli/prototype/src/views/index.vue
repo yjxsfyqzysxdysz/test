@@ -36,7 +36,7 @@ export default {
     },
     clickBtn() {
       sessionStorage.setItem('login', 'true')
-      this.$router.push('/')
+      this.$router.replace('/')
     }
   },
   beforeDestroy() {
