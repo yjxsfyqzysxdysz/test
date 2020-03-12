@@ -2,6 +2,7 @@ import $ from 'jquery'
 import './css/1.css'
 import './css/2.less'
 import './css/3.scss'
+import './css/4.styl'
 
 $(() => {
   $('li:odd').css('background', 'pink')

@@ -59,3 +59,7 @@ typings/
 
 # next.js build output
 .next
+
+# 不上传不需要的code
+/gitModel/*
+!/gitModel/README.md
