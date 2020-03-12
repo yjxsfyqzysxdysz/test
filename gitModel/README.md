@@ -32,3 +32,9 @@ https://github.com/SirSui/BullshitGenerator.git
 ```
 https://github.com/suyucheng-lz/BullshitGenerator-handwrite.git
 ```
+
+### GIT UI 汉化包
+mingw64\share\git-gui\lib\msgs下复制`zh_cn.msg`
+```
+https://github.com/stayor/git-gui-zh.git
+```
