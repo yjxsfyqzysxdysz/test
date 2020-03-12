@@ -133,6 +133,18 @@ module.exports = {
   ...
 ```
 
+### 打包处理stylus文件
+- `npm i stylus -d` 
+- `npm i stylus-loader -d`
+  webpack.config.js
+```
+module.exports = {
+  module: {
+    rules: [
+      { test: /\.styl(us)?$/, use: ['style-loader', 'css-loader', 'stylus-loader'] }
+  ...
+```
+
 ### 配置postCSS自动添加css的兼容前缀
 eg: input 框的 placeholder 伪类样式 是有浏览器兼容的
 - `npm i autoprefixer -d` 
@@ -186,6 +198,33 @@ webpack.config.js
  module: {
     rules: [
       { test: /\.js$/, use: ['babel-loader'], exclude: /node_modules/ }
+...
+```
+
+### 打包前自动清空
+- `npm i clean-webpack-plugin -d`
+```
+  plugins: [
+    new CleanWebpackPlugin()
+...
+```
+
+### 热模块替换HRM
+```
+const webpack = require('webpack')
+  devServer: {
+    hot: true
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+...
+```
+
+### 公共代码合并
+-  `npm i webpack-merge -d` \
+创建 build 文件夹
+创建 webpack.base.js 文件
+```
 ...
 ```
 
