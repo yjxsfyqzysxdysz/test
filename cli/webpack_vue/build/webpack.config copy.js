@@ -18,6 +18,7 @@ module.exports = {
   // 编译模式
   mode: 'development', // 开发
   // mode: 'production', // 生产
+  devtool: 'cheap-module-eval-source-map', // 可以将编译后的代码映射回原始源代码
   plugins: [htmlPlugin, new VueLoaderPlugin()], // plugin 数组是webpack打包期间会用到的一些插件列表
   module: {
     rules: [

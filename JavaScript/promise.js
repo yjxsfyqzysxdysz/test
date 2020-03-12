@@ -1,5 +1,14 @@
 // Promise
-
+/**
+ * Promise API
+ * 实例方法
+ * p.then() // 得到异步任务的正确结果
+ * p.catch() // 获取异常
+ * p.finally() // 是正式标准
+ * 对象方法
+ * Promise.all() // 并发处理多个异步任务，所有任务执行完才能得到结果
+ * Promise.race() // 并发处理多个异步任务，只要有一个任务完成就能得到结果
+ */
 
 /**
  * session: 1
@@ -16,18 +25,21 @@ let fun1 = (val) => {
   console.log('fun1', val, num)
   return new Promise((resolve, reject) => {
     if (num > 0.5) {
-      resolve({ num, index: val }) // success
+      resolve({
+        num,
+        index: val
+      }) // success
     } else {
       reject() // error
     }
   })
 }
-/*
-  let arr1 = []
-  for (let i = 0; i < 10; i++) {
-    arr1.push(fun1(i))
-  }
 
+let arr1 = []
+// for (let i = 0; i < 10; i++) {
+//   arr1.push(fun1(i))
+// }
+/*
   console.log('当一个失败时，全部失败')
   Promise.all(arr1)
     .then(res => {
@@ -252,11 +264,17 @@ let fun5 = () => {
     let num = 6
     console.log('fun5', num)
     if (num > 5) {
-     return resolve({ meg: 'ok', num })
+      return resolve({
+        meg: 'ok',
+        num
+      })
     } else {
-     return reject({ msg: 'err', num })
+      return reject({
+        msg: 'err',
+        num
+      })
     }
- })
+  })
 }
 
 /*
@@ -317,11 +335,11 @@ let fun6 = () => {
     setInterval(() => {
       console.log('fun6')
       resolve('fun6_resolved')
-    }, 500)   
+    }, 500)
   })
 }
 
-/*
+/**
   fun6()
     .then(res => {
       console.log(res)
@@ -360,12 +378,12 @@ let fun7 = () => {
     resolve()
   })
 }
-  
+
 let fun7_2 = n => {
   n--
   return new Promise((resolve, reject) => {
-    resolve()
-  })
+      resolve()
+    })
     .then(() => {
       if (n > 90) {
         console.log('fun7_2-then', n)
@@ -379,7 +397,7 @@ let fun7_2 = n => {
     })
 }
 
-/*
+/**
   fun7()
     .then(() => {
       return fun7_2(100)
@@ -412,13 +430,14 @@ let fun8_1 = n => {
     let num = Math.round(Math.random() * 20)
     console.log(n, num)
     if (num > 0) {
-      resolve({ n, num })
+      resolve({n, num})
     } else {
-      reject({ n, num })
+      reject({n, num})
     }
   })
 }
 
+/*
 fun8()
   .then(() => {
     let arr = []
@@ -455,4 +474,36 @@ fun8()
   .catch(err => {
     console.log(err)
   })
+*/
 
+/**
+ * session: 9
+ * Promise.race()
+ * 并发处理多个异步任务，只要有一个任务完成就能得到结果
+ * 只要第一个返回为 err 就返回 err；
+ * 第一个返回为 true ，就返回 data
+ */
+
+let fun9 = val => {
+  return new Promise((resolve, reject) => {
+    if (val === 0) {
+      setTimeout(() => {
+        reject('Promise.race-err') // error
+      }, 5e3)
+    } else {
+      resolve(val) // success
+    }
+  })
+}
+
+let arr9 = []
+for (let i = 0; i < 2; i++) {
+  arr9.push(fun9(i))
+}
+Promise.race(arr9)
+  .then(res => {
+    console.log('res', res)
+  })
+  .catch(err => {
+    console.log('err', err)
+  })
