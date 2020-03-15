@@ -1,0 +1,35 @@
+1、安装环境
+安装pyhton 2.* 或3.*
+https://www.python.org/downloads/windows/
+教程：https://www.liaoxuefeng.com/wiki/1016959663602400/1016959856222624
+
+2、安装依赖
+pip install openpyxl
+pip install xlwt
+pip install pandas
+
+大概另安装了这些依赖
+如果还有报 No module named ***，就使用 pip install *** 就好了；
+如果看着安好了，但是无法运行，就 window + R，输入 CMD，在 CMD弹框中输入 pip install ***，安装完成即可
+
+3、使用
+在测试 python 可用后，打开编译器或 CMD，到存放该 python 文件的文件夹，输入 python app.py 指令即可
+直至出现 --end-- 字样
+每次完成后，若要进行新的生成，请先删除 *.csv 和 *.xlsx 文件
+
+4、关于配置
+在 app.py 文件
+第 106 行，可设置总页数，即评论的页数，最小为1，未测试大于实际页数的情况
+第 108 行，的 url 中，
+'https://api.bilibili.com/x/v2/reply?type=1&oid=11357166&pn='
+有 oid=11357166 ，替换此处等于号后的数值即可更换视频
+该 号码即为 bilibili 的 av 编号
+可以变更 *.csv 和 *.xlsx 文件的文件名，但要注意要将 2处 *.csv 和 1处 *.xlsx 的文件名都修改
+
+5、关于参考资料
+该项目主要参考资料
+https://blog.csdn.net/wenxuhonghe/article/details/83791412
+https://blog.csdn.net/aic1999/article/details/79825982
+https://blog.csdn.net/weixin_43821854/article/details/97546857
+https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_excel.html
+
