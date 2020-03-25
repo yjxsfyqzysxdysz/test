@@ -71,7 +71,7 @@ console.log(Symbol.keyFor(s8)) // underfined
 // Symbol.hasInstance
 // 当使用instanceof判断是否为实例时可用
 const symbol1 = {
-  [Symbol.hasInstance] (val) {
+  [Symbol.hasInstance] (val: any) {
     console.log(val)
   }
 }
@@ -79,16 +79,16 @@ console.log({ a: 'a' } instanceof <any>symbol1) // false
 
 // Symbol.isConcatSpreadable
 // isConcatSpreadable为true/undefined时，可以拆开扁平化
-let arr = [1, 2]
-console.log([].concat(arr, [3, 4]))
-arr[Symbol.isConcatSpreadable] = false
-console.log([].concat(arr, [3, 4]))
+let arr: Array<number> = [1, 2]
+// console.log([].concat(arr, [3, 4]))
+// arr[Symbol.isConcatSpreadable] = false
+// console.log([].concat(arr, [3, 4]))
 
 
 // Symbol.species
 // 创建衍生对象的构造函数
 class C extends Array {
-  constructor(...args) {
+  constructor(...args: any[]) {
     super(...args)
   }
   static get [Symbol.species]() {
@@ -108,11 +108,11 @@ const a = c.map(e => e + 1)
 // 指向一个内部方法，字符串上调用match方法时，会调用
 // 指定了匹配的是正则表达式而不是字符串
 let symbol2 = {
-  [Symbol.match](string) {
-    // console.log(string.length)
+  [Symbol.match](string: string) {
+    console.log(string.length)
   },
-  [Symbol.split](string) {
-    // console.log('split', string.length)
+  [Symbol.split](string: string) {
+    console.log('split', string.length)
   }
 }
 'abcde'.match(<RegExp>symbol2)
@@ -137,7 +137,7 @@ console.log(iterator.next())
 // Symbol.toPrimitive
 // 对象的属性指向一个方法，当对象转为原始类型值时会调用这个方法
 let symbol3: unknown = {
-  [Symbol.toPrimitive](type) {
+  [Symbol.toPrimitive](type: number) {
     console.log(type)
   }
 }
