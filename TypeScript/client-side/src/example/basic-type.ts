@@ -50,7 +50,7 @@ const consoleText = (text: string): void => {
 consoleText('text')
 let v: void
 v = undefined
-v = null
+// v = null
 
 // null 和 undefined
 let u: undefined
