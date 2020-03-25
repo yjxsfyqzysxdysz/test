@@ -2,8 +2,8 @@
 
 ## webpack 的基本使用
 ### 项目中安装和配置webpack
-- `npm i webpack -d` webpack包
-- `npm i webpack-cli -d` webpack脚手架 \
+- `npm i webpack -D` webpack包
+- `npm i webpack-cli -D` webpack脚手架 \
 创建 `webpack.config.js` 配置文件
 ```
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
 `webpack` 的 `4.X` 版本中默认
 - 打包的`入口文件`为 `src` -> `index.js`
 - 打包的`出口文件`为 `dist` -> `main.js`
-- `npm i path -d` node 核心依赖，进行路径获取 \
+- `npm i path -D` node 核心依赖，进行路径获取 \
   webpack.config.js
 ```
 const path = require('path')
@@ -39,17 +39,17 @@ module.exports = {
 ```
 
 ### webpack的自动打包功能
-- `npm i webpack-dev-server -d` webpack自动打包工具
+- `npm i webpack-dev-server -D` webpack自动打包工具
   package.json
 ```
  "scripts": {
-   "dev": "webpack-dev-server"
+   "dev": "webpack-Dev-server"
 ...
 ```
 将 src/index.html 中， script 脚本的引用路径，修改为 "/bundle.js"
 
 ### 配置html-webpack-plugin生成预览页面
-- `npm i html-webpack-plugin -d` 生成预览页面
+- `npm i html-webpack-plugin -D` 生成预览页面
   webpack.config.js
 ```
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -70,7 +70,7 @@ module.exports = {
 package.json
 ```
 "scripts": {
-    "dev": "webpack-dev-server --open"
+    "dev": "webpack-Dev-server --open"
   ...
 ```
 
@@ -83,8 +83,8 @@ loader 加载器可以协助webpack打包处理特定的文件模块
   - url-loader 可以打包处理 css 中与 url 路径相关的文件
 
 ### 打包处理css文件
-- `npm i style-loader -d` 
-- `npm i css-loader -d`
+- `npm i style-loader -D` 
+- `npm i css-loader -D`
   webpack.config.js
   - test 匹配的文件类型
   - use 对应调用的loader
@@ -100,8 +100,8 @@ module.exports = {
 ```
 
 ### 打包处理less文件
-- `npm i less -d` 
-- `npm i less-loader -d`
+- `npm i less -D` 
+- `npm i less-loader -D`
   webpack.config.js
   - test 匹配的文件类型
   - use 对应调用的loader
@@ -117,8 +117,8 @@ module.exports = {
 ```
 
 ### 打包处理scss文件
-- `npm i node-sass -d` 
-- `npm i sass-loader -d`
+- `npm i node-sass -D` 
+- `npm i sass-loader -D`
   webpack.config.js
   - test 匹配的文件类型
   - use 对应调用的loader
@@ -134,8 +134,8 @@ module.exports = {
 ```
 
 ### 打包处理stylus文件
-- `npm i stylus -d` 
-- `npm i stylus-loader -d`
+- `npm i stylus -D` 
+- `npm i stylus-loader -D`
   webpack.config.js
 ```
 module.exports = {
@@ -147,8 +147,8 @@ module.exports = {
 
 ### 配置postCSS自动添加css的兼容前缀
 eg: input 框的 placeholder 伪类样式 是有浏览器兼容的
-- `npm i autoprefixer -d` 
-- `npm i postcss-loader -d`
+- `npm i autoprefixer -D` 
+- `npm i postcss-loader -D`
 
 webpack.config.js
 ```
@@ -167,8 +167,8 @@ module.exports = {
 ```
 
 ### 样式表中的图片和字体文件
-- `npm i file-loader -d`
-- `npm i url-loader -d` \
+- `npm i file-loader -D`
+- `npm i url-loader -D` \
 webpack.config.js
 * `注意`：
   - `?` 之后是loader的参数项
@@ -182,8 +182,8 @@ module.exports = {
 ```
 
 ### 打包处理js文件中的高级语法
--  `npm i babel-loader @babel/core @babel/runtime -d` 安装babel转化器的相关包
--  `npm i @babel/preset-env @babel/plugin-transform-runtime @babel/plugin-proposal-class-properties -d` 安装babel语法插件相关包 \
+-  `npm i babel-loader @babel/core @babel/runtime -D` 安装babel转化器的相关包
+-  `npm i @babel/preset-env @babel/plugin-transform-runtime @babel/plugin-proposal-class-properties -D` 安装babel语法插件相关包 \
 babel.config.js
 ```
 module.exports = {
@@ -202,7 +202,7 @@ webpack.config.js
 ```
 
 ### 打包前自动清空
-- `npm i clean-webpack-plugin -d`
+- `npm i clean-webpack-plugin -D`
 ```
   plugins: [
     new CleanWebpackPlugin()
@@ -221,7 +221,7 @@ const webpack = require('webpack')
 ```
 
 ### 公共代码合并
--  `npm i webpack-merge -d` \
+-  `npm i webpack-merge -D` \
 创建 build 文件夹
 创建 webpack.base.js 文件
 ```
@@ -230,7 +230,7 @@ const webpack = require('webpack')
 
 ## vue 中的使用
 ### wbepack 中配置 vue 组件的加载器
--  `npm i vue-loader vue-template-compiler -d` \
+-  `npm i vue-loader vue-template-compiler -D` \
 webpack.config.js
 ```
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
