@@ -19,7 +19,7 @@
 //   我们需要通过export暴露模块里面的数据（变量、函数、类...）。
 //   暴露后我们通过 import 引入模块就可以使用模块里面暴露的数据（变量、函数、类...）。
 
-import { getData, save, getData as get } from './modules/db';
+import { getData, save, getData as get } from './基础1/modules/db';
 // import getData from './modules/db';
 // ts 里，不能写 db.ts 的 ts
 // as 关键字 重命名
@@ -31,7 +31,7 @@ getData();
 get()
 save();
 
-import { MsSqlDb } from './modules/db2'
+import { MsSqlDb } from './基础1/modules/db2'
 
 class User{
   username:string | undefined;

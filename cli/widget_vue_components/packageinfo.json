@@ -1,0 +1,6 @@
+{
+  "js": [
+    { "name": "js/index" },
+    { "name": "js/chunk-vendors" }
+  ]
+}
