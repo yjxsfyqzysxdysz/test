@@ -17,7 +17,8 @@
         "no-shadowed-variable": [false],
         "ban-types": [false],
         "no-unused-expression": [false],
-        "forin": [false]
+        "forin": [false],
+        "max-classes-per-file": false
     },
     "rulesDirectory": []
 }
