@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // import './example/basic-type'
 // import './example/symbol'
 // import './example/interface'
@@ -6,5 +8,4 @@
 // import './example/es6-class-1.js'
 // import './example/es6-class-2.js'
 // import './example/class'
-// import './example/enum'
-import './example/inference-compatibility'
+require("./example/enum");
