@@ -16,7 +16,7 @@
     "global": "^4.4.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "mongoose": "^5.7.1",
+    "mongoose": "^5.7.5",
     "nodemon": "^1.19.2",
     "path": "^0.12.7",
     "relative": "^3.0.2",
