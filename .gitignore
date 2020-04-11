@@ -63,4 +63,5 @@ typings/
 # 不上传不需要的code
 /gitModel/*
 !/gitModel/README.md
+/xml/demo/exportword
 /tmp
