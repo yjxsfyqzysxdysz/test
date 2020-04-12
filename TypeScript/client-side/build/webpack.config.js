@@ -1,5 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const path = require('path')
+const copyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: './src/index.ts',
@@ -28,6 +30,12 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './src/template/index.html'
-    })
+    }),
+    new copyWebpackPlugin([
+      {
+        from: path.join(__dirname, '../src/modules/handle-title.js'),
+        to: path.resolve(__dirname, '../dist')
+      }
+    ])
   ]
 }
