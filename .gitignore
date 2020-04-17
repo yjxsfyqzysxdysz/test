@@ -65,4 +65,8 @@ typings/
 !/gitModel/README.md
 /xml/demo/exportword
 /tmp
- 
+!/TypeScript/client-side/typings
+!/TypeScript/client-side/project/test-array-map/node_modules
+/TypeScript/client-side/project/test-array-map/node_modules/*
+/TypeScript/client-side/project/test-array-map/node_modules/.bin/*
+!/TypeScript/client-side/project/test-array-map/node_modules/exercise-model
