@@ -52,6 +52,16 @@ git push --force --tags origin 'refs/heads/*'
 
 
 
-查看提交日志
-`git log`
+> 查看提交日志 `git log`
+
+> 不可逆提交  
+> 查找日志 `git log`  
+> 还原 `git reset --hard commit ID`  
+> 提交 `git push -f`
+
+> 可逆提交  
+> 还原某个文件到某次commit `git checkout  commitID fileName`
+
+
+
 
