@@ -38,3 +38,8 @@ mingw64\share\git-gui\lib\msgs下复制`zh_cn.msg`
 ```
 https://github.com/stayor/git-gui-zh.git
 ```
+
+### 快捷方式生成器 
+```
+https://github.com/seayxu/WinCShortcut
+```
