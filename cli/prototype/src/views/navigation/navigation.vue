@@ -18,7 +18,7 @@
           </div>
         </div>
         <div :class="['profession-content-icon', showAplia ? (curAppPage >= applicationArr.length - 1 ? 'disabled' : '') : 'disabled']">
-          <i class="iconfont icon-jiantou icon-right"  @click="aplicationRight"></i>
+          <i class="iconfont icon-jiantou icon-right" @click="aplicationRight"></i>
         </div>
       </div>
     </div>
@@ -33,7 +33,7 @@ export default {
   mounted() {
     console.log(navigation)
   },
-  data () {
+  data() {
     return {
       mainMenu: [
         { name: '大型测试', children: [] },
@@ -118,47 +118,47 @@ export default {
 </script>
 
 <style lang="less" scope>
-  .navigation {
-    min-height: 700px;
-    height: 100%;
+.navigation {
+  min-height: 700px;
+  height: 100%;
+  width: 100%;
+  // overflow: auto;
+  // background-size: 100% 100%;
+  padding: 40px 60px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  .profession-box {
+    flex: 1;
+    background: #ccc;
+    height: 50%;
     width: 100%;
-    // overflow: auto;
-    // background-size: 100% 100%;
-    padding: 40px 60px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-    .profession-box {
-      flex: 1;
-      background: #ccc;
-      height: 50%;
-      width: 100%;
-      text-align: center;
+    text-align: center;
+    // 标题
+    .profession-title {
+      position: relative;
+      // 标题 线
+      .title-line {
+        width: 30%;
+        height: 1px;
+        position: absolute;
+        top: 50%;
+        background-image: linear-gradient(to top, #3f51b5, #00bcd4, #3f51b5);
+      }
+      .title-line1 {
+        left: 10%;
+      }
+      .title-line2 {
+        right: 10%;
+      }
       // 标题
-      .profession-title {
-        position: relative;
-        // 标题 线
-        .title-line {
-          width: 30%;
-          height: 1px;
-          position: absolute;
-          top: 50%;
-          background-image: linear-gradient(to top, #3F51B5, #00BCD4, #3F51B5);
-        }
-        .title-line1 {
-          left: 10%;
-          }
-        .title-line2 {
-          right: 10%;
-        }
-        // 标题
-        .title-font {
-          font-size: 2em;
-          font-weight: bold;
-        }
+      .title-font {
+        font-size: 2em;
+        font-weight: bold;
       }
     }
   }
+}
 </style>

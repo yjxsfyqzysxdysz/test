@@ -13,7 +13,8 @@ const router = new VueRouter({
       path: '/',
       name: 'home',
       component: Home,
-      redirect: '/navigation', // 重定向
+      redirect: '/test', // 重定向
+      // redirect: '/navigation', // 重定向
       children: [
         ...ModuleRouter
       ]
