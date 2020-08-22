@@ -3,8 +3,8 @@ const moment = require('moment')
 
 /**
  * 对文件大小进行转换
- * @param {string} type 单位
- * @param {string || Number} value 传入参数
+ * @param {String | Number} value 传入参数
+ * @param {String} type 单位
  * @param {Boolean} unit 返回结果是否带单位
  * @param {Boolean} decimals 返回结果是否带小数
  */
@@ -34,10 +34,12 @@ const filterSize = (value, type = 'B', unit = false, decimals = false) => {
   for (let i = 3; i >= 0; i--) {
     res = (_value / Math.pow(1024, i)).toFixed(2)
     if (res >= 1 || i === 0) {
-      if (!decimals) { // 不带小数
+      if (!decimals) {
+        // 不带小数
         res = parseInt(res)
       }
-      if (unit) { // 带单位
+      if (unit) {
+        // 带单位
         switch (i) {
           case 3:
             res += 'GB'
@@ -59,7 +61,8 @@ const filterSize = (value, type = 'B', unit = false, decimals = false) => {
   return res
 }
 
-const filterMacFun = (val) => { // 过滤的Mac地址
+// 过滤的Mac地址
+const filterMacFun = val => {
   let data = val
   let tmp = data.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,.\/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、g-z\s]/gi, '').toUpperCase()
   let arr = []
@@ -68,7 +71,7 @@ const filterMacFun = (val) => { // 过滤的Mac地址
   }
   for (let i = 0; i < Math.ceil(tmp.length / 2); i++) {
     arr.push(tmp.slice(0 + 2 * i, 2 + 2 * i))
-    if ((i + 1 !== Math.ceil(tmp.length / 2)) && (((tmp.length % 2) && (tmp.length !== 1)) || (!(tmp.length % 2)))) {
+    if (i + 1 !== Math.ceil(tmp.length / 2) && ((tmp.length % 2 && tmp.length !== 1) || !(tmp.length % 2))) {
       arr.push(':')
     }
   }
@@ -76,17 +79,19 @@ const filterMacFun = (val) => { // 过滤的Mac地址
   return tmp.replace(/[,]/gi, '')
 }
 
-const filterIpFun = (val) => {
+const filterIpFun = val => {
   // let data = val
   // let tmp = data.replace(/[]/gi, '')
 }
 
-const judgeMacFun = (val) => {
+// 校验MAC地址
+const judgeMacFun = val => {
   let reg = /([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}/
   return reg.test(val)
 }
 
-const judgePwdPower = (val) => { // 密码强度判断
+// 校验密码强度
+const judgePwdPower = val => {
   let password = val
   let n = 0
   let reg1 = /[0-9]/g // 判断数字
@@ -109,22 +114,42 @@ const judgePwdPower = (val) => { // 密码强度判断
   return n
 }
 
-const judgeIPAdd = (val) => { // IPV4/IPV6校验
+// IPV4/IPV6校验
+const judgeIPAdd = val => {
   let ipv4 = /^((\d|[1-9]\d|1\d\d|2([0-4]\d|5[0-5]))\.){4}$/
   let ipv6 = /^(([\da-fA-F]{1,4}):){8}$/
   return ipv4.test(val + '.') ? 'IPv4' : ipv6.test(val + ':') ? 'IPv6' : 'Neither'
 }
 
+// IP转成整型
+const ip2int = ip => {
+  var num = 0
+  ip = ip.split('.')
+  num = Number(ip[0]) * 256 * 256 * 256 + Number(ip[1]) * 256 * 256 + Number(ip[2]) * 256 + Number(ip[3])
+  num = num >>> 0
+  return num
+}
+// 整型解析为IP地址
+const int2iP = num => {
+  var str
+  var tt = []
+  tt[0] = (num >>> 24) >>> 0
+  tt[1] = ((num << 8) >>> 24) >>> 0
+  tt[2] = (num << 16) >>> 24
+  tt[3] = (num << 24) >>> 24
+  str = String(tt[0]) + '.' + String(tt[1]) + '.' + String(tt[2]) + '.' + String(tt[3])
+  return str
+}
+
 // 大数相加
 // 数字类型采用64位浮点格式表示，我们可以利用Number对象的属性Number.MAX_VALUE , Number.MIN_VALUE来查看；
 // JavaScript中Number范围为正负2的53次方，也即从最小值-9007199254740992到最大值+9007199254740992之间的范围。
-// const bigInt = require('big-integer')
+// const bigInt = require('big-integer') // js2020版可用
 // const add = (num1, num2) => {
 //   return bigInt(num1).add(num2).value.toString()
 // }
 
-const add = (a, b) => {
-  // 保存最终结果
+const addBigNum = (a, b) => {
   let res = ''
   // 保存两位相加的结果 和 进位值
   let c = 0
@@ -149,11 +174,75 @@ const add = (a, b) => {
  */
 // console.log(add('1000000000000000000000000000001', '1'))
 
+/**
+ * 防抖
+ * 将多次高频操作优化为只在最后一次执行
+ * @param {Function} fn 函数方法
+ * @param {Number | String} wait 等待时间
+ * @param {Boolean} immediate 是否立即执行
+ */
+const debounce = (fn, wait, immediate = false) => {
+  let timer = null
+  function clearTimer() {
+    clearTimeout(timer)
+    timer = null
+  }
+  return function () {
+    let that = this
+    let params = arguments
+    if (immediate && !timer) {
+      fn.apply(that, params)
+    }
+    if (timer) {
+      clearTimer()
+    }
+    timer = setTimeout(() => {
+      fn.apply(that, params)
+      clearTimer()
+    }, +wait)
+  }
+}
+
+/**
+ * 节流
+ * 每隔一段时间后执行一次，也就是降低频率，将高频操作优化成低频操作
+ * 当调用动作n毫秒后，才会执行该动作，若在这n毫秒内又调用此动作则将重新计算执行时间。
+ * @param {Function} fn 函数方法
+ * @param {Number | String} wait 等待时间
+ * @param {Boolean} immediate 是否立即执行
+ */
+const throttle = (fn, wait, immediate = false) => {
+  let timer = null
+  let now = immediate
+  function clearTimer() {
+    clearTimeout(timer)
+    timer = null
+  }
+  return function () {
+    let that = this
+    let params = arguments
+    if (now) {
+      fn.apply(that, params)
+      now = !now
+    }
+    if (!timer) {
+      timer = setTimeout(() => {
+        fn.apply(that, params)
+        clearTimer()
+        now = immediate
+      }, +wait)
+    }
+  }
+}
+
 module.exports = {
   filterSize,
   filterMacFun,
   filterIpFun,
   judgeMacFun,
   judgePwdPower,
-  judgeIPAdd
+  judgeIPAdd,
+  addBigNum,
+  ip2int,
+  int2iP,
 }
