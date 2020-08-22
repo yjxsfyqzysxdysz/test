@@ -19,7 +19,7 @@ console.log('----------------------------------------')
 
 // 使用set()方法，简单数组去重
 /**
- * Set 对象允许你存储任何类型的 唯一值 ，无论是原始值或者是对象引用。 
+ * Set 对象允许你存储任何类型的 唯一值 ，无论是原始值或者是对象引用。
  * Set对象是值的集合，你可以按照插入的顺序迭代它的元素。
  * Set中的元素只会出现一次，即 Set 中的元素是唯一的。
  */
@@ -35,8 +35,6 @@ console.log(Array.from(_arr.arr7))
 console.log(Array.from(_arr.arr8))
 console.log(Array.from(_str.str1))
 console.log('----------------------------------------')
-
-
 
 // 利用对象的属性不会重复这一特性，校验数组元素是否重复
 // 超高效率
@@ -56,7 +54,7 @@ console.log('----------------------------------------')
 arr = _arr.arr2.concat(_arr.arr1) //合并成一个数组
 obj = {} //用于id判断重复
 res = [] //最后的新数组
-//遍历c数组，将每个item.id在temp中是否存在值做判断， 
+//遍历c数组，将每个item.id在temp中是否存在值做判断，
 arr.map(e => {
   if (!obj[e.id]) {
     res.push(e)
@@ -65,7 +63,7 @@ arr.map(e => {
 })
 console.log(JSON.stringify(res))
 res = [] //最后的新数组
-//遍历c数组，将每个item.id在temp中是否存在值做判断， 
+//遍历c数组，将每个item.id在temp中是否存在值做判断，
 _arr.arr9.map(e => {
   if (!obj[e.startTime]) {
     res.push(e)
@@ -74,7 +72,7 @@ _arr.arr9.map(e => {
 })
 console.log(JSON.stringify(res))
 console.log('----------------------------------------')
-// 
+//
 arr = _.cloneDeep(_arr.arr1)
 // let tmp1 = arr.splice(5, 1)
 // let tmp2 = arr.splice(0, 1, tmp1)
@@ -108,3 +106,14 @@ aaa.b.map(e => {
   console.log('map', e)
 })
 console.log('aaa')
+
+// arr = new Array(3).fill(1) // 索引数组
+// arr = []
+// arr['name'] = 21 // 关联数组
+// arr['age'] = 20
+arr = [3, 2, 'tom', 'vat']
+res = arr.join()
+// arr.sort(() => 0)
+// arr.fill(4)
+// console.log(arr, res, res.split(''))
+// console.log(typeof(true))

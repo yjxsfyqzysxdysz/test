@@ -83,4 +83,9 @@ function filter(arr) {
   })
 }
 
-console.log(filter(['a,b', 'b,c', 'a,d', 'e,f', 'c,g']))
+// console.log(filter(['a,b', 'b,c', 'a,d', 'e,f', 'c,g']))
+
+function unique(array) {
+  return Array.from(new Set(array));
+}
+unique([1, 1, 2, 3, 3]) // [1, 2, 3]
