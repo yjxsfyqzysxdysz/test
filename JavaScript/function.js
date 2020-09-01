@@ -87,3 +87,12 @@ let getNum = outer()
 getNum.add()
 getNum.add()
 getNum.res()
+
+// 素数
+function isPrime(n) {
+  if (n<2) return false
+  for(let i = 2; Math.pow(i, 2) <= n;i++) {
+    if(!(n%i)) return false
+  }
+  return true
+}

@@ -188,7 +188,7 @@ function merge(left, right) {
  * 重新排序数列，所有元素比基准值小的摆放在基准前面，所有元素比基准值大的摆在基准的后面（相同的数可以到任一边）。在这个分区退出之后，该基准就处于数列的中间位置。这个称为分区（partition）操作；
  * 递归地（recursive）把小于基准值元素的子数列和大于基准值元素的子数列排序。
  */
-
+/*
 function quickSort(arr = [], left = 0, right = arr.length - 1) {
   let partitionIndex
   if (left < right) {
@@ -211,6 +211,22 @@ function partition(arr, left, right) {
   }
   swap(arr, pivot, index)
   return index
+}
+*/
+function quickSort(arr = []) {
+  const len = arr.length
+  if (len < 2) return arr
+  let partition = arr.splice(Math.floor(len / 2), 1)[0]
+  let left = [],
+    right = []
+  for (let i = 0; i < len; i++) {
+    if (partition > arr[i]) {
+      right.push(arr[i])
+    } else if (partition < arr[i]) {
+      left.push(arr[i])
+    }
+  }
+  return quickSort(left).concat([partition], quickSort(right))
 }
 
 // 堆排序
@@ -402,3 +418,31 @@ function radixSort(arr, maxDigit) {
   }
   return arr
 }
+
+// 数组的扁平化
+function flatDeep(arr) {
+  return arr.reduce((total, item) => {
+    if (Array.isArray(item)) {
+      return [].concat(total, ...flatDeep(item))
+    } else {
+      return [].concat(total, item)
+    }
+  })
+}
+
+// console.log(flatDeep([1,2,3, [4,5,6, [7,8,9]]]))
+// console.log([1, 2, 3, [4, 5, 6, [7, 8, 9]]].toString().split(',').map(e => +e))
+
+// 函数柯里化
+function currying(fn) {
+  // args 获取第一个方法内的全部参数
+  let args = Array.prototype.slice.call(arguments, 1)
+  return function () {
+    // 将后面方法里的全部参数和args进行合并
+    let newArgs = args.concat(Array.prototype.slice.call(arguments))
+    // 把合并后的参数通过apply作为fn的参数并执行
+    return fn.apply(this, newArgs)
+  }
+}
+function add(a,b = 0) { console.log(a, b, arguments); return a + b}
+// console.log(currying(add, 1)(1,2))

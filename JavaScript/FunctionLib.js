@@ -129,6 +129,7 @@ const ip2int = ip => {
   num = num >>> 0
   return num
 }
+
 // 整型解析为IP地址
 const int2iP = num => {
   var str
@@ -233,6 +234,21 @@ const throttle = (fn, wait, immediate = false) => {
       }, +wait)
     }
   }
+}
+
+Function.prototype.mybind = function (context, ...args) {
+  return (...newArgs) => {
+    return this.call(context, ...args, ...newArgs)
+  }
+}
+
+Function.prototype.mycall = function (context, ...args) {
+  context = Object(context) || window
+  let fn = Symbol(1)
+  context[fn] = this
+  let result = context[fn](...args)
+  delete context[fn]
+  return result
 }
 
 module.exports = {
