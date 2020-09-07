@@ -20,14 +20,14 @@
  * 之后通过filter进行过滤
  * 可得到全部正确的数据
  */
-let fun1 = (val) => {
+let fun1 = val => {
   let num = Math.random()
   console.log('fun1', val, num)
   return new Promise((resolve, reject) => {
     if (num > 0.5) {
       resolve({
         num,
-        index: val
+        index: val,
       }) // success
     } else {
       reject() // error
@@ -266,12 +266,12 @@ let fun5 = () => {
     if (num > 5) {
       return resolve({
         meg: 'ok',
-        num
+        num,
       })
     } else {
       return reject({
         msg: 'err',
-        num
+        num,
       })
     }
   })
@@ -382,19 +382,18 @@ let fun7 = () => {
 let fun7_2 = n => {
   n--
   return new Promise((resolve, reject) => {
-      resolve()
-    })
-    .then(() => {
-      if (n > 90) {
-        console.log('fun7_2-then', n)
-        sleep(500)
-        return fun7_2(n)
-      } else {
-        // return 'the end'
-        // return Promise.reject('the end')
-        throw 'the end'
-      }
-    })
+    resolve()
+  }).then(() => {
+    if (n > 90) {
+      console.log('fun7_2-then', n)
+      sleep(500)
+      return fun7_2(n)
+    } else {
+      // return 'the end'
+      // return Promise.reject('the end')
+      throw 'the end'
+    }
+  })
 }
 
 /**
@@ -419,7 +418,7 @@ let fun7_2 = n => {
  * 使用async的series方法
  * 当 有/无 错误时，全部执行
  */
-const async = require("async")
+const async = require('async')
 let fun8 = () => {
   return new Promise((resolve, reject) => {
     resolve()
@@ -430,9 +429,9 @@ let fun8_1 = n => {
     let num = Math.round(Math.random() * 20)
     console.log(n, num)
     if (num > 0) {
-      resolve({n, num})
+      resolve({ n, num })
     } else {
-      reject({n, num})
+      reject({ n, num })
     }
   })
 }
@@ -497,13 +496,106 @@ let fun9 = val => {
 }
 
 let arr9 = []
-for (let i = 0; i < 2; i++) {
-  arr9.push(fun9(i))
-}
-Promise.race(arr9)
-  .then(res => {
-    console.log('res', res)
-  })
-  .catch(err => {
-    console.log('err', err)
-  })
+// for (let i = 0; i < 2; i++) {
+//   arr9.push(fun9(i))
+// }
+// Promise.race(arr9)
+//   .then(res => {
+//     console.log('res', res)
+//   })
+//   .catch(err => {
+//     console.log('err', err)
+//   })
+
+// Promise.resolve()
+//   .then(() => {
+//     console.log('then1')
+//     Promise.resolve().then(() => {
+//       console.log('then1-1')
+//     })
+//   })
+//   .then(() => {
+//     console.log('then2')
+//   })
+// then1 then1-1 then2
+
+// let p = Promise.resolve()
+// p.then(() => {
+//   console.log('then1')
+//   Promise.resolve().then(() => {
+//     console.log('then1-1')
+//   })
+// }).then(() => {
+//   console.log('then1-2')
+// })
+
+// p.then(() => {
+//   console.log('then2')
+// })
+// then1 then2 then1-1 then1-2
+
+// let p = Promise.resolve()
+//   .then(() => {
+//     console.log('then1')
+//     Promise.resolve().then(() => {
+//       console.log('then1-1')
+//     })
+//   })
+//   .then(() => {
+//     console.log('then2')
+//   })
+
+// p.then(() => {
+//   console.log('then3')
+// })
+// then1 then1-1 then2 then3
+
+// Promise.resolve()
+//   .then(() => {
+//     console.log('then1')
+//     Promise.resolve()
+//       .then(() => {
+//         console.log('then1-1')
+//         return 1
+//       })
+//       .then(() => {
+//         console.log('then1-2')
+//       })
+//   })
+//   .then(() => {
+//     console.log('then2')
+//   })
+//   .then(() => {
+//     console.log('then3')
+//   })
+//   .then(() => {
+//     console.log('then4')
+//   })
+// then1 then1-1 then2 then1-2 then3 then4
+
+// Promise.resolve()
+//   .then(() => {
+//     console.log('then1')
+//     Promise.resolve()
+//       .then(() => {
+//         console.log('then1-1')
+//         return Promise.resolve()
+//       })
+//       .then(() => {
+//         console.log('then1-2')
+//       })
+//   })
+//   .then(() => {
+//     console.log('then2')
+//   })
+//   .then(() => {
+//     console.log('then3')
+//   })
+//   .then(() => {
+//     console.log('then4')
+//   })
+//   .then(() => {
+//     console.log('then5')
+//   })
+// then1 then1-1 then2 then3 then4 then1-2 then5
+// 如果在一个 pending 状态的 promise 对象（p）的 .then回调里返回一个 promise 对象（ p2），或者任意带有 then 方法的对象，引擎会专门起一个额外的 microtask/job 去执行这个 p2的 then 方法，同时把 p 的 [[resolve]]和 [[reject]]函数作为参数传过去，虽然 p2 已经 fulfilled 了，但它能做的也就是把 [[resolve]] 函数立刻放到 microtask 队列里，这样也就过了两个 microtask，这时 p 才会被 fulfill，p 后面的 console.log('内部第二个then')才会被放入队列。
