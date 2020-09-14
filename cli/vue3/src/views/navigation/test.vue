@@ -37,7 +37,7 @@ export default {
         this.timer = new Date().getTime()
         const t = setTimeout(() => {
           if (this.timer + 1e3 >= new Date().getTime()) {
-            clearTimeout()
+            clearTimeout(t)
           }
         }, 1e3)
       }
