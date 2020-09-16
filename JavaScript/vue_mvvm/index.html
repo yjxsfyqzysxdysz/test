@@ -11,6 +11,7 @@
   <div id="app">
     <input type="text" v-model="someStr">
     <input type="text" v-model="child.someStr">
+    <input type="text" v-model="child.some2Str">
     <p>{{ getHelloWord }}</p>
     <p v-html="htmlStr"></p>
     <button v-on:click="clickBtn">change model</button>
@@ -24,7 +25,8 @@
         className: 'btn',
         htmlStr: '<span style="color: #f00;">red</span>',
         child: {
-          someStr: 'World !'
+          someStr: 'World !',
+          some2Str: '1234567'
         },
         obj: {
           obj: {

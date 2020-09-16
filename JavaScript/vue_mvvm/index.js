@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
+
 // Observer
 // 观察者
 function Observer(data) {
@@ -84,7 +85,6 @@ Dep.prototype = {
   },
   // 发布者 触发 update
   notify: function () {
-    console.log('notify')
     this.subs.forEach(e => {
       e.update() // 通知 订阅者 变化
     })
@@ -165,16 +165,15 @@ Compile.prototype = {
         if (that.isEventDirective(dir)) {
           compileUtil.eventHandler(node, that.$vm, exp, dir)
         } else {
-          // 普通指令 属性
+          // 其他指令 属性
           compileUtil[dir] && compileUtil[dir](node, that.$vm, exp)
         }
         node.removeAttribute(attrName)
       }
     })
   },
-  // 修改 text 指向
+  // 是文本
   compileText: function (node, exp) {
-    // 修改 this 指向当前节点
     compileUtil.text(node, this.$vm, exp)
   },
   // 是v-指令
@@ -195,9 +194,9 @@ Compile.prototype = {
   },
 }
 
-// 指令处理集合
+// 指令集
 /**
- * 修改 this 指向当前节点
+ * 转发给 bind 指向当前节点
  */
 const compileUtil = {
   /**
@@ -226,7 +225,7 @@ const compileUtil = {
       val = newVal
     })
   },
-  // 绑定 修改操作
+  // 绑定 修改操作 触发监听
   bind: function (node, vm, exp, dir) {
     const updaterFn = updater[dir + 'Updater']
     updaterFn && updaterFn(node, this._getVMVal(vm, exp))
@@ -265,7 +264,8 @@ const compileUtil = {
     })
   },
 }
-// 修改操作
+
+// 视图更新
 const updater = {
   // 修改文本内容
   textUpdater: function (node, value) {
@@ -302,9 +302,9 @@ function Watcher(vm, expOrFn, cb) {
   this.expOrFn = expOrFn
   this.depIds = {} // 发布者 的 唯一 id
 
-  if (typeof expOrFn === 'function') {
-    this.getter = expOrFn
-  } else {
+  if (typeof expOrFn === 'function') { // 从解析指令触发
+    this.getter = expOrFn // compileUtil
+  } else { // 从观察者触发
     this.getter = this.parseGetter(expOrFn.trim()) // 获得该 属性 所对应的参数
   }
   this.value = this.get()
@@ -379,7 +379,7 @@ function MVVM(options) {
   Object.keys(data).forEach(key => {
     that._proxyData(key)
   })
-  this._initComputed() // 初始化 计算？
+  this._initComputed() // 初始化 计算属性
   observe(data, this) // 观察者
   this.$compile = new Compile(options.el || document.body, this) // 初始化 指令解析器
 }
@@ -409,7 +409,7 @@ MVVM.prototype = {
     })
   },
   /**
-   * 初始化 计算
+   * 初始化 计算属性
    */
   _initComputed: function () {
     const that = this
