@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import lodash from 'lodash'
 import moment from 'moment'
-import echarts from 'echarts'
+// import echarts from 'echarts'
 // import leaflet from 'leaflet' // 地图框架
 // import 'leaflet/dist/leaflet.css'
 import 'moment/locale/zh-cn'
@@ -14,9 +14,12 @@ import './common/element'
 Vue.config.productionTip = false
 Vue.prototype.$lodash = Vue.lodash = lodash
 Vue.prototype.$moment = moment
-Vue.prototype.$echarts = echarts
+// Vue.prototype.$echarts = echarts
 // Vue.prototype.$leaflet = leaflet
 
+Object.isObject = function isObject(val) {
+  return Object.prototype.toString.call(val) === '[object Object]'
+}
 new Vue({
   router,
   store,

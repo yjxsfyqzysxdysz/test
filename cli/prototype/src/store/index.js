@@ -1,9 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {
-  read,
-  save
-} from '../storage'
+import { read, save } from '../storage'
 // 登录获取基础参数
 // import confParameters from './modules/confParameters'
 

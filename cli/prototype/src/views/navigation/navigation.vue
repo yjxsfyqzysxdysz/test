@@ -26,12 +26,10 @@
 </template>
 
 <script>
-// import navigation from 'src/navigation.json'
-// import navigation1 from '@/navigation.json'
-// import navigation from '../../common/navigation.json'
+import navigation2 from '@/common/navigation'
 export default {
   mounted() {
-    console.log(navigation)
+    console.log(navigation2)
   },
   data() {
     return {
@@ -48,7 +46,7 @@ export default {
   },
   methods: {
     checkmenue(item) {
-      // console.log('导航页点击菜单项：', item)
+      console.log('导航页点击菜单项：', item)
       // 运维跳转到新运维
       // if (item.url === '/ops/deviceMonitor' || item.url === '/settings/ops') {
       //   if (!this.opsHost) {

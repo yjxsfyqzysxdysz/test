@@ -1,4 +1,5 @@
-[
+module.exports = {
+  list: [
   {
     "_id": "5ad6c05d99c5897cc21afb3c",
     "isapi": false,
@@ -3791,4 +3792,4 @@
     "tag": "/mapEdit/3D",
     "__v": 0
   }
-]
+]}
