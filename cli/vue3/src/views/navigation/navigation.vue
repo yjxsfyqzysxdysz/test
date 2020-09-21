@@ -1,18 +1,13 @@
 <template>
   <div class="navigation">
     <div class="profession-box" v-for="(item, index) of mainMenu" :key="index" :data-num="index">
-      <div class="profession-title">
-        <div class="title-line" :class="[`title-line${i}`]" v-for="i of 2" :key="i"></div>
-        <span class="title-font">{{item.name}}</span>
-      </div>
+      <p class="profession-title">{{item.name}}</p>
       <div class="profession-content">
         <div class="profession-content-box">
           <div class="profession-content-item" ref="professoion" :style="{ left: positionLeft[index].left + 'px' }">
             <div class="list-item" v-for="(item, i) of item.children" :key="i">
-              <div class="cell">
-                <i class="icon iconfont icon-setting"></i>
-                <span class="txt">{{item}}</span>
-              </div>
+              <i class="icon iconfont" :class="item.icon"></i>
+              <span class="txt">{{item.name}}</span>
             </div>
           </div>
         </div>
@@ -29,28 +24,11 @@
 </template>
 
 <script>
+import navlist from '@/navlist.js'
+
 export default {
   created() {
-    let arr = []
-    for (let i = 0; i < 43; i++) {
-      arr.push(i)
-    }
-    for (let i = 0; i < 1; i++) {
-      this.mainMenu[i].children = arr
-      if (arr.length > 20) {
-        this.positionLeft[i].rightToggle = false
-      }
-      this.positionLeft[i].maxNum = -Math.ceil(arr.length / 2) + 10
-    }
-    // navigation.forEach(e => {
-    //   if (e.icon) {
-    //     if (e.moduleType === '1') {
-    //       this.mainMenu[0].children.push(e)
-    //     } else if (e.moduleType === '2') {
-    //       this.mainMenu[1].children.push(e)
-    //     }
-    //   }
-    // })
+    this.init()
   },
   mounted() {
     this.ele = document.getElementsByClassName('list-item')[0]
@@ -69,6 +47,11 @@ export default {
     }
   },
   methods: {
+    init() {
+      navlist.forEach(e => {
+        this.mainMenu[e.type - 1].children.push(e)
+      })
+    },
     checkmenue(item) {
       // console.log('导航页点击菜单项：', item)
       // 运维跳转到新运维
@@ -123,7 +106,7 @@ export default {
       if (this.positionLeft[index].leftToggle) { return }
       this.positionLeft[index].num++
       this.positionLeft[index].left = this.positionLeft[index].num * this.ele.clientWidth
-      this.positionLeft[index].rightToggle = false
+      this.positionLeft[index].rightToggle && (this.positionLeft[index].rightToggle = false)
       if (!this.positionLeft[index].num) {
         this.positionLeft[index].leftToggle = !this.positionLeft[index].leftToggle
       }
@@ -132,7 +115,7 @@ export default {
       if (this.positionLeft[index].rightToggle) { return }
       this.positionLeft[index].num--
       this.positionLeft[index].left = this.positionLeft[index].num * this.ele.clientWidth
-      this.positionLeft[index].leftToggle = false
+      this.positionLeft[index].leftToggle && (this.positionLeft[index].leftToggle = false)
       if (this.positionLeft[index].num === this.positionLeft[index].maxNum) {
         this.positionLeft[index].rightToggle = !this.positionLeft[index].rightToggle
       }
@@ -146,7 +129,6 @@ export default {
 
 <style lang="less" scope>
 .navigation {
-  min-height: 700px;
   height: 100%;
   width: 100%;
   padding: 40px 60px;
@@ -164,35 +146,35 @@ export default {
     .profession-title {
       position: relative;
       text-align: center;
+      user-select: none;
+      font-size: 2em;
+      font-weight: bold;
       // 标题 线
-      .title-line {
+      &::before,
+      &::after {
+        content: "";
+        display: block;
         width: 30%;
         height: 1px;
         position: absolute;
         top: 50%;
         background-image: linear-gradient(to top, #3f51b5, #00bcd4, #3f51b5);
       }
-      .title-line1 {
+      &::before {
         left: 10%;
       }
-      .title-line2 {
+      &::after {
         right: 10%;
-      }
-      // 标题
-      .title-font {
-        user-select: none;
-        font-size: 2em;
-        font-weight: bold;
       }
     }
     // 内容
     .profession-content {
-      height: calc(100% - 42px);
+      height: calc(~"100% - 42px");
       display: flex;
       position: relative;
       .profession-content-box {
         width: 100%;
-        height: calc(100% - 32px);
+        height: calc(~"100% - 32px");
         margin: 16px 32px;
         overflow: hidden;
       }
@@ -206,22 +188,22 @@ export default {
         flex-direction: column;
         align-content: flex-start;
         .list-item {
-          width: calc(100% / 10);
-          height: calc(100% / 2);
+          width: 10%;
+          height: 50%;
           background: #f9f9f9;
-          .cell {
-            height: 80%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-            .icon {
-              font-size: 60px;
-              cursor: pointer;
-            }
+          text-align: center;
+          .icon {
+            display: block;
+            font-size: 60px;
+            cursor: pointer;
+            margin-top: 10%;
           }
-          .cell:hover .icon {
-            color: #373e4c;
+          .txt {
+            padding-top: 10px;
+            font-size: 1.3em;
+          }
+          &:hover .icon {
+            color: #003c96;
             transform: scale(1.2);
             transition: all 200ms linear 200ms;
           }
@@ -231,7 +213,7 @@ export default {
     // 选择器
     .profession-select {
       position: absolute;
-      height: calc(100% - 32px);
+      height: calc(~"100% - 32px");
       width: 25px;
       background: #cccccc52;
       margin: 16px 5px;
