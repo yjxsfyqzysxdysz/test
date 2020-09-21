@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="index">
     <div class="main">
       <Button type="warning" shape="circle" icon="md-star" @click="clickBtn">进入</Button>

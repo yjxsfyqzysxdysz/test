@@ -1,14 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {
-  read,
-  save
-} from '../storage'
+import { read, save } from '../storage'
 // 登录获取基础参数
 // import confParameters from './modules/confParameters'
 
 Vue.use(Vuex)
 Vue.config.devtools = true
+let plugin = null
 let modules = {
   // confParameters
 }
@@ -27,8 +25,14 @@ save('state', '{}')
 const store = new Vuex.Store({
   modules: modules,
   getters: {
+    // plugin() {
+    //   return plugin
+    // }
   },
   mutations: {
+    // SET_PLUGIN(state, pl) {
+    //   plugin = pl
+    // }
   }
 })
 

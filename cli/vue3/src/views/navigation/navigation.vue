@@ -1,6 +1,6 @@
 <template>
   <div class="navigation">
-    <div class="profession-box" v-for="(item, index) of mainMenu" :key="index" :style="{order: index}" v-show="item.children.length">
+    <div class="profession-box" v-for="(item, index) of mainMenu" :key="index" :data-num="index">
       <div class="profession-title">
         <div class="title-line" :class="[`title-line${i}`]" v-for="i of 2" :key="i"></div>
         <span class="title-font">{{item.name}}</span>
@@ -8,23 +8,29 @@
       <div class="profession-content">
         <div class="profession-content-box">
           <div class="profession-content-item" ref="professoion" :style="{ left: positionLeft[index].left + 'px' }">
-            <div class="col" :class="'col' + col" v-for="col of Math.ceil(item.children.length / 20)" :key="col">
-              <div class="list-item" v-for="(item, i) of item.children" :key="i" v-show="Math.ceil((col * 20 - i) / 20) === 1">{{item}}</div>
+            <div class="list-item" v-for="(item, i) of item.children" :key="i">
+              <div class="cell">
+                <i class="icon iconfont icon-setting"></i>
+                <span class="txt">{{item}}</span>
+              </div>
             </div>
           </div>
         </div>
         <!-- 指示器 -->
-        <div class="profession-select profession-select-left" :class="{disabled: positionLeft[index].leftToggle}" @click="selectLeft(index)"><Icon type="ios-arrow-back" size="27" /></div>
-        <div class="profession-select profession-select-right" :class="{disabled: positionLeft[index].rightToggle}" @click="selectRight(index)"><Icon type="ios-arrow-forward" size="27" /></div>
+        <div class="profession-select profession-select-left" :class="{disabled: positionLeft[index].leftToggle}" @click="selectLeft(index)">
+          <i class="icon iconfont icon-jiantou-copy"></i>
+        </div>
+        <div class="profession-select profession-select-right" :class="{disabled: positionLeft[index].rightToggle}" @click="selectRight(index)">
+          <i class="icon iconfont icon-jiantou"></i>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-// import navigation from '@assets/navigation.json'
 export default {
-  created () {
+  created() {
     let arr = []
     for (let i = 0; i < 43; i++) {
       arr.push(i)
@@ -48,10 +54,8 @@ export default {
   },
   mounted() {
     this.ele = document.getElementsByClassName('list-item')[0]
-    // console.log(ele.clientWidth)
-    // console.log(this.$refs.professoion)
   },
-  data () {
+  data() {
     return {
       mainMenu: [
         { name: '大型测试', children: [] },
@@ -65,7 +69,7 @@ export default {
     }
   },
   methods: {
-    checkmenue (item) {
+    checkmenue(item) {
       // console.log('导航页点击菜单项：', item)
       // 运维跳转到新运维
       // if (item.url === '/ops/deviceMonitor' || item.url === '/settings/ops') {
@@ -133,6 +137,9 @@ export default {
         this.positionLeft[index].rightToggle = !this.positionLeft[index].rightToggle
       }
     }
+  },
+  beforeDestroy() {
+    this.ele = null
   }
 }
 </script>
@@ -195,19 +202,28 @@ export default {
         height: 100%;
         position: relative;
         transition: left 1.5s;
-        .col {
-          height: 100%;
-          width: 100%;
-          flex-shrink: 0;
-          display: flex;
-          flex-wrap: wrap;
-          flex-direction: column;
-          align-content: flex-start;
-          .list-item {
-            width: calc(100% / 10);
-            height: calc(100% / 2);
-            background: #ccc;
-            display: inline-block;
+        flex-wrap: wrap;
+        flex-direction: column;
+        align-content: flex-start;
+        .list-item {
+          width: calc(100% / 10);
+          height: calc(100% / 2);
+          background: #f9f9f9;
+          .cell {
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            .icon {
+              font-size: 60px;
+              cursor: pointer;
+            }
+          }
+          .cell:hover .icon {
+            color: #373e4c;
+            transform: scale(1.2);
+            transition: all 200ms linear 200ms;
           }
         }
       }
@@ -230,9 +246,12 @@ export default {
         opacity: 0.8;
         transition: opacity 0.9s;
       }
+      .icon {
+        font-size: 27px;
+      }
     }
     .profession-select.disabled {
-      // cursor: no-drop;
+      cursor: default;
       &:hover {
         opacity: 0.1;
       }

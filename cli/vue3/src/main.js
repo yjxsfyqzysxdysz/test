@@ -14,6 +14,9 @@ Vue.prototype.$lodash = Vue.lodash = lodash
 Vue.prototype.$moment = Vue.moment = moment
 // Vue.prototype.$echarts = echarts
 
+Object.isObject = function isObject(val) {
+  return Object.prototype.toString.call(val) === '[object Object]'
+}
 
 new Vue({
   router,

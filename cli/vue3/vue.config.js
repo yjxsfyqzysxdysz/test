@@ -1,6 +1,6 @@
-'use strict'
-const path = require('path')
-const resolve = dir => path.join(__dirname, dir)
+'use strict';
+const path = require('path');
+const resolve = dir => path.join(__dirname, dir);
 
 module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
@@ -12,7 +12,9 @@ module.exports = {
   transpileDependencies: [], // 默认情况下 babel-loader 会忽略所有 node_modules 中的文件。如果你想要通过 Babel 显式转译一个依赖，可以在这个选项中列出来
   productionSourceMap: false, // 是否在构建生产包时生成 sourceMap 文件，false将提高构建速度
   // 分化配置
-  configureWebpack: config => { // webpack-merge
+  configureWebpack: config => {
+    // htmlWebpackPlugin.options.title
+    // webpack-merge
     if (process.env.NODE_ENV === 'production') {
       // 为生产环境修改配置...
     } else {
@@ -25,35 +27,33 @@ module.exports = {
       .set('@', resolve('src'))
       .set('@assets', resolve('src/assets/'))
       .set('@com', resolve('src/components/'))
-      .set('@img', resolve('src/assets/img/'))
+      .set('@img', resolve('src/assets/img/'));
   },
   // 传递第三方插件选项
-  pluginOptions: {
-  },
+  pluginOptions: {},
   // 全局注入通用样式
   css: {
     extract: true, // 是否使用css分离插件 ExtractTextPlugin
-    sourceMap: false, // 开启 CSS source maps
+    sourceMap: true, // 开启 CSS source maps
     loaderOptions: {}, // css预设器配置项
-    requireModuleExtension: false // 启用 CSS modules for all css / pre-processor files.
   },
   /* webpack-dev-server 相关配置 */
   devServer: {
     /* 自动打开浏览器 */
-    open: false,
+    open: true,
     /* 设置为0.0.0.0则所有的地址均能访问 */
     host: '0.0.0.0',
     port: 8080,
     https: false,
-    hotOnly: false,
+    hotOnly: false
     /* 使用代理 */
-    proxy: {
-      '/api': {
-        /* 目标代理服务器地址 */
-        target: 'http://47.100.47.3/',
-        /* 允许跨域 */
-        changeOrigin: true
-      }
-    }
+    // proxy: {
+    //   '/api': {
+    //     /* 目标代理服务器地址 */
+    //     target: 'http://47.100.47.3/',
+    //     /* 允许跨域 */
+    //     changeOrigin: true
+    //   }
+    // }
   }
-}
+};
