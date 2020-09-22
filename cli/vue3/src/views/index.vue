@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'index',
   data() {
@@ -14,10 +16,11 @@ export default {
       timer: null
     }
   },
-  mounted () {
-    this.randomFun()
+  mounted() {
+    // this.randomFun()
   },
   methods: {
+    ...mapActions('login', ['login']),
     randomFun() {
       this.timer = setInterval(() => {
         let num = Math.round(Math.random() * 50)
@@ -34,8 +37,10 @@ export default {
       }, 1e4)
     },
     clickBtn() {
-      sessionStorage.setItem('login', 'true')
-      this.$router.replace('/')
+      this.login()
+        .then(() => {
+          this.$router.replace('/navigation')
+        })
     }
   },
   beforeDestroy() {
@@ -46,34 +51,34 @@ export default {
 </script>
 
 <style lang="less" scope>
-  .index {
-    .main {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      transform: translate(-50%, -50%);
-      top: 50%;
-      left: 50%;
-      text-align: center;
-      line-height: 100px;
-    }
-    &::before {
-      content: '';
-      width: 100%;
-      height: 100%;
-      position: fixed;
-      background-position: center;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      opacity: 0.5;
-      background-color: #fffae9;
-      background-image: url(../assets/image/001.jpg);
-      left: 0;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      z-index: -1;
-    }
+.index {
+  .main {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    line-height: 100px;
   }
+  &::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.5;
+    background-color: #fffae9;
+    background-image: url(../assets/image/001.jpg);
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+}
 </style>
