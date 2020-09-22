@@ -2,13 +2,13 @@ export default [
   {
     icon: 'icon-setting',
     name: '测试项目1',
-    url: '',
+    path: '',
     type: 1
   },
   {
     icon: 'icon-zhuye',
     name: '测试项目2',
-    url: '',
+    path: '',
     type: 2
   }
 ]
