@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { read, save } from '../storage'
+import { read, save } from '@tools/storage'
 // 登录获取基础参数
-// import confParameters from './modules/confParameters'
+import login from './modules/login'
+
 
 Vue.use(Vuex)
 Vue.config.devtools = true
 let plugin = null
 let modules = {
-  // confParameters
+  login
 }
 
 // 刷新页面后把保存到stroage的数据还原到store中
