@@ -27,7 +27,9 @@ module.exports = {
       .set('@', resolve('src'))
       .set('@assets', resolve('src/assets/'))
       .set('@com', resolve('src/components/'))
-      .set('@img', resolve('src/assets/img/'));
+      .set('@img', resolve('src/assets/img/'))
+      .set('@tools', resolve('src/tools/'))
+      .set('@lib', resolve('src/lib/'))
   },
   // 传递第三方插件选项
   pluginOptions: {},
