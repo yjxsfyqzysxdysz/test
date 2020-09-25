@@ -1,34 +1,41 @@
 import Vue from 'vue'
 import axios from 'axios'
-// import store from '../store'
+import { read } from '../tools/storage'
 
 const requestMap = {}
 
-// response interceptor
-axios.interceptors.request.use(request => {
-  let key
-  // abort the same post request
-  if (/POST|PUT|DELETE/.test(request.method)) {
-    key = `${request.method}${request.url}${JSON.stringify(request.body)}`
-    // abort the existed request
-    if (key && requestMap[key]) {
-      key = null
-      setTimeout(() => {
-        request.abort()
-      })
-    } else {
-      requestMap[key] = request
+axios.interceptors.request.use(
+  function(request) {
+    let key
+    request.headers.Authorization = read('TOKEN') || ''
+    if (request.headers) {
+      // 解决IE下请求缓存问题
+      request.headers['Cache-Control'] = 'no-cache'
+      request.headers['Pragma'] = 'no-cache'
     }
+    // abort the same post request
+    if (/POST|PUT|DELETE/.test(request.method)) {
+      key = `${request.method}${request.url}${JSON.stringify(request.body)}`
+      // abort the existed request
+      if (key && requestMap[key]) {
+        key = null
+        setTimeout(() => {
+          request.abort()
+        })
+      } else {
+        requestMap[key] = request
+      }
+    }
+    return request
+  },
+  function(error) {
+    // 对请求错误做些什么
+    return Promise.reject(error)
   }
-  // if (store.getters.loggedIn) {
-  //   // if logged in, add the token to the header
-  //   request.headers.common.Authorization = `Bearer ${store.getters.accessToken}`
-  // }
-  return request
-})
+)
 
 axios.interceptors.response.use(
-  response => {
+  function(response) {
     // delete current request in the map
     const request = response.request
     let key
@@ -38,7 +45,9 @@ axios.interceptors.response.use(
     }
     return response
   },
-  error => {
+  function(error) {
+    // Do something with response error
+    // 获取错误状态码
     switch (error.response.status) {
       case 500:
         Vue.errorMsg('500')

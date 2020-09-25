@@ -6,7 +6,7 @@
         <div class="profession-content-box">
           <div class="profession-content-item" ref="professoion" :style="{ left: positionLeft[index].left + 'px' }">
             <div class="list-item" v-for="(item, i) of item.children" :key="i">
-              <i class="icon iconfont" :class="item.icon"></i>
+              <i class="icon iconfont" :class="item.icon" @click="checkmenue(item)"></i>
               <span class="txt">{{item.name}}</span>
             </div>
           </div>
@@ -53,54 +53,7 @@ export default {
       })
     },
     checkmenue(item) {
-      // console.log('导航页点击菜单项：', item)
-      // 运维跳转到新运维
-      // if (item.url === '/ops/deviceMonitor' || item.url === '/settings/ops') {
-      //   if (!this.opsHost) {
-      //     this.warningMsg('请配置运维地址！')
-      //     return
-      //   }
-      // }
-      // this.momentCheck = item.tag
-      // const data = { children: item.children, item: item.tag }
-      // // 对地图模块特殊处理，根据系统参数2/3D配置设置点击地图模块的跳转路径
-      // this.setMenueList(data).then(() => {
-      //   if (item.tag === '/map/module') { // 地图应用
-      //     this.getTwoImensionalInfo().then(res => { // 获取2D/3D默认配置
-      //       if (res.mapType) {
-      //         let mapMode = res.mapType.default ? res.mapType.default : MAPMODE.mode2D
-      //         let url = '/map/' + mapMode
-      //         if (mapMode === MAPMODE.mode3D) {
-      //           let map3DType = res.mapType.map3DType ? res.mapType.map3DType : MAPMODE.mapType3D.superMap
-      //           let menu3D = item.children.find(child => { return child.url === url })
-      //           if (menu3D.children && menu3D.children.length) {
-      //             url = menu3D.children.find(child => { return child.name === map3DType }).url
-      //           }
-      //         }
-      //         this.$router.replace({ path: url })
-      //       }
-      //     })
-      //   } else if (item.tag === '/mapEdit') { // 地图编辑
-      //     this.getTwoImensionalInfo().then(res => { // 获取2D/3D默认配置
-      //       if (res.mapType) {
-      //         let mapMode = res.mapType.default ? res.mapType.default : MAPMODE.mode2D
-      //         let url = '/mapEdit/' + mapMode
-      //         if (mapMode === MAPMODE.mode3D) {
-      //           let map3DType = res.mapType.map3DType ? res.mapType.map3DType : MAPMODE.mapType3D.superMap
-      //           let menu3D = item.children.find(child => { return child.url === url })
-      //           if (menu3D.children && menu3D.children.length) {
-      //             url = menu3D.children.find(child => { return child.name === map3DType }).url
-      //           }
-      //         }
-      //         this.$router.replace({ path: url })
-      //       }
-      //     })
-      //   } else {
-      //     this.$router.replace({ path: item.children[0].url })
-      //   }
-      // }).catch((err) => {
-      //   console.log('set menulist err' + err)
-      // })
+      this.$router.push(item.path)
     },
     selectLeft(index) {
       if (this.positionLeft[index].leftToggle) { return }
@@ -127,7 +80,7 @@ export default {
 }
 </script>
 
-<style lang="less" scope>
+<style lang="less" scoped>
 .navigation {
   height: 100%;
   width: 100%;
