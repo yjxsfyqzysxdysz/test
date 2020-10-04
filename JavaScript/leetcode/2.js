@@ -28,11 +28,25 @@ function ListNode(val, next = null) {
   this.val = val
   this.next = next
 }
-const setVal = (val, node = null) => {
-  if (val.length) {
-    return setVal(val.slice(1), new ListNode(parseInt(val.slice(0, 1)), node))
+const LineList = function () {
+  let item = null
+  this.append = function (el) {
+    let node = new ListNode(el)
+    if (!item) {
+      item = node
+    } else {
+      let current = item
+      while (current.next) {
+        current = current.next
+      }
+      current.next = node
+      current = null
+    }
+    node = null
   }
-  return node
+  this.getHead = function () {
+    return item
+  }
 }
 
 // var addTwoNumbers = function (l1, l2) {
@@ -68,25 +82,52 @@ const setVal = (val, node = null) => {
 // }
 
 
-var addTwoNumbers = function (l1, l2) {
-   let l3 = new ListNode(0)
-   let l4 = l3
-   let carry = 0
-   while (l1 || l2) {
-     let l1val = l1 ? parseInt(l1.val) : 0
-     let l2val = l2 ? parseInt(l2.val) : 0
-     let sum = l1val + l2val + carry
-     l4.next = new ListNode(sum % 10)
-     carry = Math.floor(sum / 10)
-     if (l1) l1 = l1.next
-     if (l2) l2 = l2.next
-     l4 = l4.next
-   }
-   if (carry > 0) {
-     l4.next = new ListNode(carry)
-   }
-   return l3.next
-}
+// var addTwoNumbers = function (l1, l2) {
+//    let l3 = new ListNode(0)
+//    let l4 = l3
+//    let carry = 0
+//    while (l1 || l2) {
+//      let l1val = l1 ? parseInt(l1.val) : 0
+//      let l2val = l2 ? parseInt(l2.val) : 0
+//      let sum = l1val + l2val + carry
+//      l4.next = new ListNode(sum % 10)
+//      carry = Math.floor(sum / 10)
+//      if (l1) l1 = l1.next
+//      if (l2) l2 = l2.next
+//      l4 = l4.next
+//    }
+//    if (carry > 0) {
+//      l4.next = new ListNode(carry)
+//    }
+//    return l3.next
+// }
 
-let a = addTwoNumbers(setVal('55'), setVal('66'))
-console.log(a)
+var addTwoNumbers = function (l1, l2) {
+  let node = new ListNode(0),
+    carry = 0,
+    current = node
+  while (l1 || l2) {
+    let l1Val = l1 ? +l1.val : 0
+    let l2Val = l2 ? +l2.val : 0
+    let sum = l1Val + l2Val + carry
+    current.next = new ListNode(sum % 10)
+    current = current.next
+    carry = Math.floor(sum / 10)
+    if (l1) l1 = l1.next
+    if (l2) l2 = l2.next
+  }
+  if (carry) {
+    current.next = new ListNode(carry)
+  }
+  return node.next
+}
+const a = new LineList()
+const b = new LineList()
+;[9, 9, 9, 9, 9, 9, 9].forEach(e => {
+  a.append(e)
+})
+;[9, 9, 9, 9].forEach(e => {
+  b.append(e)
+})
+let res = addTwoNumbers(a.getHead(), b.getHead())
+console.log(res)
