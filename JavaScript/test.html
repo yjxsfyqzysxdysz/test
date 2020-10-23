@@ -11,7 +11,36 @@
 </head>
 
 <body>
+  <ul>
+    <li>A</li>
+    <li>B</li>
+    <li>C</li>
+  </ul>
   <script>
+    window.onload = () => {
+      // let lis = document.getElementsByTagName('li')
+      // for (let i = 0; i < lis.length; i++) {
+      //   lis[i].onclick = function(val) {
+      //     console.log(i)
+      //   }
+      // }
+      // for (let i = 0; i < lis.length; i++) {
+      //   lis[i].addEventListener('click', function() {
+      //     console.log(i);
+      //   })
+      // }
+      // let url = 'i.value.com/?a=bc=d&e=f'
+      // let brr = url.split('?')[1].split('&')
+      // let obj = {}
+      // for (let i = 0; i < brr.length; i++) {
+      //   let num = brr[i].indexOf('=')
+      //   obj[brr[i].slice(0,num)] = brr[i].slice(num + 1)
+      // }
+      // console.log(obj)
+    }
+  </script>
+  <script src="./extend.js"></script>
+  <!-- <script>
     let val = {}
     let res = Object.prototype.toString.call(val)
     console.log(res)
@@ -33,9 +62,9 @@
 
     function add() {
       // 第一次执行时，定义一个数组专门用来存储所有的参数
-      var _args = Array.prototype.slice.call(arguments);
+      let _args = Array.prototype.slice.call(arguments);
       // 在内部声明一个函数，利用闭包的特性保存_args并收集所有的参数值
-      var _adder = function() {
+      let _adder = function() {
         _args.push(...arguments);
         return _adder;
       };
@@ -47,7 +76,7 @@
     }
     res = add(1)(2)(3)
     console.log(res)
-  </script>
+  </script> -->
 </body>
 
 </html>
