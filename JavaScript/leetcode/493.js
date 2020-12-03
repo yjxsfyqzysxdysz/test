@@ -21,6 +21,9 @@
  * @param {number[]} nums
  * @return {number}
  */
+/**
+ * 正常的判断模式
+ */
 var reversePairs = function (nums) {
   if (nums.length < 2) return 0
   let res = 0,
@@ -34,6 +37,10 @@ var reversePairs = function (nums) {
   return res
 }
 
+/**
+ * 记录同一个字母出现的位置
+ * 两位置之间的符合的数量会 以累加的形式保存
+ */
 var reversePairss = function (nums) {
   const len = nums.length
   if (len < 2) return 0
@@ -50170,7 +50177,5 @@ let len = [
   1779,
   2417
 ]
-console.time('te')
-console.log(reversePairs1([64, 32, 16, 1, 8, 2]))
 // 312836170
 console.timeEnd('te')
