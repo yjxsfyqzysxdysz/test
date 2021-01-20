@@ -52,8 +52,8 @@ let cat
 
 // 4.利用空对象作为中介
 // 第3种方法升级
-// function Animal1() {}
-// Animal1.prototype.species = '动物'
+function Animal1() {}
+Animal1.prototype.species = '动物'
 // const F = function () {}
 // F.prototype = Animal1.prototype
 // Cat.prototype = new F()
@@ -63,20 +63,20 @@ let cat
 // F为空对象，几乎不占用内存
 // 修改Cat的prototype对象，就不会影响到Animal.prototype
 
-// 封装继承方法
-// function extend(Child, Parent) {
-//   const F = function () {}
-//   F.prototype = Parent.prototype
-//   Child.prototype = new F()
-//   Child.prototype.constructor = Child
-//   // 属性直接指向父对象的prototype属性。（uber是一个德语词，意思是"向上"、"上一层"。）
-//   // 这等于在子对象上打开一条通道，可以直接调用父对象的方法。
-//   // 这一行放在这里，只是为了实现继承的完备性，纯属备用性质。
-//   Child.prototype.uber = Parent.prototype
-// }
-// extend(Cat, Animal1)
-// cat = new Cat('大毛', '黄色')
-// console.log(cat)
+// 封装继承方法 / 圣杯模式
+function extend(Child, Parent) {
+  const F = function () {}
+  F.prototype = Parent.prototype
+  Child.prototype = new F()
+  Child.prototype.constructor = Child
+  // 属性直接指向父对象的prototype属性。（uber是一个德语词，意思是"向上"、"上一层"。）
+  // 这等于在子对象上打开一条通道，可以直接调用父对象的方法。
+  // 这一行放在这里，只是为了实现继承的完备性，纯属备用性质。
+  Child.prototype.uber = Parent.prototype
+}
+extend(Cat, Animal1)
+cat = new Cat('大毛', '黄色')
+console.log(cat)
 
 // 5.拷贝继承
 // 采用“拷贝”的方式实现继承
@@ -151,3 +151,17 @@ const Doctor = {
 // Chinese.birthPlaces = ['北京', '上海', '香港']
 // cat.birthPlaces.push('xiamen')
 
+function callback(qdx) {
+  console.log('callback')
+  qdx()
+}
+var user = {
+    name:"笛巴哥",
+    callback:callback,
+    callback1(){
+      console.log('callback1')
+      callback(()=>{console.log(this)});
+    }
+}
+user.callback(()=>{console.log(this)});  // still window
+// user.callback1(()=>{console.log(this)}); // user
