@@ -1,1 +1,0 @@
-console.log('./06_requires4/index.js')
