@@ -1,7 +1,12 @@
 
 // 获取单个cookie
 export const getCookie = key => {
-
+key+='='
+const cookie=document.cookiesplit(';')
+for(const e of cookie) {
+while(e.charAt(0)===' ')e=e.slice(1)
+if(e.includes(key)) return e.slice(key.length)
+}
 }
 
 // 获取全部cookies
