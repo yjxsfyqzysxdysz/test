@@ -1,5 +1,8 @@
 
 // 获取cookie
+export const getCookie = key => {
+
+}
 
 // 设置cookie
 
