@@ -30,6 +30,7 @@ export const clearCookie = () => {}
 // 确认浏览器
 // 计算空间大小
 export const getSize = size => {
+size=+size
   return 
 }
 // Map 按 key 升序排列
@@ -50,7 +51,7 @@ export const deviceType = () => {
 // 对象深拷贝
 // 获取随机id（10位，雪花算法）
 export const getId = num => {
-  return
+  return (Math.random()*1e8).toString(16).substr(0,4)+'-'+new Date().getTime()+'-'+Math.random().toString().substr(2,5)
 }
 // 将图片转成base64
 // 将图片的base64转成Blob形式
