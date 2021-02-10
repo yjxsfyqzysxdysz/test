@@ -126,8 +126,7 @@ export const strTrim = str => {
 
 // 清空数组（不改变指针）
 export const clearArr = arr => {
-  arr.length = 0
-  return arr
+  if (arr.length)return arr.splice(0)
 }
 
 // 数组去重
