@@ -29,9 +29,18 @@ export const clearCookie = () => {}
 
 // 确认浏览器
 // 计算空间大小
-export const getSize = size => {
-size=+size
-  return 
+export const getSize = (size,{space=true,unit=true,place=true}={}) => {
+const enumUnit=['B','KB','MB','GB','TB']
+let count =0
+size=parseFloat(size)
+while(size>1024&&count<4){
+size=size/1024
+count++
+}
+size=size.toFixed(place)
+space&&(size+=' ')
+unit&&(size+=enumUnit[count])
+  return size
 }
 // Map 按 key 升序排列
 // Set 升序排列
