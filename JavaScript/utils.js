@@ -121,7 +121,7 @@ export const clearSessionStorage = () => {
 
 // 去除字符串两侧空格
 export const strTrim = str => {
-  return str.
+  return str.replace(/(^\s*)|(\s*$)/g,'')
 }
 
 // 清空数组（不改变指针）
@@ -136,8 +136,23 @@ export const filterArr = arr => {
 }
 
 // 检测数据类型
-export const Data = data => {
-
+export const getDataType = data => {
+const str=Object.prototype.string
+const enumType={
+'[object String]':'string',
+'[object Number]':'number',
+'[object Object]':'object',
+'[object Boolean]':'boolean',
+'[object Underfunded]':'underfun',
+'[object ]':'',
+'[object ]':'',
+'[object ]':'',
+'[object ]':'',
+'[object ]':'',
+'[object ]':''
+}
+if(data instanceof Element){return 'element'}
+return enumType[str.call(data)]
 }
 // 字符补0
 // 获取字符长度（Unicode 128-1 ff-2 fff-3 4）
