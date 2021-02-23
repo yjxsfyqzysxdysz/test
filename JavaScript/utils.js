@@ -266,7 +266,7 @@ export const filterArr = arr => {
 
 // 检测数据类型
 export const getDataType = data => {
-  return Object.prototype.toString.call(data).substring(8).split(/]/)[0]
+  return Object.prototype.toString.call(data).slice(8, -1)
   // const str = Object.prototype.toString
   // const enumType = {
   //   '[object String]': 'string',
