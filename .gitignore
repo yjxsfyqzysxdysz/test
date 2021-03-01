@@ -72,3 +72,4 @@ typings/
 !/TypeScript/client-side/project/test-array-map/node_modules/exercise-model
 xml/demo/exportword
 /gitModel
+lib/es6
