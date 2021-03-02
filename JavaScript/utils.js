@@ -333,6 +333,20 @@ export const transferredMeaning = data => {
 // 时间转换
 // 获取随机颜色
 // 字符串隔8位匿名化
+export const anonymizedString =(str,{limit=8,first=true,fill=true}={})=>{
+str=String(str)
+const len =str.length
+for(let i=0;i*limit<=lean;i++){
+if(first){
+str=str.substring(0,i*limit)+'*'+str.substring(8*limit+1)
+}else if((i+1)*limit<=len){
+str=str.substring(0,(i+1)*limit-1)+'*'+str.substring((i+1)*limit)
+}
+}
+if(fill){str=str.slice(0,-1)}
+return str
+}
+
 // 对象比较
 export const isObjectEqual = (obj1, obj2) => {
   if (arguments.length < 2) throw 'Incorrect number of parameters'
