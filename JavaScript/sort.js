@@ -51,6 +51,7 @@ function bubbleSort(arr) {
     for (let j = 0; j < len - 1 - i; j++) {
       // 相邻元素两两对比
       if (arr[j] > arr[j + 1]) {
+        // [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
         swap(arr, j, j + 1)
       }
     }
@@ -100,6 +101,7 @@ function insertionSort(arr) {
   const len = arr.length
   let preIndex, current
   for (let i = 1; i < len; i++) {
+    // 外循环从1开始，默认arr[0]是有序段
     preIndex = i - 1
     current = arr[i]
     while (preIndex >= 0 && arr[preIndex] > current) {
@@ -432,17 +434,3 @@ function flatDeep(arr) {
 
 // console.log(flatDeep([1,2,3, [4,5,6, [7,8,9]]]))
 // console.log([1, 2, 3, [4, 5, 6, [7, 8, 9]]].toString().split(',').map(e => +e))
-
-// 函数柯里化
-function currying(fn) {
-  // args 获取第一个方法内的全部参数
-  let args = Array.prototype.slice.call(arguments, 1)
-  return function () {
-    // 将后面方法里的全部参数和args进行合并
-    let newArgs = args.concat(Array.prototype.slice.call(arguments))
-    // 把合并后的参数通过apply作为fn的参数并执行
-    return fn.apply(this, newArgs)
-  }
-}
-function add(a,b = 0) { console.log(a, b, arguments); return a + b}
-// console.log(currying(add, 1)(1,2))

@@ -251,6 +251,52 @@ Function.prototype.mycall = function (context, ...args) {
   return result
 }
 
+// 素数
+function isPrime(n) {
+  if (n < 2) return false
+  for (let i = 2; Math.pow(i, 2) <= n; i++) {
+    if (!(n % i)) return false
+  }
+  return true
+}
+
+// 函数柯里化
+function currying(fn) {
+  // args 获取第一个方法内的全部参数
+  let args = Array.prototype.slice.call(arguments, 1)
+  return function () {
+    // 将后面方法里的全部参数和args进行合并
+    let newArgs = args.concat(Array.prototype.slice.call(arguments))
+    // 把合并后的参数通过apply作为fn的参数并执行
+    return fn.apply(this, newArgs)
+  }
+}
+function add(a,b = 0) { console.log(a, b, arguments); return a + b}
+// console.log(currying(add, 1)(1,2))
+
+function filter(arr) {
+  let tmp = []
+  return arr.map(e => {
+    return e
+      .split(',')
+      .map(f => {
+        if (!tmp.includes(f)) {
+          tmp.push(f)
+          return f
+        }
+      })
+      .filter(f => f)
+      .join()
+  })
+}
+
+// console.log(filter(['a,b', 'b,c', 'a,d', 'e,f', 'c,g']))
+
+function unique(array) {
+  return Array.from(new Set(array));
+}
+unique([1, 1, 2, 3, 3]) // [1, 2, 3]
+
 module.exports = {
   filterSize,
   filterMacFun,
@@ -260,5 +306,5 @@ module.exports = {
   judgeIPAdd,
   addBigNum,
   ip2int,
-  int2iP,
+  int2iP
 }
