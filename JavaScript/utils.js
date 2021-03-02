@@ -48,7 +48,7 @@ export const browserType = () => {
 }
 
 // 获取IE版本
-const IEVersion = () => {
+export const IEVersion = () => {
   // 取得浏览器的userAgent字符串
   var userAgent = navigator.userAgent
   // 判断是否为小于IE11的浏览器
@@ -142,9 +142,9 @@ export const getUrl = type => {
     case 'hash': // 设置或获取 href 属性中在井号“#”后面的分段
     case 'href': // 设置或获取整个 URL 为字符串
     case 'protocol': // 设置或获取 URL 的协议部分
-      return location[type]
+      return window.location[type]
     case 'search': // 设置或获取 href 属性中跟在问号后面的部分
-      let url = location.search
+      let url = window.location.search
       let obj = {}
       if (url.includes('?')) {
         url = url.substr(1).split('&')
@@ -157,6 +157,12 @@ export const getUrl = type => {
     default:
       break
   }
+}
+
+export const getUrlParams = param => {
+  const reg = new RegExp(`${param}=`)
+  window.location.href.match(reg)
+  return
 }
 
 // 判断是否有emoji表情
@@ -173,15 +179,15 @@ export const hasEmoji = (data, { match = true } = {}) => {
 
 // 判定当前设备类型（pad，phone，pc）
 export const deviceType = () => {
-  const ua = navigator.userAgent,
-    isWindowsPhone = /(?:Windows Phone)/.test(ua),
-    isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone,
-    isAndroid = /(?:Android)/.test(ua),
-    isFireFox = /(?:Firefox)/.test(ua),
-    // isChrome = /(?:Chrome|CriOS)/.test(ua),
-    isPad = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua)),
-    isPhone = /(?:iPhone)/.test(ua) && !isPad,
-    isPc = !isPhone && !isAndroid && !isSymbian
+  const ua = window.navigator.userAgent
+  let isWindowsPhone = /(?:Windows Phone)/.test(ua)
+  let isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone
+  let isAndroid = /(?:Android)/.test(ua)
+  let isFireFox = /(?:Firefox)/.test(ua)
+  // let isChrome = /(?:Chrome|CriOS)/.test(ua)
+  let isPad = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua))
+  let isPhone = /(?:iPhone)/.test(ua) && !isPad
+  let isPc = !isPhone && !isAndroid && !isSymbian
 
   return { isPad, isPhone, isPc }
 }
@@ -192,8 +198,7 @@ export const getId = () => {
 }
 
 // Dom 事件监听 添加
-export const setEvents = (event, fun, dom) => {
-  !dom && (dom = document)
+export const setEvents = (event, fun, dom = document) => {
   if (dom.attachEvent) {
     dom.attachEvent('on' + event, fun, false)
   } else {
@@ -202,8 +207,7 @@ export const setEvents = (event, fun, dom) => {
 }
 
 // Dom 事件监听 取消
-export const removeEvents = (event, fun, dom) => {
-  !dom && (dom = document)
+export const removeEvents = (event, fun, dom = document) => {
   if (dom.detachEvent) {
     dom.detachEvent('on' + event, fun, false)
   } else {
@@ -328,23 +332,35 @@ export const transferredMeaning = data => {
     '~': '',
     '@': ''
   }
+
+  return
 }
 
 // 时间转换
+export const  = => {
+  
+}
+
 // 获取随机颜色
+export const  = => {
+  
+}
+
 // 字符串隔8位匿名化
-export const anonymizedString =(str,{limit=8,first=true,fill=true}={})=>{
-str=String(str)
-const len =str.length
-for(let i=0;i*limit<=lean;i++){
-if(first){
-str=str.substring(0,i*limit)+'*'+str.substring(8*limit+1)
-}else if((i+1)*limit<=len){
-str=str.substring(0,(i+1)*limit-1)+'*'+str.substring((i+1)*limit)
-}
-}
-if(fill){str=str.slice(0,-1)}
-return str
+export const anonymizedString = (str, { limit = 8, first = true, fill = true } = {}) => {
+  str = String(str)
+  const len = str.length
+  for (let i = 0; i * limit <= len; i++) {
+    if (first) {
+      str = str.substring(0, i * limit) + '*' + str.substring(8 * limit + 1)
+    } else if ((i + 1) * limit <= len) {
+      str = str.substring(0, (i + 1) * limit - 1) + '*' + str.substring((i + 1) * limit)
+    }
+  }
+  if (fill) {
+    str = str.slice(0, -1)
+  }
+  return str
 }
 
 // 对象比较
@@ -459,8 +475,21 @@ export const unicode2Chinese = str => {
 }
 
 // 使用Object.defineProperty 添加es6方法
+
+
 // 获取月份
+export const  = => {
+
+}
+
 // Vue.extend创建toast
+
+
 // 根据滚动计算可视区域数据
+
+
 // 双击？
+
+
 // axios 全局异常处理
+
