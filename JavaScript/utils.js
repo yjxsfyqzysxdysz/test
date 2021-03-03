@@ -160,9 +160,9 @@ export const getUrl = type => {
 }
 
 export const getUrlParams = param => {
-  const reg = new RegExp(`${param}=`)
-  window.location.href.match(reg)
-  return
+  const reg = new RegExp(`${param}=([^&]*)`)
+  const [, res] = window.location.href.match(reg) || []
+  return res
 }
 
 // 判断是否有emoji表情
