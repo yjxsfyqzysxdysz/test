@@ -1,3 +1,7 @@
+/**
+ * element 自定义指令
+ * import Clickoutside from 'element-ui/src/utils/clickoutside'
+ */
 const on = (function() {
   if (!Vue.prototype.$isServer && document.addEventListener) {
     return function(element, event, handler) {
