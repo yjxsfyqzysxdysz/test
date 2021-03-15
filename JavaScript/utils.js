@@ -292,6 +292,10 @@ export const getDataType = data => {
 
 // 正则 phone，mail，password，passwordNumber
 // mail ^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$
+// phone /^[\d+*#]{1,20}$/
+// phone /^1\d{10}$/
+// password /^(?=.*[A-Za-z])[\s\S]{4,16}$/
+// passwordNumber /^\d{4,16}$/
 // 18位身份证号：^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$
 
 // 检验特殊字符 .,:+_*-=/&^;()\<|[{'`＂}]>$%#
@@ -326,7 +330,7 @@ export const transferredMeaning = data => {
     ';': '',
     '&': '',
     '^': '',
-    $: '',
+    '$': '',
     '#': '',
     '!': '',
     '~': '',
@@ -396,6 +400,34 @@ export const isObjectEqual = (obj1, obj2) => {
   } else if (obj1Type === 'Set' || obj1Type === 'Map') {
     // 把 Set Map 转为 Array
     if (!isObjectEqual(Array.from(obj1), Array.from(obj2))) return false
+  }
+  return true
+}
+
+export const isObjectEqual2 = (obj1, obj2) => {
+  if (!obj1 instanceof Object || !obj2 instanceof Object) return obj1 === obj2
+  if (Object.keys(obj1).length - Object.keys(obj2).length) return false
+  for (let k in obj1) {
+    if (k !== 'createTime') {
+      if (obj1[k] instanceof Object && obj2[k] instanceof Object) {
+        if (isObjectEqual2(obj1[k], obj2[k])) {
+          continue
+        } else {
+          return false
+        }
+      } else if (typeof obj1[k] === 'number' && typeof obj2[k] === 'number') {
+        // 若为小数
+        if (obj1[k].toString().indexOf('.') > -1) {
+          obj1[k] = parseFloat(obj1[k].toFixed(10))
+        }
+        if (obj2[k].toString().indexOf('.') > -1) {
+          obj2[k] = parseFloat(obj2[k].toFixed(10))
+        }
+        if (obj1[k] !== obj2[k]) return false
+      } else if (k === 'executeTime' || k === 'time') {
+        if (obj1[k] !== obj2[k]) return false
+      }
+    }
   }
   return true
 }
@@ -493,3 +525,22 @@ export const  = => {
 
 // axios 全局异常处理
 
+// 获取图片信息
+export const getImageInfo = (_file, _render) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reader.onabort = e => {
+      reject(e)
+    }
+    reader.onload = res => {
+      if (!res.total) {
+        reject('File size is 0')
+      } else {
+        resolve({
+          data: EXIF.readFormBinaryFile(res.currentTarget(_render))
+        })
+      }
+    }
+    reader.readAsArrayBuffer(_file)
+  })
+}
