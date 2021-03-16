@@ -434,35 +434,6 @@ export const isObjectEqual2 = (obj1, obj2) => {
 
 // 对象深拷贝
 
-// 将图片转成base64
-function image2Base64(img) {
-  const canvas = document.createElement('canvas')
-  canvas.width = img.width
-  canvas.height = img.height
-  const ctx = canvas.getContext('2d')
-  ctx.drawImage(img, 0, 0, img.width, img.height)
-  return canvas.toDataURL('image/png')
-}
-
-// 将图片的base64转成Blob形式
-function dataURItoBlob(base64Data) {
-  let byteString
-  if (base64Data.split(',')[0].indexOf('base64') >= 0) {
-    // atob 用于解码使用 base-64 编码的字符串
-    byteString = atob(base64Data.split(',')[1])
-  } else {
-    byteString = unescape(base64Data.split(',')[1])
-  }
-  const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0]
-  let u8 = new Uint8Array(byteString.length)
-  for (let i = 0; i < byteString.length; i++) {
-    u8[i] = byteString.charCodeAt(i)
-  }
-  return new Blob([u8], { type: mimeString })
-}
-
-// 生成缩略图（canvas）
-
 // 字符补0
 export const pad = (num, length) => {
   return (Array(length).join('0') + num).slice(-length)
@@ -543,4 +514,33 @@ export const getImageInfo = (_file, _render) => {
     }
     reader.readAsArrayBuffer(_file)
   })
+}
+
+// 生成缩略图（canvas）
+
+// 将图片转成base64
+function image2Base64(img) {
+  const canvas = document.createElement('canvas')
+  canvas.width = img.width
+  canvas.height = img.height
+  const ctx = canvas.getContext('2d')
+  ctx.drawImage(img, 0, 0, img.width, img.height)
+  return canvas.toDataURL('image/png')
+}
+
+// 将图片的base64转成Blob形式
+function dataURItoBlob(base64Data) {
+  let byteString
+  if (base64Data.split(',')[0].indexOf('base64') >= 0) {
+    // atob 用于解码使用 base-64 编码的字符串
+    byteString = atob(base64Data.split(',')[1])
+  } else {
+    byteString = unescape(base64Data.split(',')[1])
+  }
+  const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0]
+  let u8 = new Uint8Array(byteString.length)
+  for (let i = 0; i < byteString.length; i++) {
+    u8[i] = byteString.charCodeAt(i)
+  }
+  return new Blob([u8], { type: mimeString })
 }
