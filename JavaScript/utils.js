@@ -537,7 +537,7 @@ export const getImageInfo = (_file, _render) => {
         reject('File size is 0')
       } else {
         resolve({
-          data: EXIF.readFormBinaryFile(res.currentTarget(_render))
+          data: EXIF.readFormBinaryFile(res.currentTarget.result)
         })
       }
     }
