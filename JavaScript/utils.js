@@ -517,7 +517,7 @@ export const getImageInfo = file => {
 }
 
 // 获取缩略图
-const getThumbSteps = (image, canvas, cts) => {
+const getThumbSteps = (image, canvas, ctx) => {
   const { width = 0, height = 0 } = image // 原图宽高
   const maxWidth = 350, maxHeight = 350 // 图片宽高
   let [sx, sy] = [0, 0] // 坐标位置
