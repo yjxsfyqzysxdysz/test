@@ -1,9 +1,10 @@
+let EXIF = ''
 ;(function () {
   var debug = false
 
   var root = this
 
-  var EXIF = function (obj) {
+  EXIF = function (obj) {
     if (obj instanceof EXIF) return obj
     if (!(this instanceof EXIF)) return new EXIF(obj)
     this.EXIFwrapped = obj
