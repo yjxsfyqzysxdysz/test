@@ -497,7 +497,7 @@ export const  = => {
 // axios 全局异常处理
 
 // 获取图片信息
-export const getImageInfo = (_file, _render) => {
+export const getImageInfo = file => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onerror = reader.onabort = e => {
@@ -512,8 +512,49 @@ export const getImageInfo = (_file, _render) => {
         })
       }
     }
-    reader.readAsArrayBuffer(_file)
+    reader.readAsArrayBuffer(file)
   })
+}
+
+// 获取缩略图
+const getThumbSteps = (image, canvas, cts) => {
+  const { width = 0, height = 0 } = image // 原图宽高
+  const maxWidth = 350, maxHeight = 350 // 图片宽高
+  let [sx, sy] = [0, 0] // 坐标位置
+  let [swidth, sheight] = [width, height] // 被剪切图像的宽高
+  let [iwidth, iheight] = [width, height] // 输出图像的宽高
+  const extraSize = Math.abs(width - height) // 宽高差
+  
+  if (width > maxWidth && height > maxHeight) {
+    let ratio
+    if (width > height) {
+      ratio = height / maxHeight
+      sx = extraSize / 2
+      swidth = maxWidth * ratio
+      iwidth = width / ratio
+      iheight = maxHeight
+    } else {
+      ratio = width / maxWidth
+      sy = extraSize / 2
+      sheight = maxHeight * ratio
+      iwidth = maxWidth
+      iheight = height / ratio
+    }
+  } else if (width > maxWidth && height <= maxHeight) {
+    sx = extraSize / 2
+    swidth = maxWidth
+    iwidth = maxWidth
+    iheight = height
+  } else if (width <= maxWidth&& height > maxHeight) {
+    sy = extraSize / 2
+    sheight = maxHeight
+    iwidth = width
+    iheight = maxHeight
+  }
+  canvas.width = Math.min(maxWidth, iwidth)
+  canvas.height = Math.min(maxHeight, iheight)
+  ctx.drawImage(image, sx, sy, swidth, sheight, 0, 0, iwidth, iheight)
+  return canvas.toDataURL('image/jpeg', 0.9)
 }
 
 // 生成缩略图（canvas）
