@@ -1,3 +1,7 @@
+import md5 from './md5'
+import CryptoJS from 'CryptoJS'
+import offset from './offset'
+
 // 获取单个cookie
 export const getCookie = key => {
   key += '='
@@ -6,6 +10,22 @@ export const getCookie = key => {
     while (e.charAt(0) === ' ') e = e.slice(1)
     if (e.includes(key)) return e.slice(key.length)
   }
+}
+
+// 获取cookie
+export const getCookieCSRFToken = key => {
+  let name = key + '='
+  let ca = document.cookie.split(';')
+  let ToTalCookie = ''
+  for (let i = 0; i < ca.length; i++) {
+    const c = ca[i]
+    while (c.charAt(0) === '') c = c.substring(1)
+    if (c.indexOf(name) !== -1) {
+      ToTalCookie += ',' + c.substring(name.length, c.length)
+    }
+  }
+  ToTalCookie = ToTalCookie.substr(1)
+  return ToTalCookie
 }
 
 // 获取全部cookies
@@ -18,31 +38,33 @@ export const setCookie = (name, value, days) => {
     const date = new Date()
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
     expires = '; expires=' + date.toUTCString()
-  } else {
-    expires = ''
-    document.cookie = name + '=' + value + expires + ';'
   }
+  document.cookie = name + '=' + value + expires + ';'
 }
 
 // 清除cookie
-export const clearCookie = () => {}
+export const clearCookie = key => {
+  setCookie(key, '' , -1)
+}
 
-// 确认浏览器 不考虑对 IE9 以下
+// 获取浏览器类型
 export const browserType = () => {
   const userAgent = navigator.userAgent // 取得浏览器的userAgent字符串
   let browser = 'unknown'
-  if (userAgent.indexOf('IE') != -1) {
+  if (userAgent.includes('IE')) {
     browser = 'IE'
-  } else if (userAgent.indexOf('Firefox') != -1) {
+  } else if (userAgent.includes('Firefox')) {
     browser = 'Firefox'
-  } else if (userAgent.indexOf('OPR') != -1) {
+  } else if (userAgent.includes('OPR') || userAgent.includes('Opera')) {
     browser = 'Opera'
-  } else if (userAgent.indexOf('Chrome') != -1) {
+  } else if (userAgent.includes('Chrome') && !/Edge\/(\d+)/.exec(userAgent)) {
     browser = 'Chrome'
-  } else if (userAgent.indexOf('Safari') != -1) {
+  } else if (userAgent.includes('Safari')) {
     browser = 'Safari'
-  } else if (userAgent.indexOf('Trident') != -1) {
-    browser = 'IE 11'
+  } else if (/MSIE \d/.test(userAgent) || /Trident\/(?:[7-9]|\d{2,})\..*rv:(\d+)/.exec(userAgent)) {
+    browser = 'IE'
+  } else if (/Edge\/(\d+)/.exec(userAgent)) {
+    browser = 'Edge'
   }
   return browser
 }
@@ -90,6 +112,9 @@ export const IEVersion = () => {
     return -1
   }
 }
+
+// 校验当前是否为 win 环境
+export const isWin = (() => ['Win32', 'Win64'].includes(window.navigator.platform))()
 
 // 计算空间大小
 export const getSize = (size, { space = true, unit = true, place = true } = {}) => {
@@ -159,6 +184,28 @@ export const getUrl = type => {
   }
 }
 
+// 打开新页面
+export const toOtherPage = (url, { type, blank } = {}) => {
+  switch (type) {
+    case 1:
+      window.parent.location.href = url
+      break
+    case 2:
+      window.top.location.href = url
+      break
+    case 3:
+      window.open(url, blank)
+      break
+    case 4:
+      window.location.replace(url)
+      break
+    default:
+      window.location.href = url
+      break
+  }
+}
+
+// 获取查询字符串
 export const getUrlParams = param => {
   const reg = new RegExp(`${param}=([^&]*)`)
   const [, res] = window.location.href.match(reg) || []
@@ -180,14 +227,15 @@ export const hasEmoji = (data, { match = true } = {}) => {
 // 判定当前设备类型（pad，phone，pc）
 export const deviceType = () => {
   const ua = window.navigator.userAgent
-  let isWindowsPhone = /(?:Windows Phone)/.test(ua)
-  let isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone
-  let isAndroid = /(?:Android)/.test(ua)
-  let isFireFox = /(?:Firefox)/.test(ua)
-  // let isChrome = /(?:Chrome|CriOS)/.test(ua)
-  let isPad = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua))
-  let isPhone = /(?:iPhone)/.test(ua) && !isPad
-  let isPc = !isPhone && !isAndroid && !isSymbian
+  const isWindowsPhone = /(?:Windows Phone)/.test(ua)
+  const isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone
+  const isAndroid = /(?:Android)||(?:Adr)/.test(ua)
+  const isFireFox = /(?:Firefox)/.test(ua)
+  // const isChrome = /(?:Chrome|CriOS)/.test(ua)
+  const isPad = /(?:iPad|PlayBook)/.test(ua) || (isAndroid && !/(?:Mobile)/.test(ua)) || (isFireFox && /(?:Tablet)/.test(ua))
+  const isPhone = /(?:iPhone)/.test(ua) && !isPad
+  const isPc = !isPhone && !isAndroid && !isSymbian
+  const isWeChat = ''
 
   return { isPad, isPhone, isPc }
 }
@@ -215,51 +263,13 @@ export const removeEvents = (event, fun, dom = document) => {
   }
 }
 
-// 获取 LocalStorage
-export const getLocalStorage = key => {
-  return localStorage.getItem(key)
-}
-
-// 设置/删除 LocalStorage
-export const setLocalStorage = (key, value) => {
-  if (value + '') {
-    localStorage.setItem(key, value)
-  } else {
-    localStorage.removeItem('key')
-  }
-}
-
-// 清空 LocalStorage
-export const clearLocalStorage = () => {
-  localStorage.clear()
-}
-
-// 获取 SessionStorage
-export const getSessionStorage = key => {
-  return sessionStorage.getItem(key)
-}
-
-// 设置/删除 SessionStorage
-export const setSessionStorage = (key, value) => {
-  if (value + '') {
-    sessionStorage.setItem(key, value)
-  } else {
-    sessionStorage.removeItem('key')
-  }
-}
-
-// 清空 SessionStorage
-export const clearSessionStorage = () => {
-  sessionStorage.clear()
-}
-
 // 去除字符串两侧空格
 export const strTrim = str => {
   return str.replace(/(^\s*)|(\s*$)/g, '')
 }
 
 // 清空数组（不改变指针）
-export const clearArr = arr => {
+export const clearArray = arr => {
   if (arr.length) return arr.splice(0)
 }
 
@@ -306,38 +316,37 @@ export const checkStr = data => {
 
 // 转换特殊字符
 export const transferredMeaning = data => {
+  if (!data.length) return data
   const enumCode = {
-    '`': '',
-    "'": '',
-    '"': '',
-    '<': '',
-    '>': '',
-    '{': '',
-    '}': '',
-    '[': '',
-    ']': '',
-    '(': '',
-    ')': '',
-    '+': '',
-    '-': '',
-    '*': '',
-    '/': '',
-    '\\': '',
-    '%': '',
-    '|': '',
-    '.': '',
-    ',': '',
-    ';': '',
-    '&': '',
-    '^': '',
-    '$': '',
-    '#': '',
-    '!': '',
-    '~': '',
-    '@': ''
+    '`': '&#x60;',
+    "'": '&#x27;',
+    '"': '&#x22;',
+    ':': '&#x3a;',
+    '<': '&#x3c;',
+    '>': '&#x3e;',
+    '{': '&#x7b;',
+    '}': '&#x7d;',
+    '[': '&#x5b;',
+    ']': '&#x5d;',
+    '(': '&#x28;',
+    ')': '&#x29;',
+    '+': '&#x2b;',
+    '-': '&#x2d;',
+    '*': '&#x2a;',
+    '/': '&#x2f;',
+    '\\': '&#x5c;',
+    '%': '&#x25;',
+    '|': '&#x7c;',
+    ',': '&#x2c;',
+    ';': '&#x3b;',
+    '&': '&#x26;',
+    '^': '&#x5e;',
+    '$': '&#x24;',
+    '#': '&#x23;',
+    '@': '&#x40;',
+    '=': '&#x3d;'
   }
-
-  return
+  return data.replace(/[`@#$%^&*()-+={}\[\]|\\:;"',<>\/]/g, v => enumCode[v])
 }
 
 // 时间转换
@@ -433,6 +442,24 @@ export const isObjectEqual2 = (obj1, obj2) => {
 }
 
 // 对象深拷贝
+export const deepClone = data => {
+  const type = getDataType(data)
+  let obj
+  if (type === 'Array') {
+    obj = []
+    for (let i = 0; i < data.length; i++) {
+      obj.push(deepClone(data[i]))
+    }
+  } else if (type === 'Object') {
+    obj = {}
+    for (const key in data) {
+      obj[key] = deepClone(data[key])
+    }
+  } else {
+    obj = data
+  }
+  return obj
+}
 
 // 字符补0
 export const pad = (num, length) => {
@@ -477,13 +504,26 @@ export const unicode2Chinese = str => {
   return unescape(str.replace(/\\u/g, '%u'))
 }
 
+// 查看 dom 元素是否是某个 class 样式下的元素
+export const isChildByClassName = (className, dom) => {
+  if (!dom) return false
+  const currentClass = dom.className
+  const classType = getDataType(currentClass)
+  if (classType === 'SVGAnimatedString') {
+    if (classType.baseVal === className) {
+      return true
+    }
+    return isChildByClassName(className, dom.parentNode)
+  } else if (classType !== 'String') {
+    return false
+  } else if (currentClass.includes(className)) {
+    return true
+  }
+  return isChildByClassName(className, dom.parentNode)
+}
+
 // 使用Object.defineProperty 添加es6方法
 
-
-// 获取月份
-export const  = => {
-
-}
 
 // Vue.extend创建toast
 
@@ -491,8 +531,27 @@ export const  = => {
 // 根据滚动计算可视区域数据
 
 
-// 双击？
-
+// 双击
+let debounceTime = 0
+let timer = null
+export const debounceClick = (interval, fn) => {
+  const currentTime = new Date().getTime()
+  if(!debounceTime) {
+    debounceTime = currentTime
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+    timer = setTimeout(() => {
+      fn()
+      debounceTime = 0
+    }, interval)
+  } else if (debounceTime - currentTime <= interval) {
+    debounceTime = 0
+    clearTimeout(timer)
+    timer = null
+  }
+}
 
 // axios 全局异常处理
 
@@ -557,31 +616,444 @@ const getThumbSteps = (image, canvas, ctx) => {
   return canvas.toDataURL('image/jpeg', 0.9)
 }
 
+// 获取密文的缩略图
+const getCryptThumbSteps = (image, canvas, ctx) => {
+  const maxWidth = 350
+  const maxHeight = 350
+
+  const width = image.width || image.videoWidth
+  const height = image.height || image.videoHeight
+
+  let sx = 0 // 开始剪切的 x 坐标位置
+  let sy = 0 // 开始剪切的 y 坐标位置
+  let iwidth = width // 输出图像的宽
+  let iheight = height // 输出图像的高
+
+  // 如果宽度或高度超出，进行压缩
+  if (width > maxWidth || height > maxHeight) {
+    // 横向长方形
+    if (width > height) {
+      iwidth = maxWidth
+      iheight = (iwidth / width) * height
+    }
+    // 纵向长方形
+    if (width <= height) {
+      iheight = maxHeight
+      iwidth = (iheight / height) * width
+    }
+  }
+
+  canvas.width = iwidth
+  canvas.height = iheight
+  ctx.drawImage(image, sx, sy, iwidth, iheight)
+
+  return canvas.toDataURL('image/jpeg', 0.9)
+}
+
+// 获取LCD图
+const getLcdSteps = (image, canvas, ctx) => {
+  const maxWidth = 1920
+  const maxHeight = 1920
+
+  const width = image.width || image.videoWidth
+  const height = image.height || image.videoHeight
+
+  let sx = 0 // 开始剪切的 x 坐标位置
+  let sy = 0 // 开始剪切的 y 坐标位置
+  let iwidth = width // 输出图像的宽
+  let iheight = height // 输出图像的高
+
+    // 如果宽度或高度超出，进行压缩
+  if (width > maxWidth || height > maxHeight) {
+    // 横向长方形
+    if (width > height) {
+      iwidth = maxWidth
+      iheight = (iwidth / width) * height
+    }
+    // 纵向长方形
+    if (width <= height) {
+      iheight = maxHeight
+      iwidth = (iheight / height) * width
+    }
+  }
+
+  canvas.width = iwidth
+  canvas.height = iheight
+  ctx.drawImage(image, sx, sy, iwidth, iheight)
+
+  return canvas.toDataURL('image/jpeg', 0.9)
+}
+
 // 生成缩略图（canvas）
+const getThumb = (url, callback1, callback2) => {
+  const canvas = document.createElement('CANVAS')
+  canvas.style.display = 'none'
+  const ctx = canvas.getContext('2d')
+  document.body.appendChild(canvas)
+
+  const image = new Image()
+  image.crossOrigin = 'anonymous'
+  image.src = url
+  image.onload = () => {
+    if (callback1 && getDataType(callback1) === 'Function') {
+      const dataURL = getThumbSteps(image, canvas, ctx)
+      callback1(dataURL)
+    }
+    document.body.removeChild(canvas)
+  }
+  image.onerror = error => {
+    if (callback2 && getDataType(callback2) === 'Function') {
+      callback2(error)
+    }
+    document.body.removeChild(canvas)
+  }
+}
+
+// 绘制缩略图和LCD图，用于加密上传
+export const getThumbAndLCD = (url, callback1, callback2) => {
+  const canvas = document.createElement('CANVAS')
+  canvas.style.display = 'none'
+  const ctx = canvas.getContext('2d')
+  document.body.appendChild(canvas)
+
+  const image = new Image()
+  image.crossOrigin = 'anonymous'
+  image.src = url
+  image.onload = () => {
+    if (callback1 && getDataType(callback1) === 'Function') {
+      const dataURL = getThumbSteps(image, canvas, ctx)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const lcdDataURL = getLcdSteps(image, canvas, ctx)
+      callback1({ dataURL, lcdDataURL })
+    }
+    document.body.removeChild(canvas)
+  }
+  image.onerror = error => {
+    if (callback2 && getDataType(callback2) === 'Function') {
+      callback2(error)
+    }
+    document.body.removeChild(canvas)
+  }
+}
+
+// 根据视频第 1s 生成缩略图
+export const getThumbByVideo = (video, callback) => {
+  const canvas = document.createElement('CANVAS')
+  canvas.style.display = 'none'
+  const ctx = canvas.getContext('2d')
+  document.body.appendChild(canvas)
+
+  if (callback && getDataType(callback) === 'Function') {
+    const dataURL = getThumbSteps(video, canvas, ctx)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const lcdDataURL = getLcdSteps(video, canvas, ctx)
+    callback({ dataURL, lcdDataURL })
+  }
+  document.body.removeChild(canvas)
+}
+
+// 获取用于上传的缩略图和LCD图
+export const getThumbToUpload = url => {
+  return new Promise((resolve, reject) => {
+    getThumbAndLCD(url, ({ dataURL = '', lcdDataURL = '' }) => {
+      resolve({
+        code: 0,
+        data: {
+          thumbBlob: dataURLtoBlob(dataURL),
+          lcdBlob: dataURLtoBlob(lcdDataURL),
+          thumbUrl: window.URL.createObjectURL(dataURLtoBlob(dataURL))
+        }
+      }),
+      error => { reject(error) }
+    })
+  })
+}
+
+// 获取用于上传的视频第 1s 生成缩略图
+export const getThumbToUploadByVideo = url => {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('VIDEO')
+    if (browserType() === 'FireFox') {
+      video.currentTime = 1
+    }
+    video.src = url
+    video.crossOrigin = 'Anonymous'
+    video.addEventListener('canplay', () => {
+      getThumbByVideo(video, ({ dataURL = '', lcdDataURL = '' }) => {
+        resolve({
+          code: 0,
+          data: {
+            thumbBlob: dataURLtoBlob(dataURL),
+            lcdBlob: dataURLtoBlob(lcdDataURL),
+            thumbUrl: window.URL.createObjectURL(dataURLtoBlob(dataURL))
+          }
+        })
+      },
+      error => { reject(error) })
+    }, false)
+  })
+}
+
+// 使用 canvas 绘制缩略图
+export const getThumbByCanvas = (url, callback) => {
+  getThumb(url, dataURL => {
+    if (callback && getDataType(callback) === 'Function') {
+      callback(window.URL.createObjectURL(dataURLtoBlob(dataURL)))
+    }
+  })
+}
 
 // 将图片转成base64
-function image2Base64(img) {
-  const canvas = document.createElement('canvas')
-  canvas.width = img.width
-  canvas.height = img.height
+export const imageToBase64 = image => {
+  const canvas = document.createElement('CANVAS')
+  canvas.width = image.width
+  canvas.height = image.height
   const ctx = canvas.getContext('2d')
-  ctx.drawImage(img, 0, 0, img.width, img.height)
-  return canvas.toDataURL('image/png')
+  ctx.drawImage(image, 0, 0, image.width, image.height)
+  return canvas.toDataURL('image/png', 0.9)
 }
 
 // 将图片的base64转成Blob形式
-function dataURItoBlob(base64Data) {
-  let byteString
-  if (base64Data.split(',')[0].indexOf('base64') >= 0) {
-    // atob 用于解码使用 base-64 编码的字符串
-    byteString = atob(base64Data.split(',')[1])
-  } else {
-    byteString = unescape(base64Data.split(',')[1])
+export const dataURLtoBlob = dataurl => {
+  // let byteString
+  // if (dataurl.split(',')[0].indexOf('base64') >= 0) {
+  //   // atob 用于解码使用 base-64 编码的字符串
+  //   byteString = atob(dataurl.split(',')[1])
+  // } else {
+  //   byteString = unescape(dataurl.split(',')[1])
+  // }
+  // const mime = dataurl.split(',')[0].split(':')[1].split(';')[0]
+  // let u8 = new Uint8Array(byteString.length)
+  // for (let i = 0; i < byteString.length; i++) {
+  //   u8[i] = byteString.charCodeAt(i)
+  // }
+  // return new Blob([u8], { type: mime })
+
+  const arr = dataurl.split(',')
+  const [, mime] = arr[0].match(/:(.*?);/)
+  const bstr = arr[0].includes('base64') ? atob(arr[1]) : unescape(arr[1])
+  let n = bstr.length
+  const u8 = new Uint8Array(n)
+  while(n--) {
+    u8[n] = bstr.charCodeAt(n)
   }
-  const mimeString = base64Data.split(',')[0].split(':')[1].split(';')[0]
-  let u8 = new Uint8Array(byteString.length)
-  for (let i = 0; i < byteString.length; i++) {
-    u8[i] = byteString.charCodeAt(i)
-  }
-  return new Blob([u8], { type: mimeString })
+  return new Blob([u8], { type: mime })
 }
+
+// 获取校验分段 MD5
+export const getSpecificMD5 = (rangArr, file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    let index = 0
+    const blob = file
+    const md5Arr = []
+    reader.onload = evt => {
+      if (reader.readyState === 2) {
+        index++
+        md5Arr.push(md5.hex(evt.target.result))
+        if (angArr[index]) {
+          reader.readAsArrayBuffer(blob.slice(rangArr[index][0], rangArr[index][1] + 1))
+        } else {
+          resolve({ code: 0, data: md5Arr })
+        }
+      } else {
+        throw reader.readyState
+      }
+    }
+    reader.onabort = reader.onerror = error => {
+      reject({ msg: 'getMD5 Fail', inof: error })
+    }
+    reader.readAsArrayBuffer(blob.slice(rangArr[0][0], rangArr[0][1] + 1))
+  })
+}
+
+// 获取校验参数
+export const getMD5 = (file, key) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    let md5Obj = md5.create()
+    reader.onload = evt => {
+      const sha256 = key ? CryptoJS.HmacSHA256(CryptoJS.lib.WordArry.create(reader.result), CryptoJS.enc.Hex.parse(key)).toString() : CryptoJS.SHA256(CryptoJS.lib.WordArry.create(reader.result)).toString()
+      // base64 MD5
+      md5Obj = md5Obj.update(evt.target.result)
+      const originMd5 = md5Obj.hex()
+      const base64Md5 = md5Obj.base64()
+      // offset
+      const offsetArr = offset(originMd5, file.size)
+      getSpecificMD5(offsetArr, file)
+        .then(({ data }) => {
+          resolve({
+            code: 0,
+            data: {
+              md5Arr: data,
+              originMd5,
+              base64Md5,
+              offsetArr,
+              sha256
+            }
+          })
+        })
+        .catch(err => {
+          reject(err)
+        })
+    }
+    reader.onsnort = reader.onerror = () => {
+      reject({ msg: 'getMD5 Fail' })
+    }
+    reader.readAsArrayBuffer(file)
+  })
+}
+
+// 获取云盘备忘录校验参数
+export const getMD5Block = (file, key, type, index) => {
+  return new Promise((resolve, reject) => {
+    const segSize = 3 * 1024 * 1024
+    let startFlag
+    const reader = new FileReader()
+    let md5Obj = md5.create()
+    let sha256 = key ? CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA256, CryptoJS.enc.Hex.parse(key)).toString() : type === '6' ? '' : CryptoJS.algo.SHA256.create()
+    reader.onload = evt => {
+      if (window._upload_ && window._upload_.vm.fileInf && window._upload_.vm.fileInf[index]) {
+        window._upload_.vm.fileInf[index].statusMsg = `${(Math.random() * 100).toFixed(1)}KB/s(0.1%)`
+      }
+      if (((window._upload_ && window._upload_.vm.fileInf && window._upload_.vm.fileInf[index] && window._upload_.vm.fileInf[index].isStopped) || !window._upload_) && type === '6') {
+        reader.abort()
+      } else if (reader.readyState === 2) {
+        md5Obj = md5Obj.update(evt.target.result)
+        sha256 = !key && type === '6' ? '' : sha256.update(CryptoJS.lib.WordArry.create(reader.result))
+        if (startFlag >= file.size) {
+          sha256 = !key && type === '6' ? '' : sha256.finalize().toString()
+          const originMd5 = md5Obj.hex()
+          const base64Md5 = md5Obj.base64()
+          // offset
+          const offsetArr = offset(originMd5, file.size)
+          let dataObj = {}
+          getSpecificMD5(offsetArr, file)
+            .then(res => {
+              dataObj = {
+                md5Arr: res.data,
+                originMd5,
+                base64Md5,
+                offsetArr,
+                sha256
+              }
+              resolve({
+                code: '0',
+                data: dataObj
+              })
+            })
+            .catch(err => {
+              reject(err)
+            })
+        } else {
+          const stopFlag = startFlag + segSize >= file.size ? file.size : startFlag + segSize
+          readBlob(startFlag, stopFlag)
+        }
+      } else {
+        reject({ msg: 'readFile Fail' })
+      }
+    }
+    reader.onabort = reader.onerror = () => {
+      reject({ msg: 'readFile Fail' })
+    }
+    reader.abort = () => {
+      reject({ msg: 'user Cancel' })
+    }
+    const readBlob = (start, stop) => {
+      startFlag = stopPropagation();
+      const Blob = file.hasOwnProperty('webkitSlice') ? 
+        file.webkitSlice(start, stop) :
+        file.hasOwnProperty('mozSlice') ?
+        file.mozSlice(start, stop) : file.slice(start, stop)
+      try {
+        reader.readAsArrayBuffer(Blob)
+      } catch (err) {
+        resolve({ msg: 'readFile Fail', err })
+      }
+    }
+    readBlob(0, segSize)
+  })
+}
+
+// 判断用户是否进行了 ctrl 和 shift 提示
+// 若没有则进行存储和提示
+// callback 若没有存储时，进行处理
+export const setBalloTips = (callback, userId) => {
+  const uid = userId
+  let ballonTips = getSessionStorage('ballonTips') ? JSON.parse(getSessionStorage('ballonTips')) : {}
+  if (getDataType(ballonTips) !== 'Object') {
+    ballonTips = {}
+  }
+  if (!ballonTips[uid]) {
+    callback()
+    ballonTips[uid] = true
+    setSessionStorage('ballonTips', JSON.stringify(ballonTips))
+  }
+}
+
+// 文件下载
+export const downloadFile = url => {
+  if (!url || browserType() === 'Opera') {
+  } else if (browserType === 'Chrome') {
+    const node = document.createElement('a')
+    node.setAttribute('href', url)
+    node.setAttribute('download', '')
+    if (document.createEvent) {
+      const event = document.createEvent('iframe')
+      event.initEvent('click', true, true)
+      node.dispatchEvent(event)
+    }
+  } else if (browserType === 'FireFox') {
+    const node = document.createElement('iframe')
+    node.style.display = 'none'
+    node.src = url
+    document.body.appendChild(node)
+    node.click()
+  } else {
+    window.open(url, 'self')
+  }
+}
+
+// 生成缩略图的背景图，进行平铺展示
+export const getDefaultThumbTag = ({ width, height, marginT, marginR, marginB, marginL, borderWidth }) => {
+  const canvas = document.createElement('CANVAS')
+  canvas.style.display = 'none'
+  const ctx = canvas.getContext('2d')
+  document.body.appendChild(canvas)
+  const [cWidth, cHeight] = [width + borderWidth * 2 + marginR + marginL, height + borderWidth * 2 + marginT + marginB]
+  canvas.width = cWidth
+  canvas.height = cHeight
+  ctx.fillStyle = '#FAFAFA'
+  ctx.fillRect(0, 0, cWidth, cHeight)
+  ctx.fillStyle = '#F2F2F2'
+  ctx.fillRect(borderWidth + marginL, borderWidth + marginT, width, height)
+  const dataURL = canvas.toDataURL('image/jpeg')
+  document.body.removeChild(canvas)
+  return window.URL.createObjectURL(dataURLtoBlob(dataURL))
+}
+
+// 生成缩略图的背景图，进行平铺展示
+export const getDefaultAlbumThumbTag = ({ width, height, marginT, marginR, marginB, marginL, borderWidth }) => {
+  const canvas = document.createElement('CANVAS')
+  canvas.style.display = 'none'
+  const ctx = canvas.getContext('2d')
+  document.body.appendChild(canvas)
+  const [cWidth, cHeight] = [width + borderWidth * 2 + marginR + marginL, height + borderWidth * 2 + marginT + marginB]
+  canvas.width = cWidth
+  canvas.height = cHeight
+  ctx.fillStyle = '#FAFAFA'
+  ctx.fillRect(0, 0, cWidth, cHeight)
+  ctx.fillStyle = '#F2F2F2'
+  ctx.fillRect(borderWidth + marginL + 1, borderWidth + marginT + 1, width - 2, height - 2)
+  const dataURL = canvas.toDataURL('image/jpeg')
+  document.body.removeChild(canvas)
+  return window.URL.createObjectURL(dataURLtoBlob(dataURL))
+}
+
+// export const hasEmoji = (str = '') => {
+//   let regRule = ''
+//   const regEmoji = new RegExp(regRule, 'gi')
+//   return Array.from(str).some(item => {
+//     return regEmoji.test(item)
+//   })
+// }
