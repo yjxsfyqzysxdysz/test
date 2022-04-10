@@ -21,14 +21,25 @@ function log(data) {
 const filterList = (list, path) => {
   const arr = walk(path)
   const res = []
+  const [reg] = REGEXP_RUL
   if (list.length) {
-    res.push(...list)
+    res.push(...new Set(list))
   } else {
-    res.push(...new Set(html.replace(/http(s)?:\/\/a.d\/adblo_ck\.jpg/g, '').match(REGEXP_RUL[1])))
+    res.push(...new Set(html.replace(/http(s)?:\/\/a.d\/adblo_ck\.jpg/g, '').match(reg)))
+    // res.push(
+    //   ...new Set(
+    //     html
+    //       .replace(/&amp;/g, '&')
+    //       .replace(/\(&quot;([a-z0-9/:.&;=?_-]+)&quot;\)/gi, '')
+    //       .replace(/(name=)[a-z0-9]*/gi, '$1large')
+    //       .match(/http(s)?:\/{2}pbs\.twimg\.com\/media\/[a-z0-9?=_&*-]+/gi)
+    //   )
+    // )
   }
-
+  // return res
   return res.filter(e => {
-    const [a] = /[\da-z_]+\.(jpg|png|jpeg)/i.exec(e.replace(/-/g, '_'))
+    // return !arr.includes(e.match(/\/([a-z0-9_-]+)\?/i)[1] + '.jpg')
+    const [a] = /[\d\w.-]+\.(jpg|png|jpeg)/gi.exec(e.replace(/-/g, '_'))
     return !(arr.includes(a) || arr.includes(a.replace(/_/g, '-')))
   })
 }
