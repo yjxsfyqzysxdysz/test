@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "async": "^3.1.0",
+    "async": "^3.2.2",
     "big-integer": "^1.6.48",
     "download": "^8.0.0",
     "ejs": "^3.1.3",
