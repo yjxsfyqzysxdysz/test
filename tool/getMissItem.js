@@ -39,7 +39,7 @@ const filterList = (list, path) => {
   // return res
   return res.filter(e => {
     // return !arr.includes(e.match(/\/([a-z0-9_-]+)\?/i)[1] + '.jpg')
-    const [a] = /[\d\w.-]+\.(jpg|png|jpeg)/gi.exec(e.replace(/-/g, '_'))
+    const [a] = /[\d\w.-]+\.(jpg|png|jpeg|gif)/gi.exec(e.replace(/-/g, '_'))
     return !(arr.includes(a) || arr.includes(a.replace(/_/g, '-')))
   })
 }

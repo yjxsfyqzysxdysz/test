@@ -86,7 +86,7 @@ function renameDirectory(list) {
 
 // 运行
 walk(PATH, function (path, fileName) {
-  let oldPath = path + '/' + fileName, // 原文件路径拼接
+  let oldPath = `${path}/${fileName}`, // 原文件路径拼接
     // newPath = path + '/' + fileName.replace('.png', '.jpg') // 新文件路径拼接
     newPath = path + '/' + fileName + '.jpg' // 新文件路径拼接
 

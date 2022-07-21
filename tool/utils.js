@@ -3,7 +3,7 @@ const _path = require('path')
 const download = require('download')
 const jsonData = require(_path.resolve('./data.json'))
 
-const { ROOT_PATH, SUFFIX_PATH, LOOP_NUM, MEITU_PATH, MEITU_MIDPATH } = require('./config')
+const { ROOT_PATH, PREFIX_PATH, SUFFIX_PATH, LOOP_NUM, MEITU_PATH, MEITU_MIDPATH } = require('./config')
 const { html } = require('./data')
 const { LIST } = jsonData
 
@@ -54,6 +54,17 @@ function searchDir(path, status = false) {
   const files = fs.readdirSync(add)
 
   return files.filter(file => fs.statSync(add + '/' + file).isFile())
+}
+
+/**
+ * 返回 论坛 页面 title
+ */
+function getTitleHTML2CL() {
+  let [, res = ''] = html.match(/<h4 class="f16">(.+)<\/h4>/) || []
+  if (res) {
+    res = res.replace(/&nbsp;/g, ' ').replace(/\s{2,}/g, ' ')
+  }
+  return res
 }
 
 /**
@@ -124,28 +135,47 @@ function readLocal() {
 /**
  * 保存到本地
  */
-function saveLocal({ path = '', list = [], index = 0 }) {
+function saveLocal({ path = '', list = [], index = 0, flage = false }) {
   if (!list.length || !path) {
     console.log('saveLocal path or list is empty')
     return []
   }
-  if (jsonData.LIST[index].path === path) {
+  // 强制添加次项
+  if (flage) {
+    path = path
+      .replace(/[-–/]/g, '_')
+      .replace(/[（（]/g, '(')
+      .replace(/[））]/g, ')')
+      .replace(/[】］]/g, ']')
+      .replace(/[［【]/g, '[')
+      .replace(/[，，,。“”？！～]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    jsonData.LIST.splice(1, 0, { path, list })
+  }
+  // 保存到开头
+  else if (jsonData.LIST[index].path === path) {
     jsonData.LIST[index] = {
       path: path
-        .replace(/[-–]/g, '_')
+        .replace(/[-–/]/g, '_')
         .replace(/[（（]/g, '(')
         .replace(/[））]/g, ')')
         .replace(/[】］]/g, ']')
         .replace(/[［【]/g, '[')
-        .replace(/[，,。“”？！～]+/g, ' ')
+        .replace(/[，，,。“”？！～]+/g, ' ')
+        .replace(/\s+/g, ' ')
         .trim(),
       list
     }
-    jsonData.LIST.unshift({ path: '[寫真] ' })
-  } else if ((jsonData.LIST.slice(-1)[0] || {}).path !== path) {
-    jsonData.LIST.push({ path, list }, { path: '[寫真] ' })
-  } else {
-    jsonData.LIST.splice(-1, 1, { path, list }, { path: '[寫真] ' })
+    jsonData.LIST.unshift({ path: PREFIX_PATH })
+  }
+  // 保存到结尾
+  else if ((jsonData.LIST.slice(-1)[0] || {}).path !== path) {
+    jsonData.LIST.push({ path, list }, { path: PREFIX_PATH })
+  }
+  // 替换最后一项
+  else {
+    jsonData.LIST.splice(-1, 1, { path, list }, { path: PREFIX_PATH })
   }
   fs.writeFile('./data.json', JSON.stringify(jsonData, null, 2), err => {
     if (err) {
@@ -192,7 +222,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
       if (/^https:\/\/imageproxy/.test(url)) {
-        filename = url.match(/(%2f|\/)([0-9a-z-.]+\.[a-z]+)$/i)[2]
+        filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-.%]+\.[a-z]+)$/i)[2])
       }
       return download(url, filePath, {
         rejectUnauthorized: false,
@@ -226,6 +256,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
 module.exports = {
   log,
   searchDir,
+  getTitleHTML2CL,
   getHTML2CL,
   getHTML2TW,
   getURL2MT,

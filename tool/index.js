@@ -2,8 +2,8 @@ const _path = require('path')
 const { LIST, MT_LIST } = require(_path.resolve('./data.json'))
 const { filterList } = require('./getMissItem')
 const {
-  log,
   searchDir,
+  getTitleHTML2CL,
   getHTML2CL,
   getHTML2TW,
   getURL2MT,
@@ -12,6 +12,8 @@ const {
   downloadHandler,
   filterDataAndLocal
 } = require('./utils')
+const { PROXY_URL, PREFIX_PATH } = require('./config')
+
 const arg = process.argv.slice(2, 4)
 
 let eventHandler = null
@@ -38,7 +40,13 @@ if (arg.length) {
           // INDEX = LIST.length - 1
           eventHandler = (list, path) => {
             const URLList = getHTML2CL()
-            URLList.length && saveLocal({ path, list: URLList })
+            const title = getTitleHTML2CL()
+            let flage = false
+            if (path === PREFIX_PATH && title) {
+              path = title
+              flage = true
+            }
+             URLList.length && saveLocal({ path, list: URLList, flage })
             return []
           }
           break
@@ -97,6 +105,16 @@ if (arg.length) {
             const downloadList = filterURL({ list, localList })
             console.log(`download ${fileName} total: ${downloadList.length}`)
             downloadHandler({ list: downloadList, path })
+            return []
+          }
+          break
+        case 'downloadproxy':
+          eventHandler = (list, path) => {
+            list = filterDataAndLocal(INDEX).map(e => {
+              return `${PROXY_URL}?url=${encodeURIComponent(e)}`
+            })
+            console.log(`download ${path} total: ${list.length}`)
+            downloadHandler({ list, path, index: INDEX })
             return []
           }
           break
