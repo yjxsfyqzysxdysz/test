@@ -46,7 +46,7 @@ if (arg.length) {
               path = title
               flage = true
             }
-             URLList.length && saveLocal({ path, list: URLList, flage })
+            URLList.length && saveLocal({ path, list: URLList, flage })
             return []
           }
           break
@@ -115,6 +115,18 @@ if (arg.length) {
             })
             console.log(`download ${path} total: ${list.length}`)
             downloadHandler({ list, path, index: INDEX })
+            return []
+          }
+          break
+        case 'downloadreproxy':
+          eventHandler = (list, path) => {
+            list = filterDataAndLocal(INDEX)
+            console.log(`download ${path} total: ${list.length}`)
+            downloadHandler({
+              list: list.map(e => decodeURIComponent((e.match(/url=(.+)$/) || ['', ''])[1])),
+              path,
+              index: INDEX
+            })
             return []
           }
           break
