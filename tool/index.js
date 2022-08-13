@@ -79,6 +79,13 @@ if (arg.length) {
             return filterURL({ list, localList })
           }
           break
+        case 'filterlocalurl':
+          eventHandler = (list, path) => {
+            list = filterDataAndLocal(INDEX)
+            console.log(`download ${path} total: ${list.length}`)
+            list.forEach(e => console.log(e))
+          }
+          break
         case 'download': // 现在 data 中本地未下载的项
           eventHandler = (list, path) => {
             list = filterDataAndLocal(INDEX)

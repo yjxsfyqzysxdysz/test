@@ -215,7 +215,7 @@ function filterDataAndLocal(index) {
 // 下载
 function downloadHandler({ list, path, toast = 0, index = 0 }) {
   if (!list.length) return console.log('the list is empty')
-  const filePath = `${ROOT_PATH}${path.replace(/-/g, '_')}${SUFFIX_PATH}`
+  const filePath = `${ROOT_PATH}${path.replace(/-/g, '_')}${SUFFIX_PATH}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
   console.time(`to download ${message}`)
   return Promise.all(
@@ -234,7 +234,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
   )
     .then(() => {
       if (!list.length) {
-        console.log('all finsh')
+        console.log(`${path} all finsh`)
         let newData = LIST[++index]
         if (newData && newData.list.length) {
           const downloadList = filterDataAndLocal(index)
