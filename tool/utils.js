@@ -8,6 +8,22 @@ const { html } = require('./data')
 const { LIST } = jsonData
 
 /**
+ * 过滤 path
+ * @param {String} path
+ */
+const filterPath = path => {
+  return path
+    .replace(/[-–/\\]/g, '_')
+    .replace(/[（（]/g, '(')
+    .replace(/[））]/g, ')')
+    .replace(/[】］]/g, ']')
+    .replace(/[［【]/g, '[')
+    .replace(/[，，,。.“”？！～]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/**
  * log
  * @param {JSON} data
  * @description 返回 String 的 data 及 length
@@ -32,14 +48,7 @@ function searchDir(path, status = false) {
     console.log('path is empty')
     return []
   }
-  path = path
-    .replace(/[-–]/g, '_')
-    .replace(/[（（]/g, '(')
-    .replace(/[））]/g, ')')
-    .replace(/[】］]/g, ']')
-    .replace(/[［【]/g, '[')
-    .replace(/[，,。“”？！～]+/g, ' ')
-    .trim()
+  path = filterPath(path)
   // 同步读取文件
   let add = `${ROOT_PATH}${path}${SUFFIX_PATH}`
   if (!fs.existsSync(add)) {
@@ -135,58 +144,37 @@ function readLocal() {
 /**
  * 保存到本地
  */
-function saveLocal({ path = '', list = [], index = 0, flage = false }) {
+function saveLocal({ path = '', list = [], index = 0 }) {
   if (!list.length || !path) {
     console.log('saveLocal path or list is empty')
-    return []
+    return
   }
-  // 强制添加次项
-  if (flage) {
-    path = path
-      .replace(/[-–/]/g, '_')
-      .replace(/[（（]/g, '(')
-      .replace(/[））]/g, ')')
-      .replace(/[】］]/g, ']')
-      .replace(/[［【]/g, '[')
-      .replace(/[，，,。“”？！～]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-    jsonData.LIST.splice(1, 0, { path, list })
+  const { path: everyPath, list: everyList = [] } = LIST[index]
+  path = filterPath(path)
+  // 首项
+  if (index === 0) {
+    LIST.splice(0, 1, { path: PREFIX_PATH }, { path, list })
   }
-  // 保存到开头
-  else if (jsonData.LIST[index].path === path) {
-    jsonData.LIST[index] = {
-      path: path
-        .replace(/[-–/]/g, '_')
-        .replace(/[（（]/g, '(')
-        .replace(/[））]/g, ')')
-        .replace(/[】］]/g, ']')
-        .replace(/[［【]/g, '[')
-        .replace(/[，，,。“”？！～]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim(),
-      list
+  // 末项
+  else if (index === LIST.length - 1 && everyPath === PREFIX_PATH) {
+    LIST.splice(-1, 0, { path, list })
     }
-    jsonData.LIST.unshift({ path: PREFIX_PATH })
+  // 任意项
+  else if (path === everyPath) {
+    LIST.splice(index, 1, { path, list: [...new Set([...everyList, ...list])] })
   }
-  // 保存到结尾
-  else if ((jsonData.LIST.slice(-1)[0] || {}).path !== path) {
-    jsonData.LIST.push({ path, list }, { path: PREFIX_PATH })
-  }
-  // 替换最后一项
+  // 异常
   else {
-    jsonData.LIST.splice(-1, 1, { path, list }, { path: PREFIX_PATH })
+    console.log('\x1B[31m%s\x1B[0m', '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
+    return
   }
   fs.writeFile('./data.json', JSON.stringify(jsonData, null, 2), err => {
     if (err) {
-      console.log('保存到本地文件失败', err)
+      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', '保存到本地文件失败', err)
     } else {
-      console.log(`${path} 保存到本地文件成功 ${list.length}`)
+      console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${path} 保存到本地文件成功 ${list.length}`)
     }
   })
-  // const res = fs.writeFileSync('./data.json', JSON.stringify(data))
-  // console.log(res);
-  return []
 }
 
 /**
@@ -214,27 +202,27 @@ function filterDataAndLocal(index) {
 
 // 下载
 function downloadHandler({ list, path, toast = 0, index = 0 }) {
-  if (!list.length) return console.log('the list is empty')
-  const filePath = `${ROOT_PATH}${path.replace(/-/g, '_')}${SUFFIX_PATH}`.trim()
+  if (!list.length) return console.log('\x1B[33m%s\x1B[0m', '[WARN]', 'the list is empty')
+  const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
   console.time(`to download ${message}`)
   return Promise.all(
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
-      if (/^https:\/\/imageproxy/.test(url)) {
+      if (/^http(s)?:\/\/imageproxy/.test(url)) {
         filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-.%]+\.[a-z]+)$/i)[2])
       }
       return download(url, filePath, {
         rejectUnauthorized: false,
         filename
       }).then(() => {
-        console.log(`success No.${toast * LOOP_NUM + 1 + i}`)
+        console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `No.${toast * LOOP_NUM + 1 + i}`)
       })
     })
   )
     .then(() => {
       if (!list.length) {
-        console.log(`${path} all finsh`)
+        console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${path} all finsh`)
         let newData = LIST[++index]
         if (newData && newData.list.length) {
           const downloadList = filterDataAndLocal(index)
@@ -246,7 +234,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(err => {
-      console.log(err)
+      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err)
     })
     .finally(() => {
       console.timeEnd(`to download ${message}`)

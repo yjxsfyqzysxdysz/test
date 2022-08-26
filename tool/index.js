@@ -12,7 +12,7 @@ const {
   downloadHandler,
   filterDataAndLocal
 } = require('./utils')
-const { PROXY_URL, PREFIX_PATH } = require('./config')
+const { PROXY_URL } = require('./config')
 
 const arg = process.argv.slice(2, 4)
 
@@ -37,17 +37,10 @@ if (arg.length) {
           eventHandler = (list, path) => searchDir(path, true)
           break
         case 'save': // 将 论坛 获取的 url 保存到本地文件
-          // INDEX = LIST.length - 1
           eventHandler = (list, path) => {
             const URLList = getHTML2CL()
             const title = getTitleHTML2CL()
-            let flage = false
-            if (path === PREFIX_PATH && title) {
-              path = title
-              flage = true
-            }
-            URLList.length && saveLocal({ path, list: URLList, flage })
-            return []
+            URLList.length && saveLocal({ path: title || path, list: URLList, index: INDEX })
           }
           break
         case 'savemt': // 将 mt 获取的 url 保存到本地文件
@@ -158,4 +151,4 @@ if (arg.length) {
 
 const { list = [], path = '' } = LIST[INDEX] || {}
 
-eventHandler(list, path)
+eventHandler && eventHandler(list, path)
