@@ -33,9 +33,6 @@ if (arg.length) {
     } else {
       // 传参任务
       switch (e) {
-        case 'search': // 查找文件夹中的项
-          eventHandler = (list, path) => searchDir(path, true)
-          break
         case 'save': // 将 论坛 获取的 url 保存到本地文件
           eventHandler = (list, path) => {
             const URLList = getHTML2CL()
@@ -72,7 +69,7 @@ if (arg.length) {
             return filterURL({ list, localList })
           }
           break
-        case 'filterlocalurl':
+        case 'filterlocalurl': // 过滤 url 为下载的项
           eventHandler = (list, path) => {
             list = filterDataAndLocal(INDEX)
             console.log(`download ${path} total: ${list.length}`)

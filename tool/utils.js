@@ -18,7 +18,8 @@ const filterPath = path => {
     .replace(/[））]/g, ')')
     .replace(/[】］]/g, ']')
     .replace(/[［【]/g, '[')
-    .replace(/[，，,。.“”？！～]+/g, ' ')
+    .replace(/[，，,。“”'"？?!！～：:、]+/g, ' ')
+    .replace(/\.{2,}/g, '.')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -215,29 +216,36 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       return download(url, filePath, {
         rejectUnauthorized: false,
         filename
-      }).then(() => {
-        console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `No.${toast * LOOP_NUM + 1 + i}`)
       })
+        .then(() => {
+          console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
+        })
+        .catch(err => {
+          console.log(err)
+          return Promise.reject(err)
+        })
     })
   )
     .then(() => {
+      console.timeEnd(`to download ${message}`)
       if (!list.length) {
         console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${path} all finsh`)
+        // return
         let newData = LIST[++index]
-        if (newData && newData.list.length) {
+        if (newData && newData.list && newData.list.length) {
           const downloadList = filterDataAndLocal(index)
           console.log(`download ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
+        } else {
+          console.log('\x1B[35m%s\x1B[0m', '[ERROR]', 'all clear')
         }
         return
       }
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(err => {
-      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err)
-    })
-    .finally(() => {
       console.timeEnd(`to download ${message}`)
+      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err)
     })
 }
 
