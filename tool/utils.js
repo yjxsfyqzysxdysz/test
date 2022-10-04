@@ -13,7 +13,8 @@ const { LIST } = jsonData
  */
 const filterPath = path => {
   return path
-    .replace(/[-–/\\]/g, '_')
+    .replace(/[-–]/g, '-')
+    .replace(/[/\\]/g, '_')
     .replace(/[（（]/g, '(')
     .replace(/[））]/g, ')')
     .replace(/[】］]/g, ']')
@@ -87,7 +88,7 @@ function getHTML2CL() {
     console.log('没有过滤出 URL')
     return []
   }
-  return [...new Set(filterURLs.map(e => e.replace(/^ess-data="|"$/g, '')))]
+  return [...new Set(filterURLs.map(e => e.replace(/^ess-data="|"$/g, '')).filter(e => !/\.gif$/i.test(e)))]
 }
 
 /**
@@ -159,7 +160,7 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   // 末项
   else if (index === LIST.length - 1 && everyPath === PREFIX_PATH) {
     LIST.splice(-1, 0, { path, list })
-    }
+  }
   // 任意项
   else if (path === everyPath) {
     LIST.splice(index, 1, { path, list: [...new Set([...everyList, ...list])] })
@@ -188,7 +189,13 @@ function filterURL({ list = [], localList = [] }) {
   if (!localList.length) {
     return list
   }
-  return list.filter(e => !localList.some(f => e.includes(f) || e.includes(f.replace(/-/g, '_'))))
+  return list.filter(e => {
+    e = e.toLowerCase()
+    return !localList.some(f => {
+      f = f.toLowerCase()
+      return e.includes(f) || e.includes(f.replace(/-/g, '_'))
+    })
+  })
 }
 
 /**
@@ -221,7 +228,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
         })
         .catch(err => {
-          console.log(err)
+          console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err.statusCode, url)
           return Promise.reject(err)
         })
     })
@@ -243,9 +250,9 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       }
       downloadHandler({ list, path, toast: ++toast, index })
     })
-    .catch(err => {
+    .catch(() => {
       console.timeEnd(`to download ${message}`)
-      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err)
+      // console.log('\x1B[31m%s\x1B[0m', '[ERROR]')
     })
 }
 
