@@ -19,7 +19,7 @@ const filterPath = path => {
     .replace(/[））]/g, ')')
     .replace(/[】］]/g, ']')
     .replace(/[［【]/g, '[')
-    .replace(/[，，,。“”'"？?!！～：:、]+/g, ' ')
+    .replace(/[，，,。“”'"？?!！～：:、|~]+/g, ' ')
     .replace(/\.{2,}/g, '.')
     .replace(/\s+/g, ' ')
     .trim()
@@ -83,12 +83,12 @@ function getTitleHTML2CL() {
  * @returns {Array} 带有 url 的 array
  */
 function getHTML2CL() {
-  const filterURLs = html.match(/ess-data="([0-9a-z:?=/._\-%]+)"/gi)
+  const filterURLs = html.match(/ess-data="([微信图片0-9a-z:;?=/._\-\\%~& ]+)"/gi)
   if (!filterURLs) {
     console.log('没有过滤出 URL')
     return []
   }
-  return [...new Set(filterURLs.map(e => e.replace(/^ess-data="|"$/g, '')).filter(e => !/\.gif$/i.test(e)))]
+  return [...new Set(filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '')).filter(e => !/\.gif$/i.test(e)))]
 }
 
 /**
@@ -174,7 +174,7 @@ function saveLocal({ path = '', list = [], index = 0 }) {
     if (err) {
       console.log('\x1B[31m%s\x1B[0m', '[ERROR]', '保存到本地文件失败', err)
     } else {
-      console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${path} 保存到本地文件成功 ${list.length}`)
+      console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
     }
   })
 }
@@ -190,10 +190,9 @@ function filterURL({ list = [], localList = [] }) {
     return list
   }
   return list.filter(e => {
-    e = e.toLowerCase()
     return !localList.some(f => {
-      f = f.toLowerCase()
-      return e.includes(f) || e.includes(f.replace(/-/g, '_'))
+      // return e.includes('/' + f) || e.includes('/' + f.replace(/-/g, '_'))
+      return new RegExp(`/${f}(.[a-z]+)?$`, 'i').test(e)
     })
   })
 }
@@ -241,7 +240,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
         let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
           const downloadList = filterDataAndLocal(index)
-          console.log(`download ${newData.path} total: ${downloadList.length}`)
+          console.log(`download ${index} / ${LIST.length - 2} ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
         } else {
           console.log('\x1B[35m%s\x1B[0m', '[ERROR]', 'all clear')
