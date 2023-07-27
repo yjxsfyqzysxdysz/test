@@ -280,6 +280,15 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     })
 }
 
+// 下载 定制版
+function downloadHandler2(data, index = 0) {
+  const { list: listItem, path: pathItem } = data[index]
+  LIST.splice(0, Number.MAX_SAFE_INTEGER, ...data)
+  const list = filterDataAndLocal(listItem, pathItem)
+  console.log(`download ${index} / ${data.length} ${pathItem} total: ${list.length}`)
+  downloadHandler({ list, path: pathItem, index })
+}
+
 module.exports = {
   log,
   searchDir,
@@ -290,5 +299,6 @@ module.exports = {
   saveLocal,
   filterURL,
   downloadHandler,
+  downloadHandler2,
   filterDataAndLocal
 }
