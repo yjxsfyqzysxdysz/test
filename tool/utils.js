@@ -3,9 +3,18 @@ const _path = require('path')
 const download = require('download')
 const jsonData = require(_path.resolve('./data.json'))
 
-const { ROOT_PATH, PREFIX_PATH, SUFFIX_PATH, LOOP_NUM, MEITU_PATH, MEITU_MIDPATH } = require('./config')
+const { ROOT_PATH, PREFIX_PATH, SUFFIX_PATH, LOOP_NUM, MEITU_PATH, MEITU_MIDPATH, IS_ONLEY_ONE } = require('./config')
 const { html } = require('./data')
 const { LIST } = jsonData
+
+function downloadFun(url, filePath, option) {
+  const options = {
+    rejectUnauthorized: false,
+    // filename
+    ...option
+  }
+  return download(url, filePath, options)
+}
 
 /**
  * 过滤 path
@@ -201,8 +210,7 @@ function filterURL({ list = [], localList = [] }) {
  * 过滤本地未下载的项
  * @param {Number} index LIST 的下标
  */
-function filterDataAndLocal(index) {
-  const { list, path } = LIST[index]
+function filterDataAndLocal(list = [], path = '') {
   const localList = searchDir(path)
   return filterURL({ list, localList })
 }
@@ -213,33 +221,35 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
   console.time(`to download ${message}`)
-  return Promise.all(
+  return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
       if (/^http(s)?:\/\/imageproxy/.test(url)) {
-        filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-.%]+\.[a-z]+)$/i)[2])
+        filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-_.%]+\.[a-z]+)$/i)[2])
+      } else {
+        filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-._%\u4e00-\u9f5a]+\.[a-z]+)$/i)[2])
       }
-      return download(url, filePath, {
-        rejectUnauthorized: false,
-        filename
-      })
+      return downloadFun(encodeURI(url), filePath, { filename })
         .then(() => {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
         })
         .catch(err => {
-          console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err.statusCode, url)
-          return Promise.reject(err)
+          console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err.statusCode || err.code || err, url)
+          return Promise.reject()
         })
     })
   )
-    .then(() => {
+    .then(res => {
       console.timeEnd(`to download ${message}`)
+      if (res.find(({ status }) => status === 'rejected')) return Promise.reject()
+    })
+    .then(() => {
       if (!list.length) {
         console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${path} all finsh`)
-        // return
         let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
-          const downloadList = filterDataAndLocal(index)
+          if (IS_ONLEY_ONE) return
+          const downloadList = filterDataAndLocal(newData.list, newData.path)
           console.log(`download ${index} / ${LIST.length - 2} ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
         } else {
@@ -250,8 +260,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(() => {
-      console.timeEnd(`to download ${message}`)
-      // console.log('\x1B[31m%s\x1B[0m', '[ERROR]')
+      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', index, ' / ', LIST.length, path)
     })
 }
 
