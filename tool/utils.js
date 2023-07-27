@@ -28,9 +28,10 @@ const filterPath = path => {
     .replace(/[））]/g, ')')
     .replace(/[】］]/g, ']')
     .replace(/[［【]/g, '[')
-    .replace(/[，，,。“”'"？?!！～：:、|~]+/g, ' ')
     .replace(/\.{2,}/g, '.')
-    .replace(/\s+/g, ' ')
+    .replace(/[，，,。“”'"‘’？?!！～：:、；;|~\s]|&nbsp;|\s{2,}/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\.+$/, '')
     .trim()
 }
 
@@ -63,7 +64,7 @@ function searchDir(path, status = false) {
   // 同步读取文件
   let add = `${ROOT_PATH}${path}${SUFFIX_PATH}`
   if (!fs.existsSync(add)) {
-    add = `${ROOT_PATH}${path}`
+    add = `${ROOT_PATH}${path}`.trim()
     if (!fs.existsSync(add)) {
       if (status) {
         return []
@@ -82,7 +83,7 @@ function searchDir(path, status = false) {
 function getTitleHTML2CL() {
   let [, res = ''] = html.match(/<h4 class="f16">(.+)<\/h4>/) || []
   if (res) {
-    res = res.replace(/&nbsp;/g, ' ').replace(/\s{2,}/g, ' ')
+    res = filterPath(res)
   }
   return res
 }
@@ -92,12 +93,22 @@ function getTitleHTML2CL() {
  * @returns {Array} 带有 url 的 array
  */
 function getHTML2CL() {
-  const filterURLs = html.match(/ess-data="([微信图片0-9a-z:;?=/._\-\\%~& ]+)"/gi)
-  if (!filterURLs) {
-    console.log('没有过滤出 URL')
-    return []
+  const filterURLs = html.match(/ess-data="([\u4e00-\u9f5a0-9a-z:;?=/._\-–\\%~&\s]+)"/gi)
+  let message = '没有过滤出 URL'
+  if (filterURLs) {
+    const list = [
+      ...new Set(
+        // filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '').replace(/&amp;/g, '&')).filter(e => !/\.gif$/i.test(e))
+        filterURLs.map(e => e.replace(/^ess-data="|"$/g, '').replace(/&amp;/g, '&')).filter(e => !/\.gif$/i.test(e))
+      )
+    ]
+    if (list.length) {
+      return list
+    }
+    message = '没有滤出有效的 URL(如非 gif)'
   }
-  return [...new Set(filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '')).filter(e => !/\.gif$/i.test(e)))]
+  console.log(message)
+  return []
 }
 
 /**
