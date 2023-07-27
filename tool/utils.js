@@ -173,6 +173,11 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   }
   const { path: everyPath, list: everyList = [] } = LIST[index]
   path = filterPath(path)
+  // 查重
+  if (path === (LIST[index + 1] || {}).path) {
+    console.log('\x1B[31m%s\x1B[0m', '[ERROR]', `path 重复 ${path}`)
+    return
+  }
   // 首项
   if (index === 0) {
     LIST.splice(0, 1, { path: PREFIX_PATH }, { path, list })
