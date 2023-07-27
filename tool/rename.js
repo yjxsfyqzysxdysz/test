@@ -23,7 +23,7 @@ function walk() {
     // renameFile(files)
   }
   if (directory.length) {
-    renameDirectory(directory)
+    // renameDirectory(directory)
   }
 }
 
@@ -79,7 +79,7 @@ function renameDirectory(list) {
     nameList.splice(nameList.indexOf(oldName), 1, newName)
     console.log(oldName, ' ----- ', newName)
     num++
-    rename(`${PATH}/${oldName}`, `${PATH}/${newName}`)
+    rename(`${PATH}\\${oldName}`, `${PATH}\\${newName}`)
   })
   console.log(`rename total: ${num}`)
 }
