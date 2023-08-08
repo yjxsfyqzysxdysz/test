@@ -3,7 +3,17 @@ const _path = require('path')
 const download = require('download')
 const jsonData = require(_path.resolve('./data.json'))
 
-const { ROOT_PATH, PREFIX_PATH, SUFFIX_PATH, LOOP_NUM, MEITU_PATH, MEITU_MIDPATH, IS_ONLEY_ONE } = require('./config')
+const {
+  ROOT_PATH,
+  PREFIX_PATH,
+  SUFFIX_PATH,
+  LOOP_NUM,
+  MEITU_PATH,
+  MEITU_MIDPATH,
+  IS_ONLEY_ONE,
+  REGEXP_RUL,
+  LOG_COLOR
+} = require('./config')
 const { html } = require('./data')
 const { LIST } = jsonData
 
@@ -156,14 +166,6 @@ function getURL2MT({ fileName, lastPath, num }) {
 }
 
 /**
- * 读本地文件
- */
-function readLocal() {
-  const res = fs.readFileSync('./data.json', 'utf-8')
-  console.log(res)
-}
-
-/**
  * 保存到本地
  */
 function saveLocal({ path = '', list = [], index = 0 }) {
@@ -175,7 +177,7 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   path = filterPath(path)
   // 查重
   if (path === (LIST[index + 1] || {}).path) {
-    console.log('\x1B[31m%s\x1B[0m', '[ERROR]', `path 重复 ${path}`)
+    console.log(LOG_COLOR.red, '[ERROR]', `path 重复 ${path}`)
     return
   }
   // 首项
@@ -192,14 +194,14 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   }
   // 异常
   else {
-    console.log('\x1B[31m%s\x1B[0m', '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
+    console.log(LOG_COLOR.red, '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
     return
   }
   fs.writeFile('./data.json', JSON.stringify(jsonData, null, 2), err => {
     if (err) {
-      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', '保存到本地文件失败', err)
+      console.log(LOG_COLOR.red, '[ERROR]', '保存到本地文件失败', err)
     } else {
-      console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
+      console.log(LOG_COLOR.green, '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
     }
   })
 }
@@ -233,24 +235,25 @@ function filterDataAndLocal(list = [], path = '') {
 
 // 下载
 function downloadHandler({ list, path, toast = 0, index = 0 }) {
-  if (!list.length) return console.log('\x1B[33m%s\x1B[0m', '[WARN]', 'the list is empty')
+  if (!list.length) return console.log(LOG_COLOR.yellow, '[WARN]', 'the list is empty')
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
+  const [, regImageproxyUrl, regFileNameEn, regFileNameCh] = REGEXP_RUL
   console.time(`to download ${message}`)
   return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
-      if (/^http(s)?:\/\/imageproxy/.test(url)) {
-        filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-_.%]+\.[a-z]+)$/i)[2])
+      if (regImageproxyUrl.test(url)) {
+        filename = decodeURIComponent(url.match(regFileNameEn)[2])
       } else {
-        filename = decodeURIComponent(url.match(/(%2f|\/)([0-9a-z-._%\u4e00-\u9f5a]+\.[a-z]+)$/i)[2])
+        filename = decodeURIComponent(url.match(regFileNameCh)[2])
       }
       return downloadFun(encodeURI(url), filePath, { filename })
         .then(() => {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
         })
         .catch(err => {
-          console.log('\x1B[31m%s\x1B[0m', '[ERROR]', err.statusCode || err.code || err, url)
+          console.log(LOG_COLOR.red, '[ERROR]', err.statusCode || err.code || err, url)
           return Promise.reject()
         })
     })
@@ -261,7 +264,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     })
     .then(() => {
       if (!list.length) {
-        console.log('\x1B[32m%s\x1B[0m', '[SUCCESS]', `${path} all finsh`)
+        console.log(LOG_COLOR.green, '[SUCCESS]', `${path} all finsh`)
         let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
           if (IS_ONLEY_ONE) return
@@ -269,14 +272,14 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
           console.log(`download ${index} / ${LIST.length - 2} ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
         } else {
-          console.log('\x1B[35m%s\x1B[0m', '[ERROR]', 'all clear')
+          console.log(LOG_COLOR.magenta, '[ERROR]', 'all clear')
         }
         return
       }
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(() => {
-      console.log('\x1B[31m%s\x1B[0m', '[ERROR]', index, ' / ', LIST.length, path)
+      console.log(LOG_COLOR.red, '[ERROR]', index, ' / ', LIST.length, path)
     })
 }
 
