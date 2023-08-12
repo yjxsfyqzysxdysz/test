@@ -11,9 +11,10 @@ const {
   filterURL,
   downloadHandler,
   downloadHandler2,
-  filterDataAndLocal
+  filterDataAndLocal,
+  setLogColor
 } = require('./utils')
-const { PROXY_URL, LOG_COLOR } = require('./config')
+const { PROXY_URL } = require('./config')
 
 const arg = process.argv.slice(2)
 const [event, ...param] = arg
@@ -126,7 +127,7 @@ if (!isFinite(event)) {
       eventHandler = (...params) => {
         let [, , [keyword, index]] = params
         if (!keyword) {
-          console.log(LOG_COLOR.red, '[ERROR] 没有入参')
+          console.log(setLogColor('red'), '[ERROR] 没有入参')
           return
         }
         const reg = new RegExp(keyword)
@@ -134,13 +135,13 @@ if (!isFinite(event)) {
         const listLen = list.length
 
         if (!listLen) {
-          console.log(LOG_COLOR.yellow, '[WARN]', `未找到 path 中包含 ${keyword} 的项`)
+          console.log(setLogColor('yellow'), '[WARN]', `未找到 path 中包含 ${setLogColor('magenta', keyword)} 的项`)
           return
         }
         if (index >= listLen) {
           index = listLen - 1
         }
-        console.log(`download 符合\n${LOG_COLOR.magenta + keyword + LOG_COLOR.end}\n项的数据 total: ${list.length}\n`)
+        console.log(`download 符合\n${setLogColor('magenta', keyword)}\n项的数据 total: ${list.length}\n`)
         downloadHandler2(list, index)
       }
       break

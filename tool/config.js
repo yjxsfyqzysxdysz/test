@@ -51,5 +51,6 @@ module.exports = {
   MEITU_PATH,
   MEITU_MIDPATH,
   IS_ONLEY_ONE,
+  LOG_COLOR,
   DEFINE_URL
 }

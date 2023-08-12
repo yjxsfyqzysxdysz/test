@@ -46,6 +46,16 @@ const filterPath = path => {
 }
 
 /**
+ * 设置 log 颜色
+ * @param {String} color 参见LOG_COLOR keys
+ * @param {String} text 需要变色的词条 %s - log 第二个入参值
+ * @param {Boolean} isEnd 是否结束,若不结束 后续结尾次颜色
+ */
+function setLogColor(color, text = '%s', isEnd = true) {
+  return `${LOG_COLOR[color]}${text}${isEnd ? LOG_COLOR.end : ''}`
+}
+
+/**
  * log
  * @param {JSON} data
  * @description 返回 String 的 data 及 length
@@ -177,7 +187,7 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   path = filterPath(path)
   // 查重
   if (path === (LIST[index + 1] || {}).path) {
-    console.log(LOG_COLOR.red, '[ERROR]', `path 重复 ${path}`)
+    console.log(setLogColor('red'), '[ERROR]', `path 重复 ${path}`)
     return
   }
   // 首项
@@ -194,14 +204,14 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   }
   // 异常
   else {
-    console.log(LOG_COLOR.red, '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
+    console.log(setLogColor('red'), '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
     return
   }
   fs.writeFile('./data.json', JSON.stringify(jsonData, null, 2), err => {
     if (err) {
-      console.log(LOG_COLOR.red, '[ERROR]', '保存到本地文件失败', err)
+      console.log(setLogColor('red'), '[ERROR]', '保存到本地文件失败', err)
     } else {
-      console.log(LOG_COLOR.green, '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
+      console.log(setLogColor('green'), '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
     }
   })
 }
@@ -235,7 +245,7 @@ function filterDataAndLocal(list = [], path = '') {
 
 // 下载
 function downloadHandler({ list, path, toast = 0, index = 0 }) {
-  if (!list.length) return console.log(LOG_COLOR.yellow, '[WARN]', 'the list is empty')
+  if (!list.length) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
   const [, regImageproxyUrl, regFileNameEn, regFileNameCh] = REGEXP_RUL
@@ -253,7 +263,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
         })
         .catch(err => {
-          console.log(LOG_COLOR.red, '[ERROR]', err.statusCode || err.code || err, url)
+          console.log(setLogColor('red'), '[ERROR]', err.statusCode || err.code || err, url)
           return Promise.reject()
         })
     })
@@ -264,7 +274,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     })
     .then(() => {
       if (!list.length) {
-        console.log(LOG_COLOR.green, '[SUCCESS]', `${path} all finsh`)
+        console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
         let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
           if (IS_ONLEY_ONE) return
@@ -272,14 +282,14 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
           console.log(`download ${index} / ${LIST.length - 2} ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
         } else {
-          console.log(LOG_COLOR.magenta, '[ERROR]', 'all clear')
+          console.log(setLogColor('magenta'), '[ERROR]', 'all clear')
         }
         return
       }
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(() => {
-      console.log(LOG_COLOR.red, '[ERROR]', index, ' / ', LIST.length, path)
+      console.log(setLogColor('red'), '[ERROR]', index, ' / ', LIST.length, path)
     })
 }
 
@@ -303,5 +313,6 @@ module.exports = {
   filterURL,
   downloadHandler,
   downloadHandler2,
-  filterDataAndLocal
+  filterDataAndLocal,
+  setLogColor
 }
