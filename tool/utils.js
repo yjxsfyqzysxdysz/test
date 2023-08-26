@@ -12,7 +12,8 @@ const {
   MEITU_MIDPATH,
   IS_ONLEY_ONE,
   REGEXP_RUL,
-  LOG_COLOR
+  LOG_COLOR,
+  DEFINE_URL
 } = require('./config')
 const { html } = require('./data')
 const { LIST } = jsonData
@@ -119,7 +120,9 @@ function getHTML2CL() {
     const list = [
       ...new Set(
         // filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '').replace(/&amp;/g, '&')).filter(e => !/\.gif$/i.test(e))
-        filterURLs.map(e => e.replace(/^ess-data="|"$/g, '').replace(/&amp;/g, '&')).filter(e => !/\.gif$/i.test(e))
+        filterURLs
+          .map(e => e.replace(/^ess-data="|"$/g, '').replace(/&amp;/g, '&'))
+          .filter(e => !/\.gif$/i.test(e) && !DEFINE_URL.includes(e))
       )
     ]
     if (list.length) {
@@ -183,24 +186,27 @@ function saveLocal({ path = '', list = [], index = 0 }) {
     console.log('saveLocal path or list is empty')
     return
   }
-  const { path: everyPath, list: everyList = [] } = LIST[index]
+  const { path: everyPath } = LIST[index]
   path = filterPath(path)
-  // 查重
-  if (path === (LIST[index + 1] || {}).path) {
-    console.log(setLogColor('red'), '[ERROR]', `path 重复 ${path}`)
-    return
+  const isSameIndex = LIST.findIndex(({ path: curPath }) => curPath === path)
+  // 查重 & 任意项
+  if (isSameIndex !== -1) {
+    const tmp = list.filter(e => !LIST[isSameIndex].list.includes(e))
+    if (tmp.length) {
+      LIST[isSameIndex].list.push(...tmp)
+      // LIST.splice(index, 1, { path, list: [...new Set([...everyList, ...list])] })
+    } else {
+      console.log(setLogColor('red'), '[ERROR]', `第 ${setLogColor('yellow', isSameIndex + 1)} 项 path 重复\n${path}`)
+      return
+    }
   }
   // 首项
-  if (index === 0) {
-    LIST.splice(0, 1, { path: PREFIX_PATH }, { path, list })
+  else if (index === 0) {
+    LIST.splice(index, 0, { path, list })
   }
   // 末项
-  else if (index === LIST.length - 1 && everyPath === PREFIX_PATH) {
+  else if (index === LIST.length - 1 || everyPath === PREFIX_PATH) {
     LIST.splice(-1, 0, { path, list })
-  }
-  // 任意项
-  else if (path === everyPath) {
-    LIST.splice(index, 1, { path, list: [...new Set([...everyList, ...list])] })
   }
   // 异常
   else {
@@ -279,7 +285,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
         if (newData && newData.list && newData.list.length) {
           if (IS_ONLEY_ONE) return
           const downloadList = filterDataAndLocal(newData.list, newData.path)
-          console.log(`download ${index} / ${LIST.length - 2} ${newData.path} total: ${downloadList.length}`)
+          console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
         } else {
           console.log(setLogColor('magenta'), '[ERROR]', 'all clear')
@@ -289,7 +295,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(() => {
-      console.log(setLogColor('red'), '[ERROR]', index, ' / ', LIST.length, path)
+      console.log(setLogColor('red'), '[ERROR]', index + 1, ' / ', LIST.length, path)
     })
 }
 
@@ -298,7 +304,7 @@ function downloadHandler2(data, index = 0) {
   const { list: listItem, path: pathItem } = data[index]
   LIST.splice(0, Number.MAX_SAFE_INTEGER, ...data)
   const list = filterDataAndLocal(listItem, pathItem)
-  console.log(`download ${index} / ${data.length} ${pathItem} total: ${list.length}`)
+  console.log(`download ${index + 1} / ${data.length} ${pathItem} total: ${list.length}`)
   downloadHandler({ list, path: pathItem, index })
 }
 

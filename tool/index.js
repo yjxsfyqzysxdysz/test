@@ -35,6 +35,10 @@ if (!isFinite(event)) {
       eventHandler = (list, path) => {
         const URLList = getHTML2CL()
         const title = getTitleHTML2CL()
+        if (!title) {
+          console.log(setLogColor('red'), '[ERROR] 没有 title')
+          return
+        }
         URLList.length && saveLocal({ path: title || path, list: URLList, index: INDEX })
       }
       break
@@ -141,7 +145,7 @@ if (!isFinite(event)) {
         if (index >= listLen) {
           index = listLen - 1
         }
-        console.log(`download 符合\n${setLogColor('magenta', keyword)}\n项的数据 total: ${list.length}\n`)
+        console.log(`download 符合 ${setLogColor('magenta', keyword)} 项的数据 total: ${list.length}`)
         downloadHandler2(list, index)
       }
       break

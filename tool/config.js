@@ -39,7 +39,10 @@ const LOG_COLOR = {
   end: '\x1B[0m' // 表示重置终端颜色，使其在此之后不再继续成为所选颜色
 }
 
-const DEFINE_URL = ['https://s3.gifyu.com/images/image07b475ae512c301a.png']
+const DEFINE_URL = [
+  'https://s3.gifyu.com/images/image07b475ae512c301a.png',
+  'https://23img.com/i/2022/09/01/fhz5tz.jpg'
+]
 
 module.exports = {
   ROOT_PATH,
