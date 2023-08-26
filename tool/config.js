@@ -1,6 +1,8 @@
 const ROOT_PATH = 'F:/'
 const PREFIX_PATH = '[寫真]'
 const SUFFIX_PATH = ''
+const LOCAL_DATA_PATH = './data.json' // 本地数据地址
+const LOCAL_TMP_DATA_PATH = './data.js' // 本地零时数据地址
 const LOOP_NUM = 150
 const REGEXP_RUL = [
   /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg)/gi, // 图片url
@@ -48,6 +50,8 @@ module.exports = {
   ROOT_PATH,
   PREFIX_PATH,
   SUFFIX_PATH,
+  LOCAL_DATA_PATH,
+  LOCAL_TMP_DATA_PATH,
   LOOP_NUM,
   REGEXP_RUL,
   PROXY_URL,

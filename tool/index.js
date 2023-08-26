@@ -1,8 +1,9 @@
 const _path = require('path')
-const { LIST, MT_LIST } = require(_path.resolve('./data.json'))
+const { LOCAL_DATA_PATH, PROXY_URL } = require('./config')
+const { LIST, MT_LIST } = require(_path.resolve(LOCAL_DATA_PATH))
 // const { filterList } = require('./getMissItem')
 const {
-  searchDir,
+  FSsearchDir,
   getTitleHTML2CL,
   getHTML2CL,
   getHTML2TW,
@@ -12,9 +13,9 @@ const {
   downloadHandler,
   downloadHandler2,
   filterDataAndLocal,
+  filterLocalData,
   setLogColor
 } = require('./utils')
-const { PROXY_URL } = require('./config')
 
 const arg = process.argv.slice(2)
 const [event, ...param] = arg
@@ -50,11 +51,16 @@ if (!isFinite(event)) {
         return list
       }
       break
+    case 'filter': // 对 data.json 的数据进行 合并、去重、排序 处理
+      eventHandler = () => {
+        filterLocalData()
+      }
+      break
     case 'filterurl': // 过滤 url 与 本地 url
       eventHandler = (list, path) => {
         const URLList = getHTML2CL()
         if (!URLList.length) return
-        const localList = searchDir(path, true)
+        const localList = FSsearchDir(path, true)
         return filterURL({ list: URLList, localList })
       }
       break
@@ -63,7 +69,7 @@ if (!isFinite(event)) {
         const { fileName, lastPath, num } = MT_LIST[INDEX]
         const list = getURL2MT({ fileName, lastPath, num })
         if (!list.length) return
-        const localList = searchDir(fileName, true)
+        const localList = FSsearchDir(fileName, true)
         return filterURL({ list, localList })
       }
       break
@@ -84,7 +90,7 @@ if (!isFinite(event)) {
     case 'downloadurl': // 下载 cl
       eventHandler = (list, path) => {
         const URLList = getHTML2CL()
-        const localList = searchDir(path)
+        const localList = FSsearchDir(path)
         list = filterURL({ list: URLList, localList })
         console.log(`download ${path} total: ${list.length}`)
         downloadHandler({ list, path, index: INDEX })
@@ -94,7 +100,7 @@ if (!isFinite(event)) {
       eventHandler = () => {
         const { fileName, lastPath, num } = MT_LIST[INDEX]
         const list = getURL2MT({ fileName, lastPath, num })
-        const localList = searchDir(fileName)
+        const localList = FSsearchDir(fileName)
         const downloadList = filterURL({ list, localList })
         console.log(`download ${fileName} total: ${downloadList.length}`)
         downloadHandler({ list: downloadList, path })

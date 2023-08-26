@@ -1,12 +1,13 @@
 const fs = require('fs')
 const _path = require('path')
 const download = require('download')
-const jsonData = require(_path.resolve('./data.json'))
 
 const {
   ROOT_PATH,
   PREFIX_PATH,
   SUFFIX_PATH,
+  LOCAL_DATA_PATH,
+  LOCAL_TMP_DATA_PATH,
   LOOP_NUM,
   MEITU_PATH,
   MEITU_MIDPATH,
@@ -15,7 +16,8 @@ const {
   LOG_COLOR,
   DEFINE_URL
 } = require('./config')
-const { html } = require('./data')
+const { html } = require(LOCAL_TMP_DATA_PATH)
+const jsonData = require(_path.resolve(LOCAL_DATA_PATH))
 const { LIST } = jsonData
 
 function downloadFun(url, filePath, option) {
@@ -76,7 +78,7 @@ function log(data) {
  *
  * 默认如果不存在就新建
  */
-function searchDir(path, status = false) {
+function FSsearchDir(path, status = false) {
   if (!path) {
     console.log('path is empty')
     return []
@@ -96,6 +98,23 @@ function searchDir(path, status = false) {
   const files = fs.readdirSync(add)
 
   return files.filter(file => fs.statSync(add + '/' + file).isFile())
+}
+
+/**
+ * 数据保存到本地
+ * @returns Promise
+ */
+function FSsave(data = jsonData) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(LOCAL_DATA_PATH, JSON.stringify(data, null, 2), err => {
+      if (err) {
+        console.log(setLogColor('red'), '[ERROR]', '保存到本地文件失败', err)
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
 }
 
 /**
@@ -213,12 +232,8 @@ function saveLocal({ path = '', list = [], index = 0 }) {
     console.log(setLogColor('red'), '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
     return
   }
-  fs.writeFile('./data.json', JSON.stringify(jsonData, null, 2), err => {
-    if (err) {
-      console.log(setLogColor('red'), '[ERROR]', '保存到本地文件失败', err)
-    } else {
-      console.log(setLogColor('green'), '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
-    }
+  FSsave(jsonData).then(() => {
+    console.log(setLogColor('green'), '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
   })
 }
 
@@ -241,11 +256,64 @@ function filterURL({ list = [], localList = [] }) {
 }
 
 /**
+ * 整理本地数据
+ * @description 去重，合并，补充 fileName
+ */
+function filterLocalData() {
+  const tmp = new Map()
+  let count = [0, 0] // 去重前, 去重后
+  let emptyFileNameCount = 0 // 空文件名
+  LIST.forEach(({ path, list }) => {
+    // 补充 fileName
+    if (!path) {
+      path = '新建文件夹' + Date.now() + Math.trunc(Math.random() * 1e3)
+      emptyFileNameCount++
+    }
+    if (!tmp.has(path)) {
+      tmp.set(path, { path, list: [] })
+    }
+    // 去重
+    const tmpData = tmp.get(path)
+    const oldList = tmpData.list
+    const newList = [...new Set([...oldList, ...list])]
+    tmpData.list = newList
+    // log
+    count[0] += list.length
+    count[1] += newList.length - oldList.length
+    // 合并
+    tmp.set(path, tmpData)
+  })
+  console.log(count)
+  // return
+  // 排序
+  const oldList = Array.from(tmp.values())
+  const newList = Array.from(tmp.values()).sort((a, b) => (a.path > b.path ? 1 : -1))
+  const isSame =
+    oldList.reduce((res, { path }) => res + path[0], '') === newList.reduce((res, { path }) => res + path[0], '')
+  if (LIST.length == tmp.size && count[0] == count[1] && !emptyFileNameCount && isSame) {
+    console.log(setLogColor('yellow'), '[WARN]', '没有可以 去重、合并、补充fileName、排序 的项')
+    return
+  }
+  jsonData.LIST = newList
+  FSsave(jsonData).then(() => {
+    let message = '保存到本地文件成功'
+    !isSame && (message += '\n已重新排序')
+    LIST.length != tmp.size && (message += `\n合并文件夹 ${LIST.length - tmp.size} 个`)
+    count[0] != count[1] && (message += `\n删除重复文件 ${count[0] - count[1]} 个`)
+    emptyFileNameCount && (message += `\n补充 fileName ${emptyFileNameCount} 个`)
+    message += '\n总计'
+    message += `\n  现有文件夹 : ${tmp.size}`
+    message += `\n  现有文件   : ${count[1]}`
+    console.log(setLogColor('green'), '[SUCCESS]', message)
+  })
+}
+
+/**
  * 过滤本地未下载的项
  * @param {Number} index LIST 的下标
  */
 function filterDataAndLocal(list = [], path = '') {
-  const localList = searchDir(path)
+  const localList = FSsearchDir(path)
   return filterURL({ list, localList })
 }
 
@@ -310,7 +378,7 @@ function downloadHandler2(data, index = 0) {
 
 module.exports = {
   log,
-  searchDir,
+  FSsearchDir,
   getTitleHTML2CL,
   getHTML2CL,
   getHTML2TW,
@@ -320,5 +388,6 @@ module.exports = {
   downloadHandler,
   downloadHandler2,
   filterDataAndLocal,
+  filterLocalData,
   setLogColor
 }
