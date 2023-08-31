@@ -63,8 +63,8 @@ function renameDirectory(list) {
     let newName = oldName
       .replace(/[技術討論新時代的我們草榴社區達蓋爾旗幟.hmltycom6_\s-]+$/i, '')
       .replace(/([-_–，,\s“”？！～]+)|([[［【]\d+P[\]］】])+/g, ' ')
-      .replace(/[（（]/, '(')
-      .replace(/[））]/, ')')
+      .replace(/[（（]/g, '(')
+      .replace(/[））]/g, ')')
       .trim()
     if (!newName || oldName === newName) return
     while (nameList.includes(newName)) {

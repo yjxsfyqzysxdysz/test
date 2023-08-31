@@ -1,10 +1,10 @@
 const fs = require('fs')
-const { ROOT_PATH, SUFFIX_PATH, REGEXP_RUL } = require('./config')
+const { ROOT_PATH, SUFFIX_PATH, REGEXP_RULER } = require('./config')
 const { html } = require('./data')
 
 // 获取详细文件名，回调返回文件名及路径
 function walk(path) {
-  path = path.replace(/[-]/g, '_')
+  path = path.replace(REGEXP_RULER.regDash, '_')
   // 同步读取文件
   const add = `${ROOT_PATH}${path}${SUFFIX_PATH}`
   if (!fs.existsSync(add)) {
@@ -21,15 +21,15 @@ function log(data) {
 const filterList = (list, path) => {
   const arr = walk(path)
   const res = []
-  const [reg] = REGEXP_RUL
+  const { regImageFileUrl } = REGEXP_RULER
   if (list.length) {
     res.push(...new Set(list))
   } else {
-    res.push(...new Set(html.replace(/http(s)?:\/\/a.d\/adblo_ck\.jpg/g, '').match(reg)))
+    res.push(...new Set(html.match(regImageFileUrl)))
     // res.push(
     //   ...new Set(
     //     html
-    //       .replace(/&amp;/g, '&')
+    //       .replace(REGEXP_RULER.regDash, '&')
     //       .replace(/\(&quot;([a-z0-9/:.&;=?_-]+)&quot;\)/gi, '')
     //       .replace(/(name=)[a-z0-9]*/gi, '$1large')
     //       .match(/http(s)?:\/{2}pbs\.twimg\.com\/media\/[a-z0-9?=_&*-]+/gi)
@@ -39,8 +39,8 @@ const filterList = (list, path) => {
   // return res
   return res.filter(e => {
     // return !arr.includes(e.match(/\/([a-z0-9_-]+)\?/i)[1] + '.jpg')
-    const [a] = /[\d\w.-]+\.(jpg|png|jpeg|gif)/gi.exec(e.replace(/-/g, '_'))
-    return !(arr.includes(a) || arr.includes(a.replace(/_/g, '-')))
+    const [a] = REGEXP_RULER.regImageFile1.exec(e.replace(REGEXP_RULER.regDash, '_'))
+    return !(arr.includes(a) || arr.includes(a.replace(REGEXP_RULER.regUnderline, '-')))
   })
 }
 

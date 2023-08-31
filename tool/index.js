@@ -160,6 +160,7 @@ if (!isFinite(event)) {
       const msg = {
         save: '将 论坛 获取的 url 保存到本地文件',
         savemt: '将 mt 获取的 url 保存到本地文件',
+        filter: `对 ${LOCAL_DATA_PATH} 的数据进行 合并、去重、排序 处理`,
         filterurl: '过滤 url 与 本地 url',
         filterurlmt: '过滤 论坛 与 本地 url',
         filterlocalurl: '过滤 url 为下载的项',

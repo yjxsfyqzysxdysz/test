@@ -12,7 +12,7 @@ const {
   MEITU_PATH,
   MEITU_MIDPATH,
   IS_ONLEY_ONE,
-  REGEXP_RUL,
+  REGEXP_RULER,
   LOG_COLOR,
   DEFINE_URL
 } = require('./config')
@@ -35,15 +35,16 @@ function downloadFun(url, filePath, option) {
  */
 const filterPath = path => {
   return path
-    .replace(/[-–]/g, '-')
+    .replace(REGEXP_RULER.regDash, '-')
     .replace(/[/\\]/g, '_')
-    .replace(/[（（]/g, '(')
-    .replace(/[））]/g, ')')
-    .replace(/[】］]/g, ']')
-    .replace(/[［【]/g, '[')
+    .replace(REGEXP_RULER.regLeftRoundBrackets, '(')
+    .replace(REGEXP_RULER.regRightRoundBrackets, ')')
+    .replace(REGEXP_RULER.regRightSquareBrackets, ']')
+    .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(/\.{2,}/g, '.')
     .replace(/[，，,。“”'"‘’？?!！～：:、；;|~\s]|&nbsp;|\s{2,}/g, ' ')
     .replace(/\s{2,}/g, ' ')
+    .replace(REGEXP_RULER.regEmoji, '')
     .replace(/\.+$/, '')
     .trim()
 }
@@ -65,6 +66,18 @@ function setLogColor(color, text = '%s', isEnd = true) {
  */
 function log(data) {
   console.log(JSON.stringify(data, null, 1), data.length)
+}
+
+/**
+ * 校验 emoji
+ * @param {String} val
+ * @description
+ * emoji表情用到的字符是4字节的UTF-16编码（utf-16有2字节和4字节两种编码）
+ * moji表情在js中被自动拆分成两个ucs-2的2字节字符
+ * 4字节utf-16在js中被用两个字符来表示，高位范围为0xD800 - 0xDBFF，低位范围为0xDC00 - 0xDFFF
+ */
+function isEmoji(val = '') {
+  return REGEXP_RULER.regEmoji.test(val)
 }
 
 /**
@@ -121,7 +134,7 @@ function FSsave(data = jsonData) {
  * 返回 论坛 页面 title
  */
 function getTitleHTML2CL() {
-  let [, res = ''] = html.match(/<h4 class="f16">(.+)<\/h4>/) || []
+  let [, res = ''] = html.match(REGEXP_RULER.regCLTitle) || []
   if (res) {
     res = filterPath(res)
   }
@@ -138,9 +151,9 @@ function getHTML2CL() {
   if (filterURLs) {
     const list = [
       ...new Set(
-        // filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '').replace(/&amp;/g, '&')).filter(e => !/\.gif$/i.test(e))
+        // filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '').replace(REGEXP_RULER.regANDSymbol, '&')).filter(e => !/\.gif$/i.test(e))
         filterURLs
-          .map(e => e.replace(/^ess-data="|"$/g, '').replace(/&amp;/g, '&'))
+          .map(e => e.replace(/^ess-data="|"$/g, '').replace(REGEXP_RULER.regANDSymbol, '&'))
           .filter(e => !/\.gif$/i.test(e) && !DEFINE_URL.includes(e))
       )
     ]
@@ -159,7 +172,7 @@ function getHTML2CL() {
  */
 function getHTML2TW() {
   const filterURLs = html
-    .replace(/&amp;/g, '&')
+    .replace(REGEXP_RULER.regANDSymbol, '&')
     .replace(/\(&quot;([a-z0-9/:.&;=?_-]+)&quot;\)/gi, '')
     .replace(/(name=)[a-z0-9]*/gi, '$1large')
     .match(/http(s)?:\/{2}pbs\.twimg\.com\/media\/[a-z0-9?=_&*-]+/gi)
@@ -215,7 +228,11 @@ function saveLocal({ path = '', list = [], index = 0 }) {
       LIST[isSameIndex].list.push(...tmp)
       // LIST.splice(index, 1, { path, list: [...new Set([...everyList, ...list])] })
     } else {
-      console.log(setLogColor('red'), '[ERROR]', `第 ${setLogColor('yellow', isSameIndex + 1)} 项 path 重复\n${path}`)
+      console.log(
+        setLogColor('red'),
+        '[ERROR]',
+        `path 在第 ${setLogColor('yellow', isSameIndex + 1)} 项已重复且无新增项\n${path}`
+      )
       return
     }
   }
@@ -249,7 +266,7 @@ function filterURL({ list = [], localList = [] }) {
   }
   return list.filter(e => {
     return !localList.some(f => {
-      // return e.includes('/' + f) || e.includes('/' + f.replace(/-/g, '_'))
+      // return e.includes('/' + f) || e.includes('/' + f.replace(REGEXP_RULER.regDash, '_'))
       return new RegExp(`/${f}(.[a-z]+)?$`, 'i').test(e)
     })
   })
@@ -322,7 +339,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
   if (!list.length) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
-  const [, regImageproxyUrl, regFileNameEn, regFileNameCh] = REGEXP_RUL
+  const { regImageproxyUrl, regFileNameEn, regFileNameCh } = REGEXP_RULER
   console.time(`to download ${message}`)
   return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {

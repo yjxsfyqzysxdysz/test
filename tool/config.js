@@ -4,12 +4,22 @@ const SUFFIX_PATH = ''
 const LOCAL_DATA_PATH = './data.json' // 本地数据地址
 const LOCAL_TMP_DATA_PATH = './data.js' // 本地零时数据地址
 const LOOP_NUM = 150
-const REGEXP_RUL = [
-  /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg)/gi, // 图片url
-  /^http(s)?:\/\/imageproxy/, // imageproxy url
-  /(%2f|\/)([0-9a-z-_.%\s]+\.[a-z]+)$/i, // 文件名-英文
-  /(%2f|\/)([0-9a-z-._%\u4e00-\u9f5a\s]+\.[a-z]+)$/i // 文件名-中文
-]
+const REGEXP_RULER = {
+  regImageFileUrl: /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg)/gi, // 图片url
+  regImageproxyUrl: /^http(s)?:\/\/imageproxy/, // imageproxy url
+  regFileNameEn: /(%2f|\/)([0-9a-z-_.%\s]+\.[a-z]+)$/i, // 文件名-英文
+  regFileNaemCh: /(%2f|\/)([0-9a-z-._%\u4e00-\u9f5a\s]+\.[a-z]+)$/i, // 文件名-中文
+  regImageFile1: /[\d\w.-]+\.(jpg|png|jpeg|gif)/gi, // 图片(包含gif)
+  regEmoji: /[\ud800-\udbff[\udc00-\udfff]/g, // emoji 校验
+  regCLTitle: /<h4 class="f16">(.+)<\/h4>/, // CL title
+  regDash: /[-–]/g, // 破折号
+  regUnderline: /_/g, // 下划线
+  regANDSymbol: /&amp;/g, // &
+  regLeftRoundBrackets: /[（（]/g, // 左圆括号
+  regRightRoundBrackets: /[））]/g, // 右圆括号
+  regLeftSquareBrackets: /[［【]/g, // 左方括号
+  regRightSquareBrackets: /[】］]/g // 右方括号
+}
 const PROXY_URL = 'https://imageproxy.pimg.tw/resize' // 图片代理地址 https://imageproxy.pimg.tw/resize?url=http%3A%2F%2Fimg3.wnacg.org%2Fdata%2F1379%2F28%2F001.jpg
 const MEITU_PATH = 'https://162.209.156.130/gallery' // 美图网地址
 const IS_ONLEY_ONE = !false
@@ -42,8 +52,11 @@ const LOG_COLOR = {
 }
 
 const DEFINE_URL = [
+  'http://a.d/adblo_ck.jpg',
+  'https://a.d/adblo_ck.jpg',
   'https://s3.gifyu.com/images/image07b475ae512c301a.png',
-  'https://23img.com/i/2022/09/01/fhz5tz.jpg'
+  'https://23img.com/i/2022/09/01/fhz5tz.jpg',
+  'https://23img.com/i/2023/01/18/j2pf4o.png'
 ]
 
 module.exports = {
@@ -53,7 +66,7 @@ module.exports = {
   LOCAL_DATA_PATH,
   LOCAL_TMP_DATA_PATH,
   LOOP_NUM,
-  REGEXP_RUL,
+  REGEXP_RULER,
   PROXY_URL,
   MEITU_PATH,
   MEITU_MIDPATH,
