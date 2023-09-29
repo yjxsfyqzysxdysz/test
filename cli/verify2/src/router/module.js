@@ -1,7 +1,10 @@
 export default [
   {
     path: '/navigation',
-    component: resolve => require(['@/views/navigation/navigation.vue'], resolve)
+    component: resolve => require(['@/views/navigation/navigation.vue'], resolve),
+    meta: {
+      keepAlive: true
+    }
   },
   // 项目1
   {
@@ -37,5 +40,10 @@ export default [
   {
     path: '/loading',
     component: resolve => require(['@/views/loading/index'], resolve)
+  },
+  // 项目6-Flip
+  {
+    path: '/flip',
+    component: resolve => require(['@/views/Flip'], resolve)
   }
 ]

@@ -28,5 +28,11 @@ export default [
     name: 'Loading',
     path: '/loading',
     type: 2
+  },
+  {
+    icon: 'icon-more',
+    name: 'Flip',
+    path: '/Flip',
+    type: 2
   }
 ]

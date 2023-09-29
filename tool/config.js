@@ -5,12 +5,12 @@ const LOCAL_DATA_PATH = './data.json' // 本地数据地址
 const LOCAL_TMP_DATA_PATH = './data.js' // 本地零时数据地址
 const LOOP_NUM = 150
 const REGEXP_RULER = {
-  regImageFileUrl: /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg)/gi, // 图片url
+  regImageFileUrl: /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg|webp)/gi, // 图片url
   regImageproxyUrl: /^http(s)?:\/\/imageproxy/, // imageproxy url
   regFileNameEn: /(%2f|\/)([0-9a-z-_.%\s]+\.[a-z]+)$/i, // 文件名-英文
-  regFileNaemCh: /(%2f|\/)([0-9a-z-._%\u4e00-\u9f5a\s]+\.[a-z]+)$/i, // 文件名-中文
+  regFileNameCh: /(%2f|\/)([0-9a-z-._%\u4e00-\u9f5a\s]+\.[a-z]+)$/i, // 文件名-中文
   regImageFile1: /[\d\w.-]+\.(jpg|png|jpeg|gif)/gi, // 图片(包含gif)
-  regEmoji: /[\ud800-\udbff[\udc00-\udfff]/g, // emoji 校验
+  regEmoji: /[\ud800-\udbff][\udc00-\udfff]/g, // emoji 校验
   regCLTitle: /<h4 class="f16">(.+)<\/h4>/, // CL title
   regDash: /[-–]/g, // 破折号
   regUnderline: /_/g, // 下划线

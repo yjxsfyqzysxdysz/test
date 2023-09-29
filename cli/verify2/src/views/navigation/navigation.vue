@@ -29,6 +29,16 @@ import navlist from '@/config/navlist.js'
 export default {
   created() {
     this.init()
+    console.log('created');
+  },
+  updated() {
+    console.log('updated');
+  },
+  deactivated() {
+    console.log('deactivated');
+  },
+  activated() {
+    console.log('activated');
   },
   mounted() {
     this.ele = document.getElementsByClassName('list-item')[0]
@@ -75,6 +85,7 @@ export default {
     }
   },
   beforeDestroy() {
+    console.log('beforeDestroy');
     this.ele = null
   }
 }

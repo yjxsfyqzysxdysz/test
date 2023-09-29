@@ -24,6 +24,10 @@ function downloadFun(url, filePath, option) {
   const options = {
     rejectUnauthorized: false,
     // filename
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+    },
     ...option
   }
   return download(url, filePath, options)
@@ -42,7 +46,7 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(/\.{2,}/g, '.')
-    .replace(/[，，,。“”'"‘’？?!！～：:、；;|~\s]|&nbsp;|\s{2,}/g, ' ')
+    .replace(/[，，,。“”'"‘’？?!！～：:、；;|~\s*]|&nbsp;|\s{2,}/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
     .replace(/\.+$/, '')

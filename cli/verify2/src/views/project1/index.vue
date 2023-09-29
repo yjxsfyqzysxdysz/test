@@ -22,7 +22,11 @@ export default {
   },
   methods: {
     back() {
-      this.$router.push('/navigation')
+      if (history.length) {
+        history.back()
+      } else {
+        this.$router.push('/navigation')
+      }
     }
   },
 }
