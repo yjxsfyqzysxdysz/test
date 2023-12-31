@@ -9,14 +9,15 @@ const {
   LOCAL_DATA_PATH,
   LOCAL_TMP_DATA_PATH,
   LOOP_NUM,
+  LIMIT_NUM,
   MEITU_PATH,
   MEITU_MIDPATH,
   IS_ONLEY_ONE,
+  IS_ERROR_FINASH,
   REGEXP_RULER,
   LOG_COLOR,
   DEFINE_URL
 } = require('./config')
-const { html } = require(LOCAL_TMP_DATA_PATH)
 const jsonData = require(_path.resolve(LOCAL_DATA_PATH))
 const { LIST } = jsonData
 
@@ -26,7 +27,22 @@ function downloadFun(url, filePath, option) {
     // filename
     headers: {
       'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47',
+      accept:
+        'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'accept-encoding': 'gzip, deflate, br',
+      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+      dnt: 1,
+      'sec-ch-ua': '"Microsoft Edge";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': 'Windows',
+      'sec-fetch-dest': 'document',
+      'sec-fetch-mode': 'navigate',
+      'sec-fetch-site': 'none',
+      'sec-fetch-user': '?1',
+      'upgrade-insecure-requests': 1
     },
     ...option
   }
@@ -46,7 +62,7 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(/\.{2,}/g, '.')
-    .replace(/[，，,。“”'"‘’？?!！～：:、；;|~\s*]|&nbsp;|\s{2,}/g, ' ')
+    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；;|~\s*#]|\s{2,}/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
     .replace(/\.+$/, '')
@@ -82,6 +98,11 @@ function log(data) {
  */
 function isEmoji(val = '') {
   return REGEXP_RULER.regEmoji.test(val)
+}
+
+function FSRead(path = LOCAL_TMP_DATA_PATH) {
+  const res = fs.readFileSync(path, 'utf8')
+  return res || ''
 }
 
 /**
@@ -138,6 +159,7 @@ function FSsave(data = jsonData) {
  * 返回 论坛 页面 title
  */
 function getTitleHTML2CL() {
+  const html = FSRead()
   let [, res = ''] = html.match(REGEXP_RULER.regCLTitle) || []
   if (res) {
     res = filterPath(res)
@@ -150,6 +172,7 @@ function getTitleHTML2CL() {
  * @returns {Array} 带有 url 的 array
  */
 function getHTML2CL() {
+  const html = FSRead()
   const filterURLs = html.match(/ess-data="([\u4e00-\u9f5a0-9a-z:;?=/._\-–\\%~&\s]+)"/gi)
   let message = '没有过滤出 URL'
   if (filterURLs) {
@@ -175,6 +198,7 @@ function getHTML2CL() {
  * @returns {Array} 带有 url 的 array
  */
 function getHTML2TW() {
+  const html = FSRead()
   const filterURLs = html
     .replace(REGEXP_RULER.regANDSymbol, '&')
     .replace(/\(&quot;([a-z0-9/:.&;=?_-]+)&quot;\)/gi, '')
@@ -350,16 +374,18 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       let filename = undefined
       if (regImageproxyUrl.test(url)) {
         filename = decodeURIComponent(url.match(regFileNameEn)[2])
-      } else {
+      } else if (regFileNameCh.test(url)) {
         filename = decodeURIComponent(url.match(regFileNameCh)[2])
       }
-      return downloadFun(encodeURI(url), filePath, { filename })
+      return downloadFun(url, filePath, { filename })
         .then(() => {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
         })
         .catch(err => {
           console.log(setLogColor('red'), '[ERROR]', err.statusCode || err.code || err, url)
-          return Promise.reject()
+          if (IS_ERROR_FINASH) {
+            return Promise.reject()
+          }
         })
     })
   )
@@ -381,6 +407,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
         }
         return
       }
+      if ((toast + 1) * LOOP_NUM >= LIMIT_NUM) return Promise.resolve()
       downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(() => {
@@ -400,6 +427,7 @@ function downloadHandler2(data, index = 0) {
 module.exports = {
   log,
   FSsearchDir,
+  FSRead,
   getTitleHTML2CL,
   getHTML2CL,
   getHTML2TW,

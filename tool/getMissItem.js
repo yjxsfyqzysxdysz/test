@@ -1,6 +1,7 @@
 const fs = require('fs')
-const { ROOT_PATH, SUFFIX_PATH, REGEXP_RULER } = require('./config')
-const { html } = require('./data')
+const { ROOT_PATH, SUFFIX_PATH, REGEXP_RULER, LOCAL_TMP_DATA_PATH } = require('./config')
+const { FSRead } = require('./utils')
+const html = FSRead(LOCAL_TMP_DATA_PATH)
 
 // 获取详细文件名，回调返回文件名及路径
 function walk(path) {

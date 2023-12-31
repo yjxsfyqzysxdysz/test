@@ -23,7 +23,7 @@ const [event, ...param] = arg
 let eventHandler = null
 let INDEX = 0
 
-// console.clear()
+console.clear()
 
 if (!arg.length) {
   throw '没有入参'
@@ -164,6 +164,7 @@ if (!isFinite(event)) {
         filterurl: '过滤 url 与 本地 url',
         filterurlmt: '过滤 论坛 与 本地 url',
         filterlocalurl: '过滤 url 为下载的项',
+        specify: '指定项下载',
         download: '现在 data 中本地未下载的项',
         downloadurl: '下载 cl',
         downloadmt: '下载 mt',

@@ -1,6 +1,6 @@
 const download = require('download')
-const { ROOT_PATH, SUFFIX_PATH, LOOP_NUM, REGEXP_RULER } = require('./config')
-const { LIST } = require('./data')
+const { ROOT_PATH, SUFFIX_PATH, LOOP_NUM, REGEXP_RULER, LOCAL_DATA_PATH } = require('./config')
+const { LIST } = require(LOCAL_DATA_PATH)
 const { filterList } = require('./getMissItem')
 
 let INDEX = 0
