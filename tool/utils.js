@@ -3,22 +3,21 @@ const _path = require('path')
 const download = require('download')
 
 const {
-  ROOT_PATH,
-  PREFIX_PATH,
-  SUFFIX_PATH,
-  LOCAL_DATA_PATH,
-  LOCAL_TMP_DATA_PATH,
-  LOOP_NUM,
-  LIMIT_NUM,
-  MEITU_PATH,
-  MEITU_MIDPATH,
-  IS_ONLEY_ONE,
-  IS_ERROR_FINASH,
-  REGEXP_RULER,
-  LOG_COLOR,
-  DEFINE_URL
+  ROOT_PATH, PREFIX_PATH, SUFFIX_PATH,
+  LOCAL_DATA_PATH, LOCAL_TMP_DATA_PATH,
+  LOOP_NUM, LIMIT_NUM,
+  MEITU_PATH, MEITU_MIDPATH,
+  IS_ONLEY_ONE, IS_ERROR_FINASH, IS_GIF,
+  REGEXP_RULER, DEFINE_URL,
+  LOG_COLOR
 } = require('./config')
-const jsonData = require(_path.resolve(LOCAL_DATA_PATH))
+const jsonData = getLocal({
+    path: LOCAL_DATA_PATH,
+    defineData: {
+      LIST: [],
+      MT_LIST: []
+    }
+  })
 const { LIST } = jsonData
 
 function downloadFun(url, filePath, option) {
@@ -62,7 +61,7 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(/\.{2,}/g, '.')
-    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；;|~\s*#]|\s{2,}/g, ' ')
+    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|~\s*#]|\s{2,}/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
     .replace(/\.+$/, '')
@@ -124,9 +123,9 @@ function FSsearchDir(path, status = false) {
   path = filterPath(path)
   // 同步读取文件
   let add = `${ROOT_PATH}${path}${SUFFIX_PATH}`
-  if (!fs.existsSync(add)) {
+  if (!FSExistsSync(add)) {
     add = `${ROOT_PATH}${path}`.trim()
-    if (!fs.existsSync(add)) {
+    if (!FSExistsSync(add)) {
       if (status) {
         return []
       }
@@ -155,6 +154,11 @@ function FSsave(data = jsonData) {
   })
 }
 
+function FSExistsSync(path) {
+  if (!path) throw('path is temp')
+  return fs.existsSync(path)
+}
+
 /**
  * 返回 论坛 页面 title
  */
@@ -181,7 +185,7 @@ function getHTML2CL() {
         // filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '').replace(REGEXP_RULER.regANDSymbol, '&')).filter(e => !/\.gif$/i.test(e))
         filterURLs
           .map(e => e.replace(/^ess-data="|"$/g, '').replace(REGEXP_RULER.regANDSymbol, '&'))
-          .filter(e => !/\.gif$/i.test(e) && !DEFINE_URL.includes(e))
+          .filter(e =>  (IS_GIF ? true : !/\.gif$/i.test(e)) && !DEFINE_URL.includes(e))
       )
     ]
     if (list.length) {
@@ -280,6 +284,18 @@ function saveLocal({ path = '', list = [], index = 0 }) {
   FSsave(jsonData).then(() => {
     console.log(setLogColor('green'), '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
   })
+}
+
+function getLocal({ path = LOCAL_DATA_PATH, defineData = '' }) {
+  if (!path) throw('path is temp')
+  if (!FSExistsSync(LOCAL_DATA_PATH)) {
+    const type = typeof defineData
+    const data = type === 'string' ? defineData : JSON.stringify(defineData, null, 2)
+    fs.writeFileSync(LOCAL_DATA_PATH, data)
+    return defineData
+  } else {
+    return require(_path.resolve(LOCAL_DATA_PATH))
+  }
 }
 
 /**
@@ -433,6 +449,7 @@ module.exports = {
   getHTML2TW,
   getURL2MT,
   saveLocal,
+  getLocal,
   filterURL,
   downloadHandler,
   downloadHandler2,

@@ -3,7 +3,7 @@ const PREFIX_PATH = '[寫真]'
 const SUFFIX_PATH = ''
 const LOCAL_DATA_PATH = './data.json' // 本地数据地址
 const LOCAL_TMP_DATA_PATH = './data.js' // 本地零时数据地址
-const LOOP_NUM = 5
+const LOOP_NUM = 25
 const LIMIT_NUM = 200
 const REGEXP_RULER = {
   regImageFileUrl: /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg|webp)/gi, // 图片url
@@ -23,9 +23,11 @@ const REGEXP_RULER = {
 }
 const PROXY_URL = 'https://imageproxy.pimg.tw/resize' // 图片代理地址 https://imageproxy.pimg.tw/resize?url=http%3A%2F%2Fimg3.wnacg.org%2Fdata%2F1379%2F28%2F001.jpg
 const MEITU_PATH = 'https://162.209.156.130/gallery' // 美图网地址
-const IS_ONLEY_ONE = false
-const IS_ERROR_FINASH = !true
-const MEITU_MIDPATH = {}
+const IS_ONLEY_ONE = !false
+const IS_ERROR_FINASH = true
+const IS_GIF = false
+const MEITU_MIDPATH = {
+}
 // \x1B[33m%s\x1B[0m'  %s  表 log 第2项入参
 const LOG_COLOR = {
   bright: '\x1B[1m', // 亮色
@@ -63,7 +65,9 @@ const DEFINE_URL = [
   'http://mmd.asia/pic/toj7tg.png',
   'https://66img.cc/images/2023/07/20/25921461a5a1ca39d4d02e8ede66edc1e383946871ee973.jpg',
   'https://66img.cc/images/2023/11/09/qrcode_for_gh_ce3247fff5e7_258.jpg',
-  'https://66img.cc/images/2023/11/08/3899930c2c849c172a8166805e4344c9.jpg'
+  'https://66img.cc/images/2023/11/08/3899930c2c849c172a8166805e4344c9.jpg',
+  'https://66img.cc/images/2024/03/18/qrcode_for_gh_ec5441f6a38c_258.jpg',
+  'https://telegraph-image-3ti.pages.dev/file/8c756e9d3561d28065a7b.jpg'
 ]
 
 module.exports = {
@@ -80,6 +84,7 @@ module.exports = {
   MEITU_MIDPATH,
   IS_ONLEY_ONE,
   IS_ERROR_FINASH,
+  IS_GIF,
   LOG_COLOR,
   DEFINE_URL
 }

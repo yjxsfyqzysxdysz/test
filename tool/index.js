@@ -1,6 +1,5 @@
 const _path = require('path')
 const { LOCAL_DATA_PATH, PROXY_URL } = require('./config')
-const { LIST, MT_LIST } = require(_path.resolve(LOCAL_DATA_PATH))
 // const { filterList } = require('./getMissItem')
 const {
   FSsearchDir,
@@ -9,6 +8,7 @@ const {
   getHTML2TW,
   getURL2MT,
   saveLocal,
+  getLocal,
   filterURL,
   downloadHandler,
   downloadHandler2,
@@ -16,6 +16,7 @@ const {
   filterLocalData,
   setLogColor
 } = require('./utils')
+const { LIST, MT_LIST } = getLocal({ path: _path.resolve(LOCAL_DATA_PATH), defineData: { LIST: [], MT_LIST: [] }})
 
 const arg = process.argv.slice(2)
 const [event, ...param] = arg

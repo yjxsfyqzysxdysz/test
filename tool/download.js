@@ -14,7 +14,7 @@ const downloadHandler = (list, path, toast = 0) => {
   return Promise.all(
     list.splice(0, LOOP_NUM).map((url, index) =>
       download(url, filePath, { rejectUnauthorized: false }).then(() => {
-        console.log(`success No.${toast * LOOP_NUM + index + 1}`)
+        // console.log(`success No.${toast * LOOP_NUM + index + 1}`)
       })
     )
   )
