@@ -61,7 +61,8 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(/\.{2,}/g, '.')
-    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|~\s*#]|\s{2,}/g, ' ')
+    .replace(/-+/g, '-')
+    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|~\s*#]/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
     .replace(/\.+$/, '')
@@ -184,8 +185,13 @@ function getHTML2CL() {
       ...new Set(
         // filterURLs.map(e => e.replace(/^ess-data="|\s|"$/g, '').replace(REGEXP_RULER.regANDSymbol, '&')).filter(e => !/\.gif$/i.test(e))
         filterURLs
-          .map(e => e.replace(/^ess-data="|"$/g, '').replace(REGEXP_RULER.regANDSymbol, '&'))
-          .filter(e =>  (IS_GIF ? true : !/\.gif$/i.test(e)) && !DEFINE_URL.includes(e))
+          .map(e =>
+            e
+              .replace(/^ess-data="|"$/g, '')
+              .replace(REGEXP_RULER.regANDSymbol, '&')
+              .replace(REGEXP_RULER.regSpaces, '%20')
+          )
+          .filter(e => (IS_GIF ? true : !/\.gif$/i.test(e)) && !DEFINE_URL.includes(e))
       )
     ]
     if (list.length) {
@@ -383,16 +389,16 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
   if (!list.length) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
-  const { regImageproxyUrl, regFileNameEn, regFileNameCh } = REGEXP_RULER
+  // const { regImageproxyUrl, regFileNameEn, regFileNameCh } = REGEXP_RULER
   console.time(`to download ${message}`)
   return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
-      if (regImageproxyUrl.test(url)) {
-        filename = decodeURIComponent(url.match(regFileNameEn)[2])
-      } else if (regFileNameCh.test(url)) {
-        filename = decodeURIComponent(url.match(regFileNameCh)[2])
-      }
+      // if (regImageproxyUrl.test(url)) {
+      //   filename = decodeURIComponent(url.match(regFileNameEn)[2])
+      // } else if (regFileNameCh.test(url)) {
+      //   filename = decodeURIComponent(url.match(regFileNameCh)[2])
+      // }
       return downloadFun(url, filePath, { filename })
         .then(() => {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)

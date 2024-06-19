@@ -19,12 +19,13 @@ const REGEXP_RULER = {
   regLeftRoundBrackets: /[（（]/g, // 左圆括号
   regRightRoundBrackets: /[））]/g, // 右圆括号
   regLeftSquareBrackets: /[［【]/g, // 左方括号
-  regRightSquareBrackets: /[】］]/g // 右方括号
+  regRightSquareBrackets: /[】］]/g, // 右方括号
+  regSpaces: /\s/g, // 空格
 }
 const PROXY_URL = 'https://imageproxy.pimg.tw/resize' // 图片代理地址 https://imageproxy.pimg.tw/resize?url=http%3A%2F%2Fimg3.wnacg.org%2Fdata%2F1379%2F28%2F001.jpg
 const MEITU_PATH = 'https://162.209.156.130/gallery' // 美图网地址
-const IS_ONLEY_ONE = !false
-const IS_ERROR_FINASH = true
+const IS_ONLEY_ONE = !!1
+const IS_ERROR_FINASH = !1
 const IS_GIF = false
 const MEITU_MIDPATH = {
 }
@@ -67,7 +68,11 @@ const DEFINE_URL = [
   'https://66img.cc/images/2023/11/09/qrcode_for_gh_ce3247fff5e7_258.jpg',
   'https://66img.cc/images/2023/11/08/3899930c2c849c172a8166805e4344c9.jpg',
   'https://66img.cc/images/2024/03/18/qrcode_for_gh_ec5441f6a38c_258.jpg',
-  'https://telegraph-image-3ti.pages.dev/file/8c756e9d3561d28065a7b.jpg'
+  'https://telegraph-image-3ti.pages.dev/file/8c756e9d3561d28065a7b.jpg',
+  'https://99img.cc/images/2024/05/03/861546ef5cdc0a0b7e7eb32a0ef90105518691ef3edd7401.jpg',
+  'https://img12.360buyimg.com/ddimg/jfs/t1/104755/29/47446/49611/65ea820eFbd3c3ba6/021ba6e44457b7aa.jpg',
+  'https://66img.cc/images/2024/05/14/qrcode_for_gh_ec5441f6a38c_258-1.jpg',
+  'https://files.catbox.moe/dhthzi.png'
 ]
 
 module.exports = {

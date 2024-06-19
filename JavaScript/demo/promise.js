@@ -7,6 +7,8 @@
  * p.finally() // 是正式标准
  * 对象方法
  * Promise.all() // 并发处理多个异步任务，所有任务执行完才能得到结果
+ * Promise.allSettled() // 并发处理多个异步任务，所有任务执行完才能得到结果 返回 [{ status: "fulfilled", value: 3 }, { status: "rejected", reason: "foo" }]
+ * * fulfilled - 成功; rejected - 失败
  * Promise.race() // 并发处理多个异步任务，一旦迭代器中的某个promise解决或拒绝，返回的 promise就会解决或拒绝。
  * Promise.any() // 并发处理多个异步任务，只要有一个任务完成就能得到结果
  */
@@ -756,3 +758,95 @@ fun21().then(res => {
 .catch(err => {
   console.log('err', err)
 })
+
+// 手写
+function Promise22(executor) {
+  this.status = 'pending'
+  this.resolveVal = undefined
+  this.rejectVal = undefined
+  this.resolveList = []
+  this.rejectList = []
+
+  const resolve = val => {
+    if (this.status === 'pending') {
+      this.status = 'resolve'
+      this.resolveVal = val
+      this.resolveList.forEach(fn => fn())
+    }
+  }
+
+  const reject = val => {
+    if (this.status === 'pending') {
+      this.status = 'reject'
+      this.rejectVal = val
+      this.rejectList.forEach(fn => fn())
+    }
+  }
+
+  try {
+    executor(resolve, reject)
+  } catch (error) {
+    reject(error)
+  }
+}
+
+Promise22.prototype.then = function (onresolved, onrejected) {
+  const promise = new Promise22((resolve, reject) => {
+    setTimeout(() => {
+      if (this.status === 'resolve') {
+        try {
+          const val = onresolved(this.resolveVal)
+          promiseHandler(promise, val, resolve, reject)
+        } catch (error) {
+          reject(error)
+        }
+      }
+      if (this.status === 'reject') {
+        try {
+          const val = onrejected(this.rejectVal)
+          promiseHandler(promise, val, resolve, reject)
+        } catch (error) {
+          reject(error)
+        }
+      }
+      if (this.status === 'pending') {
+        this.resolveList.push(() => {
+          try {
+            const val = onresolved(this.resolveVal)
+            promiseHandler(promise, val, resolve, reject)
+          } catch (error) {
+            reject(error)
+          }
+        })
+
+        this.rejectList.push(() => {
+          try {
+            const val = onrejected(this.rejectVal)
+            promiseHandler(promise, val, resolve, reject)
+          } catch (error) {
+            reject(error)
+          }
+        })
+      }
+    })
+  })
+  return promise
+}
+
+function promiseHandler(promise, val, resolve, reject) {
+  if (promise === val) return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+  if (val instanceof Promise22) {
+    val.then(resolve, reject)
+  } else {
+    resolve(val)
+  }
+}
+
+// const promisesss = new Promise22((resolve, reject) => {
+//   setTimeout(() => {
+//     resolve('ok2222')
+//   }, 2000)
+// })
+
+// promisesss.then(console.log)
+
