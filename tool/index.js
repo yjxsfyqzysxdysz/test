@@ -19,16 +19,16 @@ const {
 const { LIST, MT_LIST } = getLocal({ path: _path.resolve(LOCAL_DATA_PATH), defineData: { LIST: [], MT_LIST: [] }})
 
 const arg = process.argv.slice(2)
+if (!arg.length) {
+  arg.push('save') // throw '没有入参'
+}
+
 const [event, ...param] = arg
 
 let eventHandler = null
 let INDEX = 0
 
 console.clear()
-
-if (!arg.length) {
-  throw '没有入参'
-}
 
 if (!isFinite(event)) {
   // 传参任务

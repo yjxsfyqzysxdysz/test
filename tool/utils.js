@@ -12,13 +12,15 @@ const {
   LOG_COLOR
 } = require('./config')
 const jsonData = getLocal({
-    path: LOCAL_DATA_PATH,
-    defineData: {
-      LIST: [],
-      MT_LIST: []
-    }
-  })
+  path: LOCAL_DATA_PATH,
+  defineData: {
+    LIST: [],
+    MT_LIST: []
+  }
+})
 const { LIST } = jsonData
+
+let isStop = false
 
 function downloadFun(url, filePath, option) {
   const options = {
@@ -294,13 +296,13 @@ function saveLocal({ path = '', list = [], index = 0 }) {
 
 function getLocal({ path = LOCAL_DATA_PATH, defineData = '' }) {
   if (!path) throw('path is temp')
-  if (!FSExistsSync(LOCAL_DATA_PATH)) {
+  if (!FSExistsSync(path)) {
     const type = typeof defineData
     const data = type === 'string' ? defineData : JSON.stringify(defineData, null, 2)
-    fs.writeFileSync(LOCAL_DATA_PATH, data)
+    fs.writeFileSync(path, data)
     return defineData
   } else {
-    return require(_path.resolve(LOCAL_DATA_PATH))
+    return require(_path.resolve(path))
   }
 }
 
@@ -406,7 +408,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
         .catch(err => {
           console.log(setLogColor('red'), '[ERROR]', err.statusCode || err.code || err, url)
           if (IS_ERROR_FINASH) {
-            return Promise.reject()
+            isStop = true
           }
         })
     })
@@ -419,6 +421,9 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       if (!list.length) {
         console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
         let newData = LIST[++index]
+        if (IS_ERROR_FINASH && isStop) {
+          return Promise.reject()
+        }
         if (newData && newData.list && newData.list.length) {
           if (IS_ONLEY_ONE) return
           const downloadList = filterDataAndLocal(newData.list, newData.path)
@@ -461,5 +466,6 @@ module.exports = {
   downloadHandler2,
   filterDataAndLocal,
   filterLocalData,
-  setLogColor
+  setLogColor,
+  downloadFun
 }

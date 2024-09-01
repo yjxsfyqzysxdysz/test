@@ -72,7 +72,11 @@ const DEFINE_URL = [
   'https://99img.cc/images/2024/05/03/861546ef5cdc0a0b7e7eb32a0ef90105518691ef3edd7401.jpg',
   'https://img12.360buyimg.com/ddimg/jfs/t1/104755/29/47446/49611/65ea820eFbd3c3ba6/021ba6e44457b7aa.jpg',
   'https://66img.cc/images/2024/05/14/qrcode_for_gh_ec5441f6a38c_258-1.jpg',
-  'https://files.catbox.moe/dhthzi.png'
+  'https://files.catbox.moe/dhthzi.png',
+  'https://images2.imgbox.com/cf/22/AUJY5wmx_o.png',
+  'https://telegraph-image-3ti.pages.dev/file/72ff0adbcf328a4e0d32b.jpg',
+  'https://telegraph-image-3ti.pages.dev/file/29c9755d2805b6639131f.jpg',
+  'https://telegraph-image-3ti.pages.dev/file/1a24a8c11de012796ad20.jpg',
 ]
 
 module.exports = {
