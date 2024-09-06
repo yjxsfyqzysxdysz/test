@@ -7,7 +7,7 @@ const {
   LOCAL_DATA_PATH, LOCAL_TMP_DATA_PATH,
   LOOP_NUM, LIMIT_NUM,
   MEITU_PATH, MEITU_MIDPATH,
-  IS_ONLEY_ONE, IS_ERROR_FINASH, IS_GIF,
+  IS_ONLEY_ONE, IS_ERROR_FINASH, IS_GIF, IS_EMPTY_FINASH,
   REGEXP_RULER, DEFINE_URL,
   LOG_COLOR
 } = require('./config')
@@ -388,7 +388,16 @@ function filterDataAndLocal(list = [], path = '') {
 
 // 下载
 function downloadHandler({ list, path, toast = 0, index = 0 }) {
-  if (!list.length) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
+  if (!list.length) {
+    // 如果是空的则停止
+    if (IS_EMPTY_FINASH) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
+    // 跳过空项继续下载
+    const newData = LIST[++index]
+    if (!newData) return console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
+    const downloadList = filterDataAndLocal(newData.list, newData.path)
+    console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
+    downloadHandler({ list: downloadList, path: newData.path, index })
+  }
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
   // const { regImageproxyUrl, regFileNameEn, regFileNameCh } = REGEXP_RULER
@@ -421,6 +430,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       if (!list.length) {
         console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
         let newData = LIST[++index]
+        // 当前项执行完后,有出现错误才会停止
         if (IS_ERROR_FINASH && isStop) {
           return Promise.reject()
         }

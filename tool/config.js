@@ -24,8 +24,9 @@ const REGEXP_RULER = {
 }
 const PROXY_URL = 'https://imageproxy.pimg.tw/resize' // 图片代理地址 https://imageproxy.pimg.tw/resize?url=http%3A%2F%2Fimg3.wnacg.org%2Fdata%2F1379%2F28%2F001.jpg
 const MEITU_PATH = 'https://162.209.156.130/gallery' // 美图网地址
-const IS_ONLEY_ONE = !!1
-const IS_ERROR_FINASH = !1
+const IS_ONLEY_ONE = !1
+const IS_ERROR_FINASH = 1
+const IS_EMPTY_FINASH = 1
 const IS_GIF = false
 const MEITU_MIDPATH = {
 }
@@ -93,6 +94,7 @@ module.exports = {
   MEITU_MIDPATH,
   IS_ONLEY_ONE,
   IS_ERROR_FINASH,
+  IS_EMPTY_FINASH,
   IS_GIF,
   LOG_COLOR,
   DEFINE_URL
