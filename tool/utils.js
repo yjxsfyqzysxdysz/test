@@ -390,13 +390,14 @@ function filterDataAndLocal(list = [], path = '') {
 function downloadHandler({ list, path, toast = 0, index = 0 }) {
   if (!list.length) {
     // 如果是空的则停止
+    console.log(setLogColor('magenta'), '[INFO]', `${index + 1} / ${LIST.length} ${path} total: ${list.length}`)
     if (IS_EMPTY_FINASH) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
     // 跳过空项继续下载
     const newData = LIST[++index]
     if (!newData) return console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
     const downloadList = filterDataAndLocal(newData.list, newData.path)
     console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
-    downloadHandler({ list: downloadList, path: newData.path, index })
+    return downloadHandler({ list: downloadList, path: newData.path, index })
   }
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
@@ -428,12 +429,13 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     })
     .then(() => {
       if (!list.length) {
-        console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
-        let newData = LIST[++index]
         // 当前项执行完后,有出现错误才会停止
         if (IS_ERROR_FINASH && isStop) {
-          return Promise.reject()
+          console.log(setLogColor('cyan'), '[INFO]', `${index + 1} / ${LIST.length} 有未完成项 \n${path} finsh`)
+          return
         }
+        console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
+        let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
           if (IS_ONLEY_ONE) return
           const downloadList = filterDataAndLocal(newData.list, newData.path)

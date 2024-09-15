@@ -196,7 +196,7 @@ if (isFinite(param[0])) {
     INDEX = len - 1
     console.log(`LIST 总共有 ${len} 项, 仅支持 0 - ${len - 1} 之间的自然数`)
   } else {
-    INDEX = index
+    INDEX = +index
   }
 }
 
