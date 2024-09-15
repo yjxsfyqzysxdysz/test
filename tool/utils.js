@@ -20,7 +20,7 @@ const jsonData = getLocal({
 })
 const { LIST } = jsonData
 
-let isStop = false
+let noFindNum = 0 // 404 file count
 
 function downloadFun(url, filePath, option) {
   const options = {
@@ -394,7 +394,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     if (IS_EMPTY_FINASH) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
     // 跳过空项继续下载
     const newData = LIST[++index]
-    if (!newData) return console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
+    if (!newData) return console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;${noFindNum ? ` 404 file total: ${noFindNum} ;` : ''}`)
     const downloadList = filterDataAndLocal(newData.list, newData.path)
     console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
     return downloadHandler({ list: downloadList, path: newData.path, index })
@@ -416,9 +416,13 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
           console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
         })
         .catch(err => {
-          console.log(setLogColor('red'), '[ERROR]', err.statusCode || err.code || err, url)
-          if (IS_ERROR_FINASH) {
-            isStop = true
+          if ([404].includes(err.statusCode)) {
+            noFindNum++
+          } else {
+            console.log(setLogColor('red'), '[ERROR]', err.statusCode || err.code || err, url)
+            if (IS_ERROR_FINASH) {
+              isStop = true
+            }
           }
         })
     })
@@ -431,13 +435,17 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       if (!list.length) {
         // 当前项执行完后,有出现错误才会停止
         if (IS_ERROR_FINASH && isStop) {
-          console.log(setLogColor('cyan'), '[INFO]', `${index + 1} / ${LIST.length} 有未完成项 \n${path} finsh`)
+          console.log(setLogColor('cyan'), '[INFO]', `${index + 1} / ${LIST.length} 有未完成项${noFindNum ? ` 404 file total: ${noFindNum} ;` : ''} \n${path} finsh`)
           return
         }
-        console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
+        console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;`)
+        if (noFindNum) {
+          console.log(setLogColor('yellow'), `404 file count: ${noFindNum} / ${LIST[index].list.length}`)
+        }
         let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
           if (IS_ONLEY_ONE) return
+          noFindNum = 0
           const downloadList = filterDataAndLocal(newData.list, newData.path)
           console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
           downloadHandler({ list: downloadList, path: newData.path, index })
