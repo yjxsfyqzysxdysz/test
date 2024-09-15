@@ -20,6 +20,7 @@ const jsonData = getLocal({
 })
 const { LIST } = jsonData
 
+let isStop = false // stop tag
 let noFindNum = 0 // 404 file count
 
 function downloadFun(url, filePath, option) {
@@ -314,14 +315,14 @@ function getLocal({ path = LOCAL_DATA_PATH, defineData = '' }) {
  */
 function filterURL({ list = [], localList = [] }) {
   if (!localList.length) {
-    return list
+    return [...list]
   }
-  return list.filter(e => {
+  return [list.filter(e => {
     return !localList.some(f => {
       // return e.includes('/' + f) || e.includes('/' + f.replace(REGEXP_RULER.regDash, '_'))
       return new RegExp(`/${f}(.[a-z]+)?$`, 'i').test(e)
     })
-  })
+  })]
 }
 
 /**
@@ -401,8 +402,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
   }
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
-  // const { regImageproxyUrl, regFileNameEn, regFileNameCh } = REGEXP_RULER
-  console.time(`to download ${message}`)
+  console.time(`[DOWNLOAD] ${message}`)
   return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
@@ -427,11 +427,8 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
         })
     })
   )
-    .then(res => {
-      console.timeEnd(`to download ${message}`)
-      if (res.find(({ status }) => status === 'rejected')) return Promise.reject()
-    })
     .then(() => {
+      console.timeEnd(`[DOWNLOAD] ${message}`)
       if (!list.length) {
         // 当前项执行完后,有出现错误才会停止
         if (IS_ERROR_FINASH && isStop) {
