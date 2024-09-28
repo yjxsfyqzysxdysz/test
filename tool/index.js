@@ -14,7 +14,8 @@ const {
   downloadHandler2,
   filterDataAndLocal,
   filterLocalData,
-  setLogColor
+  setLogColor,
+  specifyFilter
 } = require('./utils')
 const { LIST, MT_LIST } = getLocal({ path: _path.resolve(LOCAL_DATA_PATH), defineData: { LIST: [], MT_LIST: [] }})
 
@@ -74,11 +75,32 @@ if (!isFinite(event)) {
         return filterURL({ list, localList })
       }
       break
-    case 'filterlocalurl': // 过滤 url 为下载的项
-      eventHandler = (list, path) => {
+    case 'filterlocalurl': // 过滤 url 未下载的项
+      eventHandler = (list, path, param) => {
         list = filterDataAndLocal(list, path)
         console.log(`download ${path} total: ${list.length}`)
-        list.forEach(e => console.log(e))
+        switch (param[1]) {
+          case '-F':
+          case '--filter':
+            if (LIST[INDEX].list.length !== list.length) {
+              if (list.length) {
+                console.log(setLogColor('magenta'), '[INFO]', `过滤已下载的 ${LIST[INDEX].list.length - list.length} , 还有 ${list.length}`)
+                LIST[INDEX].list = list
+              } else {
+                const data = LIST.splice(INDEX, 1)
+                console.log(setLogColor('magenta'), '[INFO]', `删除对应项 ${INDEX} , ${data.path}`)
+              }
+              specifyFilter(LIST)
+            } else {
+                console.log(setLogColor('cyan'), '[INFO]', '无变化')
+            }
+            break;
+          default:
+            for (let i = 0, len = Math.min(10, list.length); i < len; i++) {
+              console.log(list[i])
+            }
+            break;
+        }
       }
       break
     case 'download': // 现在 data 中本地未下载的项
@@ -156,6 +178,40 @@ if (!isFinite(event)) {
         downloadHandler2(list, index)
       }
       break
+    case 'specifyFilter': // 过滤出指定项
+      eventHandler = (...params) => {
+        let [, , [name, key]] = params
+        if (!name) {
+          console.log(setLogColor('red'), '[ERROR] 没有入参')
+          return
+        }
+        const reg = new RegExp(name)
+        const otherList = []
+        const targetList = []
+        LIST.forEach(item => {
+          if (reg.test(item.path)) {
+            targetList.push(item)
+          } else {
+            otherList.push(item)
+          }
+        })
+
+        if (!targetList.length) {
+          console.log(setLogColor('yellow'), '[WARN]', `未找到 path 中包含 ${setLogColor('magenta', name)} 的项`)
+          return
+        }
+        console.log(`符合 ${setLogColor('magenta', name)} 项的数据 total: ${targetList.length}`)
+        switch (key) {
+          case 'del':
+            specifyFilter(otherList)
+            break;
+          case 'clean':
+          default:
+            specifyFilter(targetList.concat(otherList))
+            break;
+        }
+      }
+      break
     case 'help':
     case '-h': {
       const msg = {
@@ -166,6 +222,7 @@ if (!isFinite(event)) {
         filterurlmt: '过滤 论坛 与 本地 url',
         filterlocalurl: '过滤 url 为下载的项',
         specify: '指定项下载',
+        specifyFilter: '过滤并保存指定项',
         download: '现在 data 中本地未下载的项',
         downloadurl: '下载 cl',
         downloadmt: '下载 mt',

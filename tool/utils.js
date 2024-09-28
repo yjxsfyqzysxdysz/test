@@ -158,6 +158,13 @@ function FSsave(data = jsonData) {
   })
 }
 
+function saveHandler(list) {
+  if (list && Array.isArray(list)) {
+    jsonData.LIST = list
+  }
+  return FSsave(jsonData)
+}
+
 function FSExistsSync(path) {
   if (!path) throw('path is temp')
   return fs.existsSync(path)
@@ -290,7 +297,7 @@ function saveLocal({ path = '', list = [], index = 0 }) {
     console.log(setLogColor('red'), '[ERROR]', `path 异常\n${index} 项 path 为 ${everyPath}\n解析 path 为 ${path}`)
     return
   }
-  FSsave(jsonData).then(() => {
+  saveHandler().then(() => {
     console.log(setLogColor('green'), '[SUCCESS]', `${LIST.length} ${list.length} ${path} 保存到本地文件成功`)
   })
 }
@@ -317,7 +324,7 @@ function filterURL({ list = [], localList = [] }) {
   if (!localList.length) {
     return [...list]
   }
-  return [list.filter(e => {
+  return [...list.filter(e => {
     return !localList.some(f => {
       // return e.includes('/' + f) || e.includes('/' + f.replace(REGEXP_RULER.regDash, '_'))
       return new RegExp(`/${f}(.[a-z]+)?$`, 'i').test(e)
@@ -364,8 +371,7 @@ function filterLocalData() {
     console.log(setLogColor('yellow'), '[WARN]', '没有可以 去重、合并、补充fileName、排序 的项')
     return
   }
-  jsonData.LIST = newList
-  FSsave(jsonData).then(() => {
+  saveHandler(newList).then(() => {
     let message = '保存到本地文件成功'
     !isSame && (message += '\n已重新排序')
     LIST.length != tmp.size && (message += `\n合并文件夹 ${LIST.length - tmp.size} 个`)
@@ -375,6 +381,15 @@ function filterLocalData() {
     message += `\n  现有文件夹 : ${tmp.size}`
     message += `\n  现有文件   : ${count[1]}`
     console.log(setLogColor('green'), '[SUCCESS]', message)
+  })
+}
+
+/**
+ * 将指定项提前到最前
+ */
+function specifyFilter(list) {
+  saveHandler(list).then(() => {
+    console.log(setLogColor('green'), '[SUCCESS]', '保存到本地文件成功')
   })
 }
 
@@ -432,7 +447,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
       if (!list.length) {
         // 当前项执行完后,有出现错误才会停止
         if (IS_ERROR_FINASH && isStop) {
-          console.log(setLogColor('cyan'), '[INFO]', `${index + 1} / ${LIST.length} 有未完成项${noFindNum ? ` 404 file total: ${noFindNum} ;` : ''} \n${path} finsh`)
+          console.log(setLogColor('cyan'), '[INFO]', `${index + 1} / ${LIST.length} 有未完成项${noFindNum ? ` 404 file total: ${noFindNum} / ${LIST[index].list.length};` : ''} \n${path} finsh`)
           return
         }
         console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;`)
@@ -484,5 +499,6 @@ module.exports = {
   filterDataAndLocal,
   filterLocalData,
   setLogColor,
+  specifyFilter,
   downloadFun
 }
