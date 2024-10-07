@@ -4,7 +4,7 @@ const SUFFIX_PATH = ''
 const LOCAL_DATA_PATH = './data.json' // 本地数据地址
 const LOCAL_TMP_DATA_PATH = './data.js' // 本地零时数据地址
 const LOOP_NUM = 25
-const LIMIT_NUM = 200
+const LIMIT_NUM = 300
 const REGEXP_RULER = {
   regImageFileUrl: /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg|webp)/gi, // 图片url
   regImageproxyUrl: /^http(s)?:\/\/imageproxy/, // imageproxy url

@@ -12,6 +12,7 @@ const {
   filterURL,
   downloadHandler,
   downloadHandler2,
+  downloadFunHandler,
   filterDataAndLocal,
   filterLocalData,
   setLogColor,
@@ -78,8 +79,7 @@ if (!isFinite(event)) {
     case 'filterlocalurl': // 过滤 url 未下载的项
       eventHandler = (list, path, param) => {
         list = filterDataAndLocal(list, path)
-        console.log(`download ${path} total: ${list.length}`)
-        switch (param[1]) {
+        switch (param[0]) {
           case '-F':
           case '--filter':
             if (LIST[INDEX].list.length !== list.length) {
@@ -92,10 +92,11 @@ if (!isFinite(event)) {
               }
               specifyFilter(LIST)
             } else {
-                console.log(setLogColor('cyan'), '[INFO]', '无变化')
+              console.log(setLogColor('cyan'), '[INFO]', '无变化')
             }
             break;
           default:
+            if (!list.length) return console.log('is nothing')
             for (let i = 0, len = Math.min(10, list.length); i < len; i++) {
               console.log(list[i])
             }
@@ -147,6 +148,22 @@ if (!isFinite(event)) {
         })
       }
       break
+    case 'downloadLocal':
+      eventHandler = () => {
+        const URLList = getHTML2CL()
+        const title = getTitleHTML2CL()
+        if (!title) {
+          return console.log(setLogColor('red'), '[ERROR] 没有 title')
+        }
+        if (!URLList.length) {
+          return console.log(setLogColor('red'), '[ERROR] 列表为空')
+        }
+        console.log(setLogColor('magenta'), '[INFO]', `${title} total: ${URLList.length}`)
+        downloadFunHandler(URLList, title).then(() => {
+          console.log(setLogColor('green'), '[SUCCESS]', `${title} all finsh;`)
+        })
+      }
+      break
     case 'geturlmt': // 获取 mt url
       eventHandler = () => getURL2MT(MT_LIST[INDEX])
       break
@@ -182,7 +199,7 @@ if (!isFinite(event)) {
       eventHandler = (...params) => {
         let [, , [name, key]] = params
         if (!name) {
-          console.log(setLogColor('red'), '[ERROR] 没有入参')
+          console.log(setLogColor('red'), '[ERROR] name 没有入参')
           return
         }
         const reg = new RegExp(name)
@@ -228,6 +245,7 @@ if (!isFinite(event)) {
         downloadmt: '下载 mt',
         downloadproxy: '',
         downloadreproxy: '',
+        downloadLocal: '下载当前解析项',
         geturlmt: '获取 mt url',
         geturl: '获取 论坛 url',
         geturltw: '获取 mt url'

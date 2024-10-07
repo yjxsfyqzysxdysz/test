@@ -21,6 +21,7 @@ const jsonData = getLocal({
 const { LIST } = jsonData
 
 let isStop = false // stop tag
+const isStopList = []
 let noFindNum = 0 // 404 file count
 
 function downloadFun(url, filePath, option) {
@@ -51,6 +52,45 @@ function downloadFun(url, filePath, option) {
   return download(url, filePath, options)
 }
 
+function downloadFunHandler(list, { path, toast = 0 }) {
+  const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
+  return Promise.allSettled(
+    list.splice(0, LOOP_NUM).map((url, i) => {
+      let filename = undefined
+      // if (regImageproxyUrl.test(url)) {
+      //   filename = decodeURIComponent(url.match(regFileNameEn)[2])
+      // } else if (regFileNameCh.test(url)) {
+      //   filename = decodeURIComponent(url.match(regFileNameCh)[2])
+      // }
+      return downloadFun(url, filePath, { filename }).then(() => {
+          console.log(setLogColor('green'), '[ERROR]', `No.${toast * LOOP_NUM + 1 + i}`)
+        })
+        .catch(err => {
+        if ([404].includes(err.statusCode)) {
+          noFindNum++
+        } else {
+          console.log(setLogColor('red'), '[ERROR]', `No.${toast * LOOP_NUM + 1 + i}`)
+          if (IS_ERROR_FINASH) {
+            isStop = true
+            isStopList.push([`No.${toast * LOOP_NUM + 1 + i}`, err.statusCode || err.code || err, url])
+          }
+        }
+      })
+    })
+  ).then(() => {
+    const param = {
+      len: list.length, // 当前项剩余数
+      isErrorFinash: IS_ERROR_FINASH && isStop, // 失败停止
+      noFindNum: noFindNum, // 404文件数
+      isOnleyOne: IS_ONLEY_ONE, // 只下载1个
+    }
+    if (param.len && (toast * (LOOP_NUM + 1) < LIMIT_NUM)) {
+      return downloadFunHandler(list, { path, toast: ++toast })
+    }
+    return param
+  })
+}
+
 /**
  * 过滤 path
  * @param {String} path
@@ -65,7 +105,7 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(/\.{2,}/g, '.')
     .replace(/-+/g, '-')
-    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|~\s*#]/g, ' ')
+    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|~\s*#<>《》{}]/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
     .replace(/\.+$/, '')
@@ -365,11 +405,12 @@ function filterLocalData() {
   // 排序
   const oldList = Array.from(tmp.values())
   const newList = Array.from(tmp.values()).sort((a, b) => (a.path > b.path ? 1 : -1))
+  newList.forEach(e => e.list.sort())
   const isSame =
     oldList.reduce((res, { path }) => res + path[0], '') === newList.reduce((res, { path }) => res + path[0], '')
   if (LIST.length == tmp.size && count[0] == count[1] && !emptyFileNameCount && isSame) {
     console.log(setLogColor('yellow'), '[WARN]', '没有可以 去重、合并、补充fileName、排序 的项')
-    return
+    // return
   }
   saveHandler(newList).then(() => {
     let message = '保存到本地文件成功'
@@ -403,10 +444,11 @@ function filterDataAndLocal(list = [], path = '') {
 }
 
 // 下载
-function downloadHandler({ list, path, toast = 0, index = 0 }) {
-  if (!list.length) {
+function downloadHandler({ list, path, index = 0 }) {
+  const leng = list.length
+  if (!leng) {
     // 如果是空的则停止
-    console.log(setLogColor('magenta'), '[INFO]', `${index + 1} / ${LIST.length} ${path} total: ${list.length}`)
+    console.log(setLogColor('magenta'), '[INFO]', `${index + 1} / ${LIST.length} ${path} total: ${leng}`)
     if (IS_EMPTY_FINASH) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
     // 跳过空项继续下载
     const newData = LIST[++index]
@@ -415,48 +457,30 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
     console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
     return downloadHandler({ list: downloadList, path: newData.path, index })
   }
-  const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
-  const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
-  console.time(`[DOWNLOAD] ${message}`)
-  return Promise.allSettled(
-    list.splice(0, LOOP_NUM).map((url, i) => {
-      let filename = undefined
-      // if (regImageproxyUrl.test(url)) {
-      //   filename = decodeURIComponent(url.match(regFileNameEn)[2])
-      // } else if (regFileNameCh.test(url)) {
-      //   filename = decodeURIComponent(url.match(regFileNameCh)[2])
-      // }
-      return downloadFun(url, filePath, { filename })
-        .then(() => {
-          console.log(`SUCCESS No.${toast * LOOP_NUM + 1 + i}`)
+  return downloadFunHandler(list, { path })
+    .then(({ len, isErrorFinash, noFindNum, isOnleyOne }) => {
+      console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;`)
+      if (noFindNum) {
+        console.log(setLogColor('yellow'), `404 file count: ${noFindNum} / ${leng}`)
+      }
+      if (isErrorFinash) {
+        isStopList.forEach(e => {
+          console.log(setLogColor('red'), '[ERROR]', ...e)
         })
-        .catch(err => {
-          if ([404].includes(err.statusCode)) {
-            noFindNum++
-          } else {
-            console.log(setLogColor('red'), '[ERROR]', err.statusCode || err.code || err, url)
-            if (IS_ERROR_FINASH) {
-              isStop = true
-            }
-          }
-        })
-    })
-  )
-    .then(() => {
-      console.timeEnd(`[DOWNLOAD] ${message}`)
-      if (!list.length) {
-        // 当前项执行完后,有出现错误才会停止
-        if (IS_ERROR_FINASH && isStop) {
-          console.log(setLogColor('cyan'), '[INFO]', `${index + 1} / ${LIST.length} 有未完成项${noFindNum ? ` 404 file total: ${noFindNum} / ${LIST[index].list.length};` : ''} \n${path} finsh`)
-          return
-        }
-        console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;`)
+        let message = `${index + 1} / ${LIST.length} 有未完成项`
         if (noFindNum) {
-          console.log(setLogColor('yellow'), `404 file count: ${noFindNum} / ${LIST[index].list.length}`)
+          message += `\n404 file total: ${noFindNum} / ${leng};`
         }
+        if (isErrorFinash) {
+          message += `\nerror file total: ${isStopList.length} / ${leng};`
+        }
+        message += `\n${path} finsh`
+        return console.log(setLogColor('cyan'), '[INFO]', message)
+      }
+      if (isOnleyOne) return
+      if (!len) {
         let newData = LIST[++index]
         if (newData && newData.list && newData.list.length) {
-          if (IS_ONLEY_ONE) return
           noFindNum = 0
           const downloadList = filterDataAndLocal(newData.list, newData.path)
           console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
@@ -464,10 +488,7 @@ function downloadHandler({ list, path, toast = 0, index = 0 }) {
         } else {
           console.log(setLogColor('magenta'), '[ERROR]', 'all clear')
         }
-        return
       }
-      if ((toast + 1) * LOOP_NUM >= LIMIT_NUM) return Promise.resolve()
-      downloadHandler({ list, path, toast: ++toast, index })
     })
     .catch(() => {
       console.log(setLogColor('red'), '[ERROR]', index + 1, ' / ', LIST.length, path)
@@ -496,6 +517,7 @@ module.exports = {
   filterURL,
   downloadHandler,
   downloadHandler2,
+  downloadFunHandler,
   filterDataAndLocal,
   filterLocalData,
   setLogColor,
