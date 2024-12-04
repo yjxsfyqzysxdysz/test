@@ -16,7 +16,8 @@ const {
   filterDataAndLocal,
   filterLocalData,
   setLogColor,
-  specifyFilter
+  specifyFilter,
+  getFullResData,
 } = require('./utils')
 const { LIST, MT_LIST } = getLocal({ path: _path.resolve(LOCAL_DATA_PATH), defineData: { LIST: [], MT_LIST: [] }})
 
@@ -52,6 +53,11 @@ if (!isFinite(event)) {
         const list = getURL2MT({ fileName, lastPath, num })
         list.length && saveLocal({ path: fileName, list, index: INDEX })
         return list
+      }
+      break
+    case 'savejpsft': // 将 jpsft 获取的 url 保存到本地文件
+      eventHandler = (list, path, param) => {
+        param.length && getFullResData(param)
       }
       break
     case 'filter': // 对 data.json 的数据进行 合并、去重、排序 处理
@@ -107,7 +113,7 @@ if (!isFinite(event)) {
     case 'download': // 现在 data 中本地未下载的项
       eventHandler = (list, path) => {
         list = filterDataAndLocal(list, path)
-        console.log(`download ${path} total: ${list.length}`)
+        // console.log(`download ${path} total: ${list.length}`)
         downloadHandler({ list, path, index: INDEX })
       }
       break

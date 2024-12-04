@@ -1,6 +1,7 @@
 const fs = require('fs')
 const _path = require('path')
 const download = require('download')
+const axios = require('axios')
 
 const {
   ROOT_PATH, PREFIX_PATH, SUFFIX_PATH,
@@ -8,7 +9,7 @@ const {
   LOOP_NUM, LIMIT_NUM,
   MEITU_PATH, MEITU_MIDPATH,
   IS_ONLEY_ONE, IS_ERROR_FINASH, IS_GIF, IS_EMPTY_FINASH,
-  REGEXP_RULER, DEFINE_URL,
+  REGEXP_RULER, IGNORE_URL,
   LOG_COLOR
 } = require('./config')
 const jsonData = getLocal({
@@ -60,7 +61,11 @@ function downloadFunHandler(list, { path, toast = 0 }) {
       // if (regImageproxyUrl.test(url)) {
       //   filename = decodeURIComponent(url.match(regFileNameEn)[2])
       // } else if (regFileNameCh.test(url)) {
-      //   filename = decodeURIComponent(url.match(regFileNameCh)[2])
+      //   filename = decodeURIComponent(url.match(REGEXP_RULER.regFileNameCh)[2])
+      if (decodeURIComponent((url.match(REGEXP_RULER.regFileNameCh)||[])[2]) === '0.jpg') {
+        const nameList = url.replace(/^https?:\/\//, '').split('/')
+        filename = nameList.at(-2) + nameList.at(-1)
+      }
       // }
       return downloadFun(url, filePath, { filename }).then(() => {
           console.log(setLogColor('green'), '[ERROR]', `No.${toast * LOOP_NUM + 1 + i}`)
@@ -103,12 +108,12 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regRightRoundBrackets, ')')
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
-    .replace(/\.{2,}/g, '.')
-    .replace(/-+/g, '-')
-    .replace(/&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|~\s*#<>《》{}]/g, ' ')
-    .replace(/\s{2,}/g, ' ')
+    .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
-    .replace(/\.+$/, '')
+    .replace(REGEXP_RULER.regHanList, '$1$2')
+    .replace(REGEXP_RULER.regNumber, '')
+    .replace(/(\.|\s){2,}/g, '$1')
+    .replace(/[a-z]+(\.[a-z]+)+/i, '')
     .trim()
 }
 
@@ -185,9 +190,9 @@ function FSsearchDir(path, status = false) {
  * 数据保存到本地
  * @returns Promise
  */
-function FSsave(data = jsonData) {
+function FSsave(data = jsonData, path = LOCAL_DATA_PATH) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(LOCAL_DATA_PATH, JSON.stringify(data, null, 2), err => {
+    fs.writeFile(path, JSON.stringify(data, null, 2), err => {
       if (err) {
         console.log(setLogColor('red'), '[ERROR]', '保存到本地文件失败', err)
         reject(err)
@@ -228,7 +233,7 @@ function getTitleHTML2CL() {
  */
 function getHTML2CL() {
   const html = FSRead()
-  const filterURLs = html.match(/ess-data="([\u4e00-\u9f5a0-9a-z:;?=/._\-–\\%~&\s]+)"/gi)
+  const filterURLs = html.match(/ess-data="([\u4e00-\u9fff0-9a-z:;?=/._\-–\\%~&\s!]+)"/gi)
   let message = '没有过滤出 URL'
   if (filterURLs) {
     const list = [
@@ -241,7 +246,7 @@ function getHTML2CL() {
               .replace(REGEXP_RULER.regANDSymbol, '&')
               .replace(REGEXP_RULER.regSpaces, '%20')
           )
-          .filter(e => (IS_GIF ? true : !/\.gif$/i.test(e)) && !DEFINE_URL.includes(e))
+          .filter(e => (IS_GIF ? true : !/\.gif$/i.test(e)) && !IGNORE_URL.includes(e))
       )
     ]
     if (list.length) {
@@ -367,7 +372,7 @@ function filterURL({ list = [], localList = [] }) {
   return [...list.filter(e => {
     return !localList.some(f => {
       // return e.includes('/' + f) || e.includes('/' + f.replace(REGEXP_RULER.regDash, '_'))
-      return new RegExp(`/${f}(.[a-z]+)?$`, 'i').test(e)
+      return new RegExp(`/${f}(.[a-z]+)?$`, 'i').test(e) || e.replace(/\/([a-z0-9.\-_]+)$/i, '$1').endsWith(f)
     })
   })]
 }
@@ -452,14 +457,14 @@ function downloadHandler({ list, path, index = 0 }) {
     if (IS_EMPTY_FINASH) return console.log(setLogColor('yellow'), '[WARN]', 'the list is empty')
     // 跳过空项继续下载
     const newData = LIST[++index]
-    if (!newData) return console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;${noFindNum ? ` 404 file total: ${noFindNum} ;` : ''}`)
+    if (!newData) return console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh${noFindNum ? ` 404 file total: ${noFindNum}` : ''}`)
     const downloadList = filterDataAndLocal(newData.list, newData.path)
     console.log(`download ${index + 1} / ${LIST.length} ${newData.path} total: ${downloadList.length}`)
     return downloadHandler({ list: downloadList, path: newData.path, index })
   }
   return downloadFunHandler(list, { path })
     .then(({ len, isErrorFinash, noFindNum, isOnleyOne }) => {
-      console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh;`)
+      console.log(setLogColor('green'), '[SUCCESS]', `${path} all finsh`)
       if (noFindNum) {
         console.log(setLogColor('yellow'), `404 file count: ${noFindNum} / ${leng}`)
       }
@@ -469,10 +474,10 @@ function downloadHandler({ list, path, index = 0 }) {
         })
         let message = `${index + 1} / ${LIST.length} 有未完成项`
         if (noFindNum) {
-          message += `\n404 file total: ${noFindNum} / ${leng};`
+          message += `\n404 file total: ${noFindNum} / ${leng}`
         }
         if (isErrorFinash) {
-          message += `\nerror file total: ${isStopList.length} / ${leng};`
+          message += `\nerror file total: ${isStopList.length} / ${leng}`
         }
         message += `\n${path} finsh`
         return console.log(setLogColor('cyan'), '[INFO]', message)
@@ -504,6 +509,76 @@ function downloadHandler2(data, index = 0) {
   downloadHandler({ list, path: pathItem, index })
 }
 
+/**
+ * 根据 url 自动解析当前系列 页面的 图片
+ * @param {Array} data
+ * @param {String} data[0] URL
+ * TODO 暂时仅支持 http://www.jpsft.com
+ */
+function getFullResData(data) {
+  let [url] = data
+  url = url.replace(/\s?/g, '')
+  if (!(/^https?:[/]{2}/.test(url))) return console.log(setLogColor('red'), '[ERROR] 不是 http 开头')
+  const index = url.lastIndexOf('/')
+  if (!~index) return console.log(setLogColor('red'), '[ERROR] 查找从右往左第一个\'/\'异常, 请检视code')
+  const baseURL = url.slice(0, index + 1)
+  const htmlURL = url.slice(index + 1)
+  let resData = ''
+  let cookieNum = 0
+  const instance = axios.create({
+    baseURL: baseURL,
+    timeout: 1000,
+    headers: {
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      'Accept-Encoding': 'gzip, deflate, br',
+      Pragma: 'no-cache',
+    },
+    responseType: 'arraybuffer',
+    responseEcoding: 'utf',
+  })
+  const utf8decoder = new TextDecoder('GBK') // html 默认为 gbk 格式,若直接使用utf8解析会有乱码
+  // 请求当前页面
+  return instance
+    .get(htmlURL, { headers: { cookie: `visits=${++cookieNum}; totalpv=${cookieNum}` } })
+    .then(async res => {
+      const html = utf8decoder.decode(res.data)
+      resData += html
+      // 解析后续页面
+      const tmp = (html.match(/<div class="pagelist">[\w\u4e00-\u9fff<>= '\/&;,.!#]+/g) || [''])[0].matchAll(/href='([\d_\.html]+)'/g)
+      const tmp2 = [...new Set([...tmp].map(item => item[1]))]
+      const reqList = []
+      // 请求过快会触发服务器保护
+      for (const path of tmp2) {
+        await new Promise(resolve => setTimeout(resolve, 50))
+        reqList.push(instance.get(path, { headers: { cookie: `visits=${++cookieNum}; totalpv=${cookieNum}` } }).catch(err => {console.log(path, err.code)}))
+      }
+      return Promise.all(reqList)
+    })
+    .then(list => {
+      list.forEach(res => {
+        if (!res) return
+        const html = utf8decoder.decode(res.data)
+        resData += html
+      })
+    })
+    .then(() => {
+      if (!resData) return console.log(setLogColor('red'), '[ERROR] resData 没有暂存到 html 数据')
+      const list = [...(resData.matchAll(/<img src="([a-z0-9:\/\._-]+)"/g) || [])].map(path => path[1])
+      const path = filterPath(resData.match(/<title>([0-9a-z-._()#~·\[\]%\u4e00-\u9fff\s]+)<\/title>/i)?.[1] || '')
+      if (!list.length) {
+        return console.log(setLogColor('red'), '[ERROR] 没有 list')
+      } else if (!path) {
+        return console.log(setLogColor('red'), '[ERROR] 没有 title')
+      }
+      saveLocal({ path, list})
+    })
+    .catch(error => {
+      console.log(error)
+    })
+}
+
 module.exports = {
   log,
   FSsearchDir,
@@ -522,5 +597,6 @@ module.exports = {
   filterLocalData,
   setLogColor,
   specifyFilter,
-  downloadFun
+  downloadFun,
+  getFullResData,
 }
