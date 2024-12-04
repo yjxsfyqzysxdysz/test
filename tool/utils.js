@@ -101,7 +101,7 @@ function downloadFunHandler(list, { path, toast = 0 }) {
  * @param {String} path
  */
 const filterPath = path => {
-  return path
+  return ` ${path} `
     .replace(REGEXP_RULER.regDash, '-')
     .replace(/[/\\]/g, '_')
     .replace(REGEXP_RULER.regLeftRoundBrackets, '(')
@@ -110,7 +110,7 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
-    .replace(REGEXP_RULER.regHanList, '$1$2')
+    .replace(REGEXP_RULER.regHanList, '$1$3')
     .replace(REGEXP_RULER.regNumber, '')
     .replace(/(\.|\s){2,}/g, '$1')
     .replace(/[a-z]+(\.[a-z]+)+/i, '')
@@ -515,7 +515,16 @@ function downloadHandler2(data, index = 0) {
  * @param {String} data[0] URL
  * TODO 暂时仅支持 http://www.jpsft.com
  */
-function getFullResData(data) {
+async function getFullResData(data) {
+  // 支持从 data.js 获取 url list
+  if (Array.isArray(data) && !data.length) {
+    const localData = FSRead('./data.js').replace(/(\n|\r)+/, '\n').split('\n')
+    console.log('localData', localData.length)
+    for (const url of localData) {
+      await getFullResData([url])
+    }
+    return
+  }
   let [url] = data
   url = url.replace(/\s?/g, '')
   if (!(/^https?:[/]{2}/.test(url))) return console.log(setLogColor('red'), '[ERROR] 不是 http 开头')
@@ -534,9 +543,11 @@ function getFullResData(data) {
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
       'Accept-Encoding': 'gzip, deflate, br',
       Pragma: 'no-cache',
+      'upgrade-insecure-requests': 1
     },
     responseType: 'arraybuffer',
     responseEcoding: 'utf',
+    timeout: 30 * 1e3,
   })
   const utf8decoder = new TextDecoder('GBK') // html 默认为 gbk 格式,若直接使用utf8解析会有乱码
   // 请求当前页面
@@ -546,12 +557,13 @@ function getFullResData(data) {
       const html = utf8decoder.decode(res.data)
       resData += html
       // 解析后续页面
-      const tmp = (html.match(/<div class="pagelist">[\w\u4e00-\u9fff<>= '\/&;,.!#]+/g) || [''])[0].matchAll(/href='([\d_\.html]+)'/g)
-      const tmp2 = [...new Set([...tmp].map(item => item[1]))]
+      const tmp = [...(html.match(/<div class=["']pagelist["']>[\w\u4e00-\u9fff<>= '"\/&;,.!#]+/g) || [''])[0].matchAll(/href='([\d_\.html]+)'/g)]
+      const pathList = [...new Set(tmp.map(item => item[1]))]
       const reqList = []
+      console.log('pathList', `${htmlURL} 共 ${pathList.length + 1} 页`)
       // 请求过快会触发服务器保护
-      for (const path of tmp2) {
-        await new Promise(resolve => setTimeout(resolve, 50))
+      for (const path of pathList) {
+        await new Promise(resolve => setTimeout(resolve, 100))
         reqList.push(instance.get(path, { headers: { cookie: `visits=${++cookieNum}; totalpv=${cookieNum}` } }).catch(err => {console.log(path, err.code)}))
       }
       return Promise.all(reqList)
@@ -565,17 +577,16 @@ function getFullResData(data) {
     })
     .then(() => {
       if (!resData) return console.log(setLogColor('red'), '[ERROR] resData 没有暂存到 html 数据')
-      const list = [...(resData.matchAll(/<img src="([a-z0-9:\/\._-]+)"/g) || [])].map(path => path[1])
-      const path = filterPath(resData.match(/<title>([0-9a-z-._()#~·\[\]%\u4e00-\u9fff\s]+)<\/title>/i)?.[1] || '')
-      if (!list.length) {
-        return console.log(setLogColor('red'), '[ERROR] 没有 list')
-      } else if (!path) {
-        return console.log(setLogColor('red'), '[ERROR] 没有 title')
+      const list = [...(resData.matchAll(/<img src=["']([a-z0-9:\/\._-]+)["']/g) || [])].map(path => path[1])
+      const path = filterPath(resData.match(/<title>([0-9a-z-._()#~·\[\]%《》｜\|\u4e00-\u9fff\s]+)<\/title>/i)?.[1] || '')
+      if (!list.length || !path) {
+        fs.writeFileSync('./data.js', resData) // 问题回溯
+        return console.log(setLogColor('red'), `[ERROR] 没有 ${!list.length ? 'list' : 'title'}`)
       }
       saveLocal({ path, list})
     })
     .catch(error => {
-      console.log(error)
+      console.log('error', error)
     })
 }
 

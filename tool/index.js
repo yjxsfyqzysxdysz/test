@@ -57,7 +57,7 @@ if (!isFinite(event)) {
       break
     case 'savejpsft': // 将 jpsft 获取的 url 保存到本地文件
       eventHandler = (list, path, param) => {
-        param.length && getFullResData(param)
+        getFullResData(param)
       }
       break
     case 'filter': // 对 data.json 的数据进行 合并、去重、排序 处理
