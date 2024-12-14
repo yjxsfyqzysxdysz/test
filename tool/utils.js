@@ -104,16 +104,16 @@ const filterPath = path => {
   return ` ${path} `
     .replace(REGEXP_RULER.regDash, '-')
     .replace(/[/\\]/g, '_')
+    .replace(/[a-z]+(\.[a-z]+)+/i, '')
     .replace(REGEXP_RULER.regLeftRoundBrackets, '(')
     .replace(REGEXP_RULER.regRightRoundBrackets, ')')
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
-    .replace(REGEXP_RULER.regHanList, '$1$3')
     .replace(REGEXP_RULER.regNumber, '')
+    .replace(REGEXP_RULER.regHanList, ' ')
     .replace(/(\.|\s){2,}/g, '$1')
-    .replace(/[a-z]+(\.[a-z]+)+/i, '')
     .trim()
 }
 
@@ -578,9 +578,11 @@ async function getFullResData(data) {
     .then(() => {
       if (!resData) return console.log(setLogColor('red'), '[ERROR] resData 没有暂存到 html 数据')
       const list = [...(resData.matchAll(/<img src=["']([a-z0-9:\/\._-]+)["']/g) || [])].map(path => path[1])
-      const path = filterPath(resData.match(/<title>([0-9a-z-._()#~·\[\]%《》｜\|\u4e00-\u9fff\s]+)<\/title>/i)?.[1] || '')
+      const path = filterPath(resData.match(/<title>([0-9a-z-._()#~·@\[\]%《》\\/｜\|\u4e00-\u9fff\s+]+)<\/title>/i)?.[1] || '')
       if (!list.length || !path) {
-        fs.writeFileSync('./data.js', resData) // 问题回溯
+        const limitData = '\n' + ('*'.repeat(70) + '\n').repeat(3)
+        const message = limitData + htmlURL + '\n' + resData +  limitData
+        fs.appendFileSync('./data.js', message)
         return console.log(setLogColor('red'), `[ERROR] 没有 ${!list.length ? 'list' : 'title'}`)
       }
       saveLocal({ path, list})
