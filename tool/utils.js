@@ -54,6 +54,10 @@ function downloadFun(url, filePath, option) {
 }
 
 function downloadFunHandler(list, { path, toast = 0 }) {
+  // 如果根文件夹不存在则创建
+  if (!FSExistsSync(ROOT_PATH)) {
+    FSMkdirSync(ROOT_PATH)
+  }
   const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
   return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {
@@ -154,6 +158,15 @@ function FSRead(path = LOCAL_TMP_DATA_PATH) {
 }
 
 /**
+ * 同步创建文件夹
+ * @param {String} path
+ * @description recursive: true 递归添加
+ */
+function FSMkdirSync(path) {
+  fs.mkdirSync(path, { recursive: true })
+}
+
+/**
  * 获取详细文件名,回调返回文件名及路径
  * @param {String} path 路径
  * @param {Boolean} status 是否创建文件夹
@@ -178,7 +191,7 @@ function FSsearchDir(path, status = false) {
       if (status) {
         return []
       }
-      fs.mkdirSync(add)
+      FSMkdirSync(add)
     }
   }
   const files = fs.readdirSync(add)
@@ -594,6 +607,7 @@ async function getFullResData(data) {
 
 module.exports = {
   log,
+  FSMkdirSync,
   FSsearchDir,
   FSRead,
   getTitleHTML2CL,

@@ -90,7 +90,7 @@ const REGEXP_RULER = {
   regDash: /[-–]/g, // 破折号
   regUnderline: /_/g, // 下划线
   regANDSymbol: /&amp;/g, // &
-  regSymbol: /&amp;|&nbsp;|[，，,。“”'"‘’？?!！～：:、；+;|｜~\@s*#<>《》{}_-]/g, // 符号
+  regSymbol: /&amp;|&nbsp;|[，，,。“”'"‘’？?!！丶～：:、；+;|｜~\@s*#<>《》{}_-]/g, // 符号
   regLeftRoundBrackets: /[（（]/g, // 左圆括号
   regRightRoundBrackets: /[））]/g, // 右圆括号
   regLeftSquareBrackets: /[［【]/g, // 左方括号
