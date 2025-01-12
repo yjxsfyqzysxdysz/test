@@ -61,8 +61,8 @@ if (!isFinite(event)) {
       }
       break
     case 'filter': // 对 data.json 的数据进行 合并、去重、排序 处理
-      eventHandler = () => {
-        filterLocalData()
+      eventHandler = (...param) => {
+        filterLocalData(param[2][0])
       }
       break
     case 'filterurl': // 过滤 url 与 本地 url

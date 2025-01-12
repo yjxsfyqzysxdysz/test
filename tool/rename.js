@@ -20,40 +20,56 @@ function walk() {
   })
   console.log(`files number is ${files.length}\ndirectory number is ${directory.length}\n---------------------------------------`)
   if (files.length) {
-    // renameFile(files)
+    renameFile(files)
   }
   if (directory.length) {
-    // renameDirectory(directory)
+    renameDirectory(directory)
   }
 }
 
 /*
  *   修改文件名称
- *   oldPath: 原文件路径
- *   newPath：新文件路径
+ *   oldName: 原文件名
+ *   newName: 新文件名
+ *   path: 公共地址
  */
-function rename(oldPath, newPath) {
+function rename(oldName, newName, path = '') {
+  const oldPath = path ? `${path}/${oldName}` : oldName
+  const newPath = path ? `${path}/${newName}` : newName
   if (oldPath === newPath) throw `${oldPath}: old name and new name is same`
+  // return console.log(oldName, '\n', newName)
   fs.rename(oldPath, newPath, function (err) {
     if (err) {
       throw err
+    } else {
+      console.log(`${newName.replace(/^.*(\d{3}\w+)/, '$1')} is success`)
     }
   })
 }
 
 function renameFile(list) {
-  list.forEach((e, i, arr) => {
-    let newName = e.replace(/(\.(png))?$/i, '.jpg')
-    if (arr.includes(newName)) {
-      newName = newName.replace(
-        /(\.jpg)$/i,
-        Math.trunc(Math.random() * 1e3)
-          .toString()
-          .padStart(3, '0') + '$1'
-      )
+  const obj = { size: 0 }
+  // 过滤
+  list.forEach(e => {
+    const [_, name, suffix] = e.match(/^(.*)\.(png|jpg|jpeg)$/)
+    const str = (name.match(/^\d+/g) || name.match(/\(?\d+\)?$/g) || ['0'])[0].replace(/[()]/g, '').replace('[懒惰搬运工]美腿如林，多图杀猫[129P] - 2024-07-15T050936.', '')
+    if (!obj[str]) {
+      obj[str] = []
+      obj.size++
     }
-    rename(`${PATH}/${e}`, `${PATH}/${newName}`)
+    obj[str].push({ name, suffix: suffix.toLocaleLowerCase() })
   })
+
+  // 去重
+  if (obj.size !== list.length) {}
+  // TODO 排序
+  // console.log(obj)
+  // 执行
+  for (const key in obj) {
+    if (key === 'size') continue
+    const [{ name, suffix }] = obj[key]
+    rename(`${name}.${suffix}`, `${key.padStart(3, '0')}.${suffix}`, PATH)
+  }
 }
 
 function renameDirectory(list) {

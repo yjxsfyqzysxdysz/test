@@ -7,7 +7,7 @@ const html = FSRead(LOCAL_TMP_DATA_PATH)
 function walk(path) {
   path = path.replace(REGEXP_RULER.regDash, '_')
   // 同步读取文件
-  const add = `${ROOT_PATH}${path}${SUFFIX_PATH}`
+  const add = `${ROOT_PATH}/${path}${SUFFIX_PATH}`
   if (!fs.existsSync(add)) {
     fs.mkdirSync(add)
   }

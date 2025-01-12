@@ -68,17 +68,6 @@ const IGNORE_URL = [
   'https://66img.cc/i/2024/11/12/673303736422c.jpg',
 ]
 
-const IGNORE_HAN = [
-  '作品', '私房', '精摄', '魅魔', '风情', '着迷', '着迷密拍', '风骚', '性感美女', '诱惑写真', '半脱',
-  '第\\s?\\d+\\s?页',
-  '[\\u4e00-\\u9fff]{1,6}图',
-  '重[\\u4e00-\\u9fff]',
-  '私[摄拍][\\u4e00-\\u9fff]{2}',
-  '[\\u4e00-\\u9fff]{0,2}模特',
-  '迷[\\u4e00-\\u9fff]{1,4}',
-  '[\\u4e00-\\u9fff]{1,2}色'
-]
-
 const REGEXP_RULER = {
   regImageFileUrl: /http(s)?:\/{2}[\d\w%/.-]+\.(jpg|png|jpeg|webp)/gi, // 图片url
   regImageproxyUrl: /^http(s)?:\/\/imageproxy/, // imageproxy url
@@ -90,14 +79,15 @@ const REGEXP_RULER = {
   regDash: /[-–]/g, // 破折号
   regUnderline: /_/g, // 下划线
   regANDSymbol: /&amp;/g, // &
-  regSymbol: /&amp;|&nbsp;|[，，,。“”'"‘’？?!！丶～：:、；+;|｜~\@s*#<>《》{}_-]/g, // 符号
+  regSymbol: /&amp;|&nbsp;|[，，,。“”'"‘’？?!！丶、～~：:；;+|｜\\/@&＆$%^…￥*#<>《》{}_·\-–—]/g, // 符号
   regLeftRoundBrackets: /[（（]/g, // 左圆括号
+  regRoundBrackets: /[（）（）]/g,
   regRightRoundBrackets: /[））]/g, // 右圆括号
   regLeftSquareBrackets: /[［【]/g, // 左方括号
   regRightSquareBrackets: /[】］]/g, // 右方括号
+  regSquareBrackets: /[\[\]［］【】]/g,
   regSpaces: /\s/g, // 空格
-  regNumber: /\[?([pvgif]+\d+|\d+[pvgif]+)\]?/gi, // 页数
-  regHanList: new RegExp(`\\s(${IGNORE_HAN.join('|')})+\\s`, 'gi'), // 清除 IGNORE_HAN 中独立的项
+  regNumber: /((p|v|gif)+\.?\d+|\d+(p|v|gif)+)/gi, // 页数
 }
 
 module.exports = {

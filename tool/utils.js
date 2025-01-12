@@ -12,6 +12,22 @@ const {
   REGEXP_RULER, IGNORE_URL,
   LOG_COLOR
 } = require('./config')
+const configBrand = require('./configBrand')
+const configPersion = require('./configPersion')
+const configIngore = require('./configIngore')
+
+const configPersionMap = new Map()
+
+configPersion.forEach(e => {
+  if (Array.isArray(e)) {
+    e.forEach(f => {
+      configPersionMap.set(f, e[0])
+    })
+  } else {
+    configPersionMap.set(e, e)
+  }
+})
+
 const jsonData = getLocal({
   path: LOCAL_DATA_PATH,
   defineData: {
@@ -58,7 +74,7 @@ function downloadFunHandler(list, { path, toast = 0 }) {
   if (!FSExistsSync(ROOT_PATH)) {
     FSMkdirSync(ROOT_PATH)
   }
-  const filePath = `${ROOT_PATH}${filterPath(path + SUFFIX_PATH)}`.trim()
+  const filePath = `${ROOT_PATH}/${filterPath(path + SUFFIX_PATH)}`.trim()
   return Promise.allSettled(
     list.splice(0, LOOP_NUM).map((url, i) => {
       let filename = undefined
@@ -106,8 +122,6 @@ function downloadFunHandler(list, { path, toast = 0 }) {
  */
 const filterPath = path => {
   return ` ${path} `
-    .replace(REGEXP_RULER.regDash, '-')
-    .replace(/[/\\]/g, '_')
     .replace(/[a-z]+(\.[a-z]+)+/i, '')
     .replace(REGEXP_RULER.regLeftRoundBrackets, '(')
     .replace(REGEXP_RULER.regRightRoundBrackets, ')')
@@ -116,9 +130,106 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
     .replace(REGEXP_RULER.regNumber, '')
-    .replace(REGEXP_RULER.regHanList, ' ')
     .replace(/(\.|\s){2,}/g, '$1')
     .trim()
+}
+
+const filterPath2 = path => {
+  let title = '' // tag
+  let number = '' // 编号
+  let persion = new Set() // 人员
+  let time = '' // 日期
+  let lvpai = '' // 旅拍
+  let theme = '' // 主题
+  let mode = '' // 角色
+  let uniform = '' // 制服/服饰
+  let color = '' // 颜色
+
+  let str = ` ${path} `
+    .replace(REGEXP_RULER.regSymbol, ' ')
+    .replace(REGEXP_RULER.regRoundBrackets, ' ')
+    .replace(REGEXP_RULER.regSquareBrackets, ' ')
+    .replace(REGEXP_RULER.regEmoji, '')
+    .replace(/[a-z]+(\.[a-z]+)+/i, '')
+    .replace(/(p|v|gif)\.?\d+|\d+(p|v|gif)|第\s?\d+\s?页/ig, '')
+
+    .replace(/玩拍/g, '旅拍')
+    .replace(/(主题|旅拍)/g, '$1 ')
+
+    .replace(/第(\d+)期|第(\d+)|(\d+)期|vol\.?(\d+)|no\.?(\d+)/gi, (...ret) => ` No.${(ret[1] || ret[2] || ret[3] || ret[4] || ret[5]).padStart(3, '0')} `)
+
+    .replace(/y?(\d{2,4})[ .](\d{1,2})[ .](\d{1,2})/ig, (...ret) => {
+      const [_, y,m,d] = ret
+      return ` ${y.padStart(4, '20')}.${m.padStart(2, '0')}.${d.padStart(2, '0')} `
+    })
+
+  str = str
+    .replace(new RegExp(`(${[...configPersionMap.keys()].join('|')})`, 'ig'), ret => {
+      return configPersionMap.get(ret)
+    })
+    .replace(/No\.\d+/ig, val => {
+      number = val
+      return ''
+    })
+    .replace(/\d{4}(\.\d{2}){2}/, val => {
+      time = val
+      return ''
+    })
+    .replace(new RegExp([...new Set([...configPersionMap.values()])].join('|'), 'gi'), val => {
+      persion.add(val)
+      return ''
+    })
+    .replace(/[\u4e00-\u9fff]+(主题|场景|情景)/g, val => {
+      theme = val
+      return ' '
+    })
+    .replace(/[\u4e00-\u9fff]+旅拍/g, val => {
+      lvpai = val
+      return ' '
+    })
+    .replace(/[a-z\u4e00-\u9fff]+(角色|扮演)/ig, val => {
+      if (val !== '角色扮演') {
+        val = val.replace(/(扮演)+/, '角色').replace(/(角色)+/, '角色')
+      }
+      mode = val
+      return ' '
+    })
+    .replace(/[a-z\u4e00-\u9fff]+色\s|[a-z\u4e00-\u9fff]+色$/ig, val => {
+      if (/桃色/.test(val)) return val
+      color = val.replace(/魅魔|魅力|性感|妩媚|露|诱人/g, '').trim()
+      return ' '
+    })
+    .replace(/[a-z\u4e00-\u9fff]+(制服|服饰)\s|[a-z\u4e00-\u9fff]+(制服|服饰)$/ig, val => {
+      uniform = val.trim()
+      return ' '
+    })
+
+  configIngore.forEach(e => {
+    str = str.replace(new RegExp(e, 'ig'), ' ')
+  })
+
+  configBrand.forEach(({ reg, res }) => {
+    str = str.replace(reg, () => {
+      title = res
+      return ' '
+    })
+  })
+
+  str = [...new Set(str.replace(/\s+/g, ' ').trim().split(' '))].join(' ')
+
+  const res = []
+  if (title) res.push(`[${title}]`)
+  if (number) res.push(number)
+  if (persion.size) res.push(...persion)
+  if (time) res.push(time)
+  if (lvpai) res.push(lvpai)
+  if (theme) res.push(theme)
+  if (mode) res.push(mode)
+  if (uniform) res.push(uniform)
+  if (color) res.push(color)
+  if (str) res.push(str)
+
+  return res.join(' ')
 }
 
 /**
@@ -184,9 +295,9 @@ function FSsearchDir(path, status = false) {
   }
   path = filterPath(path)
   // 同步读取文件
-  let add = `${ROOT_PATH}${path}${SUFFIX_PATH}`
+  let add = `${ROOT_PATH}/${path}${SUFFIX_PATH}`
   if (!FSExistsSync(add)) {
-    add = `${ROOT_PATH}${path}`.trim()
+    add = `${ROOT_PATH}/${path}`.trim()
     if (!FSExistsSync(add)) {
       if (status) {
         return []
@@ -394,12 +505,13 @@ function filterURL({ list = [], localList = [] }) {
  * 整理本地数据
  * @description 去重，合并，补充 fileName
  */
-function filterLocalData() {
+function filterLocalData(type) {
   const tmp = new Map()
   let count = [0, 0] // 去重前, 去重后
   let emptyFileNameCount = 0 // 空文件名
   LIST.forEach(({ path, list }) => {
     // 补充 fileName
+    path = type ? filterPath2(path) : filterPath(path)
     if (!path) {
       path = '新建文件夹' + Date.now() + Math.trunc(Math.random() * 1e3)
       emptyFileNameCount++
@@ -526,15 +638,21 @@ function downloadHandler2(data, index = 0) {
  * 根据 url 自动解析当前系列 页面的 图片
  * @param {Array} data
  * @param {String} data[0] URL
+ * @param {Boolean} options.isDeep 自动获取下一页数据
+ * @param {Boolean} options.isFilter 自动检测是否加载
  * TODO 暂时仅支持 http://www.jpsft.com
  */
-async function getFullResData(data) {
+async function getFullResData(data, options = {}) {
+  const { isDeep = true, isFilter = false } = options
   // 支持从 data.js 获取 url list
   if (Array.isArray(data) && !data.length) {
     const localData = FSRead('./data.js').replace(/(\n|\r)+/, '\n').split('\n')
     console.log('localData', localData.length)
     for (const url of localData) {
-      await getFullResData([url])
+      if (url && !(/^[\/]{2}/.test(url))) {
+        console.log(setLogColor('yellow'), `url ${url}`)
+        await getFullResData([url], { isDeep: false })
+      }
     }
     return
   }
@@ -544,9 +662,12 @@ async function getFullResData(data) {
   const index = url.lastIndexOf('/')
   if (!~index) return console.log(setLogColor('red'), '[ERROR] 查找从右往左第一个\'/\'异常, 请检视code')
   const baseURL = url.slice(0, index + 1)
+  const originURL = new URL(url).origin
   const htmlURL = url.slice(index + 1)
+  const LOG_LIMIT = `// ${'='.repeat(100)}\n`
   let resData = ''
   let cookieNum = 0
+  let isList = true
   const instance = axios.create({
     baseURL: baseURL,
     timeout: 1000,
@@ -569,16 +690,36 @@ async function getFullResData(data) {
     .then(async res => {
       const html = utf8decoder.decode(res.data)
       resData += html
+      // 判断当前是 列表 还是 内容
+      isList = /option/.test(html)
       // 解析后续页面
-      const tmp = [...(html.match(/<div class=["']pagelist["']>[\w\u4e00-\u9fff<>= '"\/&;,.!#]+/g) || [''])[0].matchAll(/href='([\d_\.html]+)'/g)]
-      const pathList = [...new Set(tmp.map(item => item[1]))]
+      let tmp = []
+      if (isList) {
+        // 列表
+        tmp.push(...html.matchAll(/<option value="(\d+\.html)">第\d+页<\/option>/ig))
+      } else {
+        // 内容
+        tmp.push(...(html.match(/<div class=["']pagelist["']>[\w\u4e00-\u9fff<>= '"\/&;,.!#]+/g) || [''])[0].matchAll(/href='([\d_\.html]+)'/g))
+        if (isFilter) {
+          const path = filterPath2(resData.match(/<title>([\s0-9a-z\u4e00-\u9fff《》【】·.\[\]\-—_()（）&＆#~@%\\/｜|+;]+)<\/title>/i)?.[1] || '')
+          console.log({ path })
+          const isSameIndex = LIST.findIndex(({ path: curPath }) => curPath === path)
+          if (isSameIndex !== -1) {
+            return Promise.reject(`[WARNING] 当前项已在第 ${isSameIndex + 1} 项重复\n${path} `)
+          }
+        }
+      }
+      const pathList = (isDeep || !isList) ? [...new Set(tmp.map(item => item[1]))] : []
       const reqList = []
       console.log('pathList', `${htmlURL} 共 ${pathList.length + 1} 页`)
       // 请求过快会触发服务器保护
       for (const path of pathList) {
+        // fs.appendFileSync('./data.js', `// ${baseURL}${path}\n`)
+        if (path === htmlURL) continue
         await new Promise(resolve => setTimeout(resolve, 100))
         reqList.push(instance.get(path, { headers: { cookie: `visits=${++cookieNum}; totalpv=${cookieNum}` } }).catch(err => {console.log(path, err.code)}))
       }
+      // fs.appendFileSync('./data.js', `// 共 ${pathList.length + 1} 页\n` + LOG_LIMIT)
       return Promise.all(reqList)
     })
     .then(list => {
@@ -588,17 +729,35 @@ async function getFullResData(data) {
         resData += html
       })
     })
-    .then(() => {
+    .then(async () => {
       if (!resData) return console.log(setLogColor('red'), '[ERROR] resData 没有暂存到 html 数据')
-      const list = [...(resData.matchAll(/<img src=["']([a-z0-9:\/\._-]+)["']/g) || [])].map(path => path[1])
-      const path = filterPath(resData.match(/<title>([0-9a-z-._()#~·@\[\]%《》\\/｜\|\u4e00-\u9fff\s+]+)<\/title>/i)?.[1] || '')
-      if (!list.length || !path) {
-        const limitData = '\n' + ('*'.repeat(70) + '\n').repeat(3)
-        const message = limitData + htmlURL + '\n' + resData +  limitData
-        fs.appendFileSync('./data.js', message)
-        return console.log(setLogColor('red'), `[ERROR] 没有 ${!list.length ? 'list' : 'title'}`)
+      if (isList) {
+        // fs.appendFileSync('./data.js', `// ${resData}\n` + LOG_LIMIT)
+        const tmp = [...(resData.match(/<div class="title">([a-z0-9\u4e00-\u9fff\s`~!@#$%^&*()+-=\[\]\\;',./{}|:"<>?·~！@#￥%……&（）—【】、；‘’，。、：“”《》？ ]+)<\/div>/ig))]
+        for (data of tmp) {
+          const title = data.match(/>([\s0-9a-z\u4e00-\u9fff《》【】·.\[\]\-—_()（）&#~@%\\/｜|+;]+)<\/a>/i)
+          const list = data.match(/href=['"]([\\/a-z0-9\.]+)['"]/i)
+          const url = `${originURL}${list[1]}`
+          fs.appendFileSync('./data.js', `// ${title[1]}\n// ${url}\n`)
+          // 获取详情页
+          await getFullResData([url])
+        }
+      } else {
+        const list = [...(resData.matchAll(/<img src=["']([a-z0-9:\/\._-]+)["']/g) || [])].map(path => path[1])
+        let path = resData.match(/<title>([\s0-9a-z\u4e00-\u9fff《》【】·.\[\]\-—_()（）&＆#~@%\\/｜|+;]+)<\/title>/i)?.[1] || ''
+        fs.appendFileSync('./data.js', `// title: ${path}\n`)
+        path = filterPath2(path)
+        fs.appendFileSync('./data.js', `// path: ${path}\n`)
+        if (!list.length || !path) {
+          fs.appendFileSync('./data.js', `// url: ${htmlURL}\n${LOG_LIMIT}\n`)
+          // fs.appendFileSync('./data.js', `${htmlURL}\n${resData}` + LOG_LIMIT)
+          return console.log(setLogColor('red'), `[ERROR] 没有 ${!list.length ? 'list' : 'title'}`)
+        } else {
+          fs.appendFileSync('./data.js', `// list: ${list.length}\n${LOG_LIMIT}\n`)
+        }
+        console.log({ path })
+        saveLocal({ path, list })
       }
-      saveLocal({ path, list})
     })
     .catch(error => {
       console.log('error', error)
@@ -626,4 +785,6 @@ module.exports = {
   specifyFilter,
   downloadFun,
   getFullResData,
+  filterPath,
+  filterPath2,
 }

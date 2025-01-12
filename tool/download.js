@@ -8,7 +8,7 @@ let { list, path } = LIST[INDEX]
 
 const downloadHandler = (list, path, toast = 0) => {
   if (!list.length) return console.log('the list is empty')
-  const filePath = `${ROOT_PATH}${path.replace(REGEXP_RULER.regDash, '_')}${SUFFIX_PATH}`
+  const filePath = `${ROOT_PATH}/${path.replace(REGEXP_RULER.regDash, '_')}${SUFFIX_PATH}`
   const message = `No.${toast * LOOP_NUM + 1} to NO.${(toast + 1) * LOOP_NUM}`
   console.time(`to download ${message}`)
   return Promise.all(
