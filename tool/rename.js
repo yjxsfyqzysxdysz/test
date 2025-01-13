@@ -1,8 +1,17 @@
+console.clear()
+
 // 引入文件系统模块
 const fs = require('fs')
+const { filterPath2 } = require('./utils')
+const timer = +new Date()
+const logName = `LOG_${timer}.log`
 
 // 需要修改的文件路径
-let PATH = './picture'
+// const PATH = ''./picture''
+
+if (!fs.existsSync(`${__dirname}\\LOG`)) {
+  fs.mkdirSync(`${__dirname}\\LOG`, { recursive: true })
+}
 
 // 获取详细文件名，回调返回文件名及路径
 function walk() {
@@ -19,9 +28,9 @@ function walk() {
     }
   })
   console.log(`files number is ${files.length}\ndirectory number is ${directory.length}\n---------------------------------------`)
-  if (files.length) {
-    renameFile(files)
-  }
+  // if (files.length) {
+  //   renameFile(files)
+  // }
   if (directory.length) {
     renameDirectory(directory)
   }
@@ -34,15 +43,23 @@ function walk() {
  *   path: 公共地址
  */
 function rename(oldName, newName, path = '') {
-  const oldPath = path ? `${path}/${oldName}` : oldName
-  const newPath = path ? `${path}/${newName}` : newName
-  if (oldPath === newPath) throw `${oldPath}: old name and new name is same`
-  // return console.log(oldName, '\n', newName)
+  const oldPath = path ? `${path}\\${oldName}` : oldName
+  const newPath = path ? `${path}\\${newName}` : newName
+  // return
   fs.rename(oldPath, newPath, function (err) {
     if (err) {
-      throw err
+      fs.appendFileSync(
+        `./LOG/${logName}`,
+        `oldName: ${oldName}` + '\n'
+        + `newName: ${newName}` + '\n'
+        + `err: ${err.toString()}` + '\n'
+      )
+      console.log({ oldName, newName })
+      console.log('err', err)
+      // throw err
     } else {
-      console.log(`${newName.replace(/^.*(\d{3}\w+)/, '$1')} is success`)
+      // console.log(`${newName} is success`)
+      fs.appendFileSync(`./LOG/${logName}`, `success: ${newName}` + '\n')
     }
   })
 }
@@ -73,38 +90,50 @@ function renameFile(list) {
 }
 
 function renameDirectory(list) {
-  const nameList = [].concat(list)
-  let num = 0
+  fs.appendFileSync(`./LOG/${logName}`, `list: ${JSON.stringify(list, null, 2)}` + '\n')
+  const map = new Map()
   list.forEach(oldName => {
-    let newName = oldName
-      .replace(/[技術討論新時代的我們草榴社區達蓋爾旗幟.hmltycom6_\s-]+$/i, '')
-      .replace(/([-_–，,\s“”？！～]+)|([[［【]\d+P[\]］】])+/g, ' ')
-      .replace(/[（（]/g, '(')
-      .replace(/[））]/g, ')')
-      .trim()
-    if (!newName || oldName === newName) return
-    while (nameList.includes(newName)) {
-      newName = newName.replace(
-        /\d{0,3}$/,
-        ' ' +
-          Math.trunc(Math.random() * 1e3)
-            .toString()
-            .padStart(3, '0')
-      )
+    let newName = filterPath2(oldName)
+      .replace(/\(\d+\)/g, '')
+      .replace(/(?<!\S)\s?\d+$/g, '')
+      .trim() // 清除末尾数字
+
+    console.log('newName', newName)
+
+    if (!newName) {
+      newName = oldName
     }
-    nameList.splice(nameList.indexOf(oldName), 1, newName)
-    console.log(oldName, ' ----- ', newName)
-    num++
-    rename(`${PATH}\\${oldName}`, `${PATH}\\${newName}`)
+    if (map.has(newName)) {
+      map.set(newName, [...map.get(newName), oldName])
+    } else {
+      map.set(newName, [oldName])
+    }
+    rename(oldName, `_${oldName}`, PATH)
   })
-  console.log(`rename total: ${num}`)
+
+  console.log(map)
+  fs.appendFileSync(
+    `./LOG/${logName}`,
+    `map: ${JSON.stringify(Array.from(map.entries()), null, 2)}` + '\n'
+      + '-'.repeat(20) + '\n'
+  )
+
+  new Promise(resolve => {
+    setTimeout(resolve, 1e3)
+  })
+    .then(() => {
+  map.forEach((oldNames, newName) => {
+    fs.appendFileSync(`./LOG/${logName}`, `newName: ${newName}` + '\n')
+
+    oldNames.forEach((oldName, index) => {
+      if (oldNames.length > 1) {
+            rename(`_${oldName}`, `${newName} ${(`${index + 1}`).padStart(3, '0')}`, PATH)
+      } else {
+            rename(`_${oldName}`, newName, PATH)
+      }
+        })
+    })
+  })
 }
 
-// 运行
-walk(PATH, function (path, fileName) {
-  let oldPath = `${path}/${fileName}`, // 原文件路径拼接
-    // newPath = path + '/' + fileName.replace('.png', '.jpg') // 新文件路径拼接
-    newPath = path + '/' + fileName + '.jpg' // 新文件路径拼接
-
-  rename(oldPath, newPath)
-})
+walk()

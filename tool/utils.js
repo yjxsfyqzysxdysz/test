@@ -36,6 +36,7 @@ const jsonData = getLocal({
   }
 })
 const { LIST } = jsonData
+const logName = `LOG_${+new Date()}.log`
 
 let isStop = false // stop tag
 const isStopList = []
@@ -116,20 +117,27 @@ function downloadFunHandler(list, { path, toast = 0 }) {
   })
 }
 
+function checkDir(dirName) {
+  if (!dirName) return
+  if (!fs.existsSync(`${__dirname}\\${dirName}}`)) {
+    fs.mkdirSync(`${__dirname}\\${dirName}`, { recursive: true })
+  }
+}
+
 /**
  * 过滤 path
  * @param {String} path
  */
 const filterPath = path => {
   return ` ${path} `
-    .replace(/[a-z]+(\.[a-z]+)+/i, '')
+    .replace(/[a-z]+(\.[ a-z]+)+/ig, '')
     .replace(REGEXP_RULER.regLeftRoundBrackets, '(')
     .replace(REGEXP_RULER.regRightRoundBrackets, ')')
     .replace(REGEXP_RULER.regRightSquareBrackets, ']')
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
-    .replace(REGEXP_RULER.regNumber, '')
+    // .replace(REGEXP_RULER.regNumber, '')
     .replace(/(\.|\s){2,}/g, '$1')
     .trim()
 }
@@ -150,7 +158,7 @@ const filterPath2 = path => {
     .replace(REGEXP_RULER.regRoundBrackets, ' ')
     .replace(REGEXP_RULER.regSquareBrackets, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
-    .replace(/[a-z]+(\.[a-z]+)+/i, '')
+    .replace(/(\.?[a-z0-9]+)+\.(com|cn)/i, '')
     .replace(/(p|v|gif)\.?\d+|\d+(p|v|gif)|第\s?\d+\s?页/ig, '')
 
     .replace(/玩拍/g, '旅拍')
@@ -656,6 +664,9 @@ async function getFullResData(data, options = {}) {
     }
     return
   }
+
+  checkDir('LOG')
+
   let [url] = data
   url = url.replace(/\s?/g, '')
   if (!(/^https?:[/]{2}/.test(url))) return console.log(setLogColor('red'), '[ERROR] 不是 http 开头')
@@ -711,15 +722,19 @@ async function getFullResData(data, options = {}) {
       }
       const pathList = (isDeep || !isList) ? [...new Set(tmp.map(item => item[1]))] : []
       const reqList = []
-      console.log('pathList', `${htmlURL} 共 ${pathList.length + 1} 页`)
+      if (isList) {
+        console.log('pathList', `${htmlURL} 共 ${pathList.length} 页`)
+        fs.appendFileSync(`./LOG/${logName}`, pathList.reduce((res, cur) => res + cur + '\n', ''))
+      }
+
       // 请求过快会触发服务器保护
       for (const path of pathList) {
-        // fs.appendFileSync('./data.js', `// ${baseURL}${path}\n`)
         if (path === htmlURL) continue
         await new Promise(resolve => setTimeout(resolve, 100))
-        reqList.push(instance.get(path, { headers: { cookie: `visits=${++cookieNum}; totalpv=${cookieNum}` } }).catch(err => {console.log(path, err.code)}))
+        reqList.push(instance
+            .get(path, { headers: { cookie: `visits=${++cookieNum}; totalpv=${cookieNum}` } })
+            .catch(err => {console.log(path, err.code)}))
       }
-      // fs.appendFileSync('./data.js', `// 共 ${pathList.length + 1} 页\n` + LOG_LIMIT)
       return Promise.all(reqList)
     })
     .then(list => {
@@ -732,30 +747,30 @@ async function getFullResData(data, options = {}) {
     .then(async () => {
       if (!resData) return console.log(setLogColor('red'), '[ERROR] resData 没有暂存到 html 数据')
       if (isList) {
-        // fs.appendFileSync('./data.js', `// ${resData}\n` + LOG_LIMIT)
         const tmp = [...(resData.match(/<div class="title">([a-z0-9\u4e00-\u9fff\s`~!@#$%^&*()+-=\[\]\\;',./{}|:"<>?·~！@#￥%……&（）—【】、；‘’，。、：“”《》？ ]+)<\/div>/ig))]
-        for (data of tmp) {
+        for (let i = 0, len = tmp.length; i < len; i++) {
+          const data = tmp[i]
           const title = data.match(/>([\s0-9a-z\u4e00-\u9fff《》【】·.\[\]\-—_()（）&#~@%\\/｜|+;]+)<\/a>/i)
           const list = data.match(/href=['"]([\\/a-z0-9\.]+)['"]/i)
           const url = `${originURL}${list[1]}`
-          fs.appendFileSync('./data.js', `// ${title[1]}\n// ${url}\n`)
+          fs.appendFileSync(`./LOG/${logName}`, `${('-').repeat(60)}\nNo: ${i + 1} / (${len})\n${title[1]}\n${url}\n`)
+          console.log(`${i + 1} / ${len}`)
           // 获取详情页
           await getFullResData([url])
         }
       } else {
         const list = [...(resData.matchAll(/<img src=["']([a-z0-9:\/\._-]+)["']/g) || [])].map(path => path[1])
         let path = resData.match(/<title>([\s0-9a-z\u4e00-\u9fff《》【】·.\[\]\-—_()（）&＆#~@%\\/｜|+;]+)<\/title>/i)?.[1] || ''
-        fs.appendFileSync('./data.js', `// title: ${path}\n`)
+        fs.appendFileSync(`./LOG/${logName}`, `title: ${path}\n`)
         path = filterPath2(path)
-        fs.appendFileSync('./data.js', `// path: ${path}\n`)
+        fs.appendFileSync(`./LOG/${logName}`, `path: ${path}\n`)
         if (!list.length || !path) {
-          fs.appendFileSync('./data.js', `// url: ${htmlURL}\n${LOG_LIMIT}\n`)
-          // fs.appendFileSync('./data.js', `${htmlURL}\n${resData}` + LOG_LIMIT)
+          fs.appendFileSync(`./LOG/${logName}`, `url: ${htmlURL}\n${LOG_LIMIT}\n`)
           return console.log(setLogColor('red'), `[ERROR] 没有 ${!list.length ? 'list' : 'title'}`)
         } else {
-          fs.appendFileSync('./data.js', `// list: ${list.length}\n${LOG_LIMIT}\n`)
+          fs.appendFileSync(`./LOG/${logName}`, `list: ${list.length}\n${LOG_LIMIT}\n`)
         }
-        console.log({ path })
+        console.log({ path, len: list.length })
         saveLocal({ path, list })
       }
     })
@@ -787,4 +802,6 @@ module.exports = {
   getFullResData,
   filterPath,
   filterPath2,
+  checkDir,
+  logName,
 }

@@ -50,5 +50,37 @@ module.exports = [
   {
     res: 'Cosplay福利女神',
     reg: /cosplay\s?福利女神|福利女神\s?cosplay|福利女神|cosplay/ig
-  }
+  },
+  {
+    res: '妖精视觉',
+    reg: /妖精视觉/g
+  },
+  {
+    res: '零度LD印象',
+    reg: /零度LD印象/gi
+  },
+  {
+    res: 'SHENSHI绅士',
+    reg: /绅士\s?SHENSHI|SHENSHI\s?绅士|SHENSHI/ig
+  },
+  {
+    res: '福利姬',
+    reg: /福利姬/g
+  },
+  {
+    res: 'YouMei尤美',
+    reg: /YouMei\s?尤美|尤美\s?YouMei|YouMei|尤美/gi
+  },
+  {
+    res: 'GIRLISS丽丝映像',
+    reg: /丽丝映像\s?GIRLISS|GIRLISS\s?丽丝映像|丽丝映像|GIRLISS/gi
+  },
+  {
+    res: 'YJS妖精社',
+    reg: /妖精社\s?YJS|YJS\s妖精社|妖精社|YJS/gi
+  },
+  {
+    res: 'MiiTao蜜桃社',
+    reg: /蜜桃社\s?MiiTao|MiiTao\s蜜桃社|蜜桃社|MiiTao/gi
+  },
 ]
