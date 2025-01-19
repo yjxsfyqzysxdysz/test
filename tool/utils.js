@@ -154,11 +154,11 @@ const filterPath2 = path => {
   let color = '' // 颜色
 
   let str = ` ${path} `
+    .replace(/(\.?[a-z0-9]+)+\.(com|cn)/ig, '')
     .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regRoundBrackets, ' ')
     .replace(REGEXP_RULER.regSquareBrackets, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
-    .replace(/(\.?[a-z0-9]+)+\.(com|cn)/i, '')
     .replace(/(p|v|gif)\.?\d+|\d+(p|v|gif)|第\s?\d+\s?页/ig, '')
 
     .replace(/玩拍/g, '旅拍')
@@ -173,7 +173,7 @@ const filterPath2 = path => {
 
   str = str
     .replace(new RegExp(`(${[...configPersionMap.keys()].join('|')})`, 'ig'), ret => {
-      return configPersionMap.get(ret)
+      return configPersionMap.get(ret) || ret
     })
     .replace(/No\.\d+/ig, val => {
       number = val
@@ -187,7 +187,7 @@ const filterPath2 = path => {
       persion.add(val)
       return ''
     })
-    .replace(/[\u4e00-\u9fff]+(主题|场景|情景)/g, val => {
+    .replace(/[\u4e00-\u9fffa-z]+(主题|场景|情景)/gi, val => {
       theme = val
       return ' '
     })
@@ -224,7 +224,6 @@ const filterPath2 = path => {
   })
 
   str = [...new Set(str.replace(/\s+/g, ' ').trim().split(' '))].join(' ')
-
   const res = []
   if (title) res.push(`[${title}]`)
   if (number) res.push(number)

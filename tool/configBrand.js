@@ -1,11 +1,11 @@
 module.exports = [
   {
     res: 'MyNvShen女神馆',
-    reg: /女神馆(写真)?\s?mynvshen/ig,
+    reg: /女神馆(写真)?\s?mynvshen|mynvshen/ig,
   },
   {
     res: 'Ugirls尤果网',
-    reg: /尤物图\s?youwutu|youwutu\s?尤物图|爱女神\s?Ugirls艺术图|[尤果网圈爱物写真]{3,}|UGirls|尤果网|爱尤物/ig,
+    reg: /尤物图\s?youwutu|youwutu\s?尤物图|爱女神\s?Ugirls艺术图|[尤果网圈爱物写真]{3,}|UGirls|尤果网|爱尤物|尤物ula|尤物|ula/ig,
   },
   {
     res: 'MFStar模范学院',
@@ -41,7 +41,7 @@ module.exports = [
   },
   {
     res: 'TuiGirl推女郎',
-    reg: /推女郎\s?TuiGirl|TuiGirl\s?推女郎|推女郎|TuiGirl/ig,
+    reg: /推女郎\s?TuiGirl|TuiGirl\s?推女郎|推女郎|TuiGirl|推女神|TGOD/ig,
   },
   {
     res: 'FEILIN嗲囡囡',
@@ -65,7 +65,7 @@ module.exports = [
   },
   {
     res: '福利姬',
-    reg: /福利姬/g
+    reg: /福利姬|福利网/g
   },
   {
     res: 'YouMei尤美',
@@ -82,5 +82,25 @@ module.exports = [
   {
     res: 'MiiTao蜜桃社',
     reg: /蜜桃社\s?MiiTao|MiiTao\s蜜桃社|蜜桃社|MiiTao/gi
+  },
+  {
+    res: 'Ligui丽柜',
+    reg: /丽柜\s?Ligui|Ligui\s丽柜|丽柜|Ligui/gi
+  },
+  {
+    res: 'QingDouKe青豆客',
+    reg: /青豆客\s?QingDouKe|QingDouKe\s青豆客|青豆客|QingDouKe/gi
+  },
+  {
+    res: 'XINGYAN星颜社',
+    reg: /星颜社\s?XINGYAN|XINGYAN\s星颜社|星颜社|XINGYAN/gi
+  },
+  {
+    res: 'PDL潘多拉',
+    reg: /潘多拉\s?PDL|PDL\s潘多拉|潘多拉|PDL/gi
+  },
+  {
+    res: 'AIMEIZI爱妹子',
+    reg: /爱妹子\s?AIMEIZI|AIMEIZI\s爱妹子|爱妹子|AIMEIZI/gi
   },
 ]

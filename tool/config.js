@@ -83,9 +83,9 @@ const REGEXP_RULER = {
   regLeftRoundBrackets: /[（（]/g, // 左圆括号
   regRoundBrackets: /[（）（）]/g,
   regRightRoundBrackets: /[））]/g, // 右圆括号
-  regLeftSquareBrackets: /[［【]/g, // 左方括号
-  regRightSquareBrackets: /[】］]/g, // 右方括号
-  regSquareBrackets: /[\[\]［］【】]/g,
+  regLeftSquareBrackets: /[『［【]/g, // 左方括号
+  regRightSquareBrackets: /[】］』]/g, // 右方括号
+  regSquareBrackets: /[\[\]［］【】『』]/g,
   regSpaces: /\s/g, // 空格
   regNumber: /((p|v|gif)+\.?\d+|\d+(p|v|gif)+)/gi, // 页数
 }

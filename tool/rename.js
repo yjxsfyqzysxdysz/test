@@ -2,16 +2,12 @@ console.clear()
 
 // 引入文件系统模块
 const fs = require('fs')
-const { filterPath2 } = require('./utils')
-const timer = +new Date()
-const logName = `LOG_${timer}.log`
+const { filterPath2, checkDir, logName } = require('./utils')
 
 // 需要修改的文件路径
 // const PATH = ''./picture''
 
-if (!fs.existsSync(`${__dirname}\\LOG`)) {
-  fs.mkdirSync(`${__dirname}\\LOG`, { recursive: true })
-}
+checkDir('LOG')
 
 // 获取详细文件名，回调返回文件名及路径
 function walk() {
@@ -96,6 +92,7 @@ function renameDirectory(list) {
     let newName = filterPath2(oldName)
       .replace(/\(\d+\)/g, '')
       .replace(/(?<!\S)\s?\d+$/g, '')
+      .replace(/\s?\.+$/g, '')
       .trim() // 清除末尾数字
 
     console.log('newName', newName)
@@ -122,18 +119,18 @@ function renameDirectory(list) {
     setTimeout(resolve, 1e3)
   })
     .then(() => {
-  map.forEach((oldNames, newName) => {
-    fs.appendFileSync(`./LOG/${logName}`, `newName: ${newName}` + '\n')
+      map.forEach((oldNames, newName) => {
+        fs.appendFileSync(`./LOG/${logName}`, `newName: ${newName}` + '\n')
 
-    oldNames.forEach((oldName, index) => {
-      if (oldNames.length > 1) {
+        oldNames.forEach((oldName, index) => {
+          if (oldNames.length > 1) {
             rename(`_${oldName}`, `${newName} ${(`${index + 1}`).padStart(3, '0')}`, PATH)
-      } else {
+          } else {
             rename(`_${oldName}`, newName, PATH)
-      }
+          }
         })
+      })
     })
-  })
 }
 
 walk()
