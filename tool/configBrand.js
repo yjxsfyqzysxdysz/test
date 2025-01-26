@@ -25,7 +25,7 @@ module.exports = [
   },
   {
     res: 'HuaYang花漾',
-    reg: /花漾(写真)?\s?HuaYang|HuaYang\s?花漾(写真)?/ig,
+    reg: /花漾(写真)?\s?HuaYang|HuaYang\s?花漾(写真)?|花漾|HuaYang/ig,
   },
   {
     res: 'YouMi尤蜜荟',
@@ -33,7 +33,7 @@ module.exports = [
   },
   {
     res: 'XiaoYu画语界',
-    reg: /XiaoYu\s?画语界|画语界\s?XiaoYu|XiaoYu|画语界/ig,
+    reg: /XiaoYu\s?画语界|画语界\s?XiaoYu|XiaoYu|画语界|语画界/ig,
   },
   {
     res: 'Toutiaogirls头条',
