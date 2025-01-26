@@ -103,4 +103,8 @@ module.exports = [
     res: 'AIMEIZI爱妹子',
     reg: /爱妹子\s?AIMEIZI|AIMEIZI\s爱妹子|爱妹子|AIMEIZI/gi
   },
+  {
+    res: 'ROSI',
+    reg: /ROSI/gi
+  },
 ]
