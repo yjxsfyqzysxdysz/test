@@ -113,7 +113,7 @@ if (!isFinite(event)) {
     case 'download': // 现在 data 中本地未下载的项
       eventHandler = (list, path) => {
         list = filterDataAndLocal(list, path)
-        // console.log(`download ${path} total: ${list.length}`)
+        console.log(`download ${path} total: ${list.length}`)
         downloadHandler({ list, path, index: INDEX })
       }
       break

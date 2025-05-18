@@ -665,6 +665,7 @@ async function getFullResData(data, options = {}) {
   }
 
   checkDir('LOG')
+  checkDir('HISTORY')
 
   let [url] = data
   url = url.replace(/\s?/g, '')
@@ -706,6 +707,7 @@ async function getFullResData(data, options = {}) {
       let tmp = []
       if (isList) {
         // 列表
+        fs.appendFileSync(`./LOG/${logName}`, `${url}\n`)
         tmp.push(...html.matchAll(/<option value="(\d+\.html)">第\d+页<\/option>/ig))
       } else {
         // 内容
@@ -754,6 +756,13 @@ async function getFullResData(data, options = {}) {
           const url = `${originURL}${list[1]}`
           fs.appendFileSync(`./LOG/${logName}`, `${('-').repeat(60)}\nNo: ${i + 1} / (${len})\n${title[1]}\n${url}\n`)
           console.log(`${i + 1} / ${len}`)
+          // TODO 1.如果是列表，现在 history/* 下获取数据校验 判断是否已经下载过
+          // TODO 没有下载过，写入数据，并下载
+          // TODO 有下载过，跳过
+          // TODO 2.history 下文件命名以时间戳自动创建，每个文件数据 1k
+          // TODO 自动读取数文件夹下文件进行校验
+          // TODO 应该有一个 config 文件进行配置
+
           // 获取详情页
           await getFullResData([url])
         }
@@ -780,6 +789,7 @@ async function getFullResData(data, options = {}) {
 
 module.exports = {
   log,
+  FSsave,
   FSMkdirSync,
   FSsearchDir,
   FSRead,

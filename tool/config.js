@@ -66,6 +66,11 @@ const IGNORE_URL = [
   'https://tupian.li/images/2024/09/12/66e2c086c6faa.png',
   'https://66img.cc/i/2024/11/12/67330372b4e79.jpg',
   'https://66img.cc/i/2024/11/12/673303736422c.jpg',
+  'https://image.acg.lol/file/2024/12/31/imagea8cbadf865056709.png',
+  "https://66img.cc/i/2025/01/28/6798679bc09dd.jpg",
+  "https://image.acg.lol/file/2025/03/05/c8771bcccbb2c2d7394e36fca60e292a.webp",
+  "https://image.acg.lol/file/2025/03/08/629b5815a49e0d654043bdc29690cd07.webp",
+  'https://66img.cc/i/2025/04/15/67fdc312b9cc3.jpg',
 ]
 
 const REGEXP_RULER = {
