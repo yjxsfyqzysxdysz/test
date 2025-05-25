@@ -36,7 +36,7 @@ const jsonData = getLocal({
   }
 })
 const { LIST } = jsonData
-const logName = `LOG_${+new Date()}.log`
+const logName = `LOG_${dateFormat()}.log`
 
 let isStop = false // stop tag
 const isStopList = []
@@ -785,6 +785,19 @@ async function getFullResData(data, options = {}) {
     .catch(error => {
       console.log('error', error)
     })
+}
+
+// 时间格式化
+function dateFormat() {
+  const date = new Date()
+  const Y = date.getFullYear()
+  const M = (`${date.getMonth() + 1}`).padStart(2, 0)
+  const D = (`${date.getDate()}`).padStart(2, 0)
+  const h = (`${date.getHours()}`).padStart(2, 0)
+  const m = (`${date.getMinutes()}`).padStart(2, 0)
+  const s = (`${date.getSeconds()}`).padStart(2, 0)
+  const ss = (`${date.getMilliseconds()}`).padStart(3, 0)
+  return `${Y}${M}${D}${h}${m}${s}.${ss}`
 }
 
 module.exports = {

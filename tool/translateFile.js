@@ -1,45 +1,17 @@
 // 文件格式转换 webp to jpg
 const sharp = require('sharp')
 const FS = require('fs')
+const fsp = FS.promises
 const _path = require('path')
 const { checkDir, logName } = require('./utils')
 
-const PATH = _path.resolve('F:\\Downloads\\360Downloads\\ing\\017\\安然 Maleah')
+const PATH = _path.resolve('F:\\ing')
 
 checkDir('LOG')
 
-
-const items = FS.readdirSync(PATH)
-const result = {
-  files: [],
-  directories: []
-}
-
-items.forEach(item => {
-  const stat = FS.statSync(_path.join(PATH, item))
-  if (stat.isFile()) {
-    result.files.push(item)
-  } else if (stat.isDirectory()) {
-    result.directories.push(item)
-  }
-})
-
-// 处理文件
-if (!result.files.length) {
-  FS.appendFileSync(`./LOG/${logName}`, `${PATH}` + '\n')
-
-  transformerHandler(result.files, PATH)
-} else if (!result.directories.length) {
-
-  for (const file of result.directories) {
-    const path = _path.join(PATH, file)
-    const list = FS.readdirSync(path)
-    transformerHandler(list, path)
-  }
-}
-
 function transformerHandler(list, path) {
-  FS.appendFileSync(`./LOG/${logName}`, `${path}` + '\n')
+  const dirName = _path.parse(path).base
+  FS.appendFileSync(`./LOG/${logName}`, `${path}\n${JSON.stringify(list, null, 2)}` + '\n')
 
   let index = 0
 
@@ -47,7 +19,7 @@ function transformerHandler(list, path) {
     const file = list[i]
     // 是目标类型文件
     const { ext, name } = _path.parse(file)
-    if (ext === '.webp') {
+    if (['.WEBP', '.webp'].includes(ext)) {
       const newFileName = {
         name,
         mid: '',
@@ -65,21 +37,21 @@ function transformerHandler(list, path) {
 
       list.push(newFile)
       // 转换
-      convertWebp2Jpg(_path.join(DirPath, file), _path.join(DirPath, newFile))
+      convertWebp2Jpg(_path.join(path, file), _path.join(path, newFile))
         .then(() => {
-          console.log('转换成功', ` ${++index} ${file} ---- ${newFile}`)
+          console.log(`| 转换成功 | ${dirName} | ${++index}(${i}/${len}) | ${file} | ${newFile} |`)
 
-          FS.appendFileSync(`./LOG/${logName}`, `成功 ${file} --- ${newFile}` + '\n')
+          FS.appendFileSync(`./LOG/${logName}`, `| 成功 | ${dirName} | ${file} | ${newFile} |` + '\n')
           // 删除原文件
-          FS.unlink(_path.join(DirPath, file), err => {
+          FS.unlink(_path.join(path, file), err => {
             if (err) {
-              console.log('删除文件出错\n', file, err)
+              console.log(`| 删除文件出错 | ${dirName} | ${file} | ${err} |`)
             }
           })
         })
         .catch(err => {
-          FS.appendFileSync(`./LOG/${logName}`, `失败 ${file} --- ${newFile}` + '\n')
-          console.log('转换失败', file, err)
+          FS.appendFileSync(`./LOG/${logName}`, `| 失败 | ${dirName} | ${file} | ${newFile} |` + '\n')
+          console.log(`| 转换失败 | ${dirName} | ${file} | ${err} |`)
         })
     }
   }
@@ -105,3 +77,44 @@ function convertWebp2Jpg(inputPath, outPath) {
       .on('error', reject)
   })
 }
+
+// 解析数据
+
+function readFile(path) {
+  const result = {
+    files: [],
+    directories: [],
+    path
+  }
+
+  return fsp.readdir(path).then(res => {
+    res.forEach(item => {
+      const stat = FS.statSync(_path.join(path, item))
+      if (stat.isFile()) {
+        result.files.push(item)
+      } else if (stat.isDirectory()) {
+        result.directories.push(item)
+      }
+    })
+
+    return result
+  })
+}
+
+function handler(path) {
+  return readFile(path)
+    .then(async ({ files, directories, path }) => {
+      // 处理文件
+      if (files.length) {
+        transformerHandler(files, path)
+      }
+      if (directories.length) {
+        for (const file of directories) {
+          const path1 = _path.join(path, file)
+          await handler(path1)
+        }
+      }
+    })
+}
+
+handler(PATH)
