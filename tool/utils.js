@@ -31,7 +31,9 @@ configPersion.forEach(e => {
 const jsonData = getLocal({
   path: LOCAL_DATA_PATH,
   defineData: {
-    LIST: [],
+    LIST: [
+      { "path": "81万张机构高清写真套图列表", "list": [] }
+    ],
     MT_LIST: []
   }
 })
@@ -48,22 +50,42 @@ function downloadFun(url, filePath, option) {
     // filename
     headers: {
       'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+        // 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47',
       accept:
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-      'accept-encoding': 'gzip, deflate, br',
-      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
+        'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+        // 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      'accept-encoding': 'gzip, deflate, br, zstd',
+      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
       'Cache-Control': 'no-cache',
+      priority: 'u=2, i',
       Pragma: 'no-cache',
       dnt: 1,
       'sec-ch-ua': '"Microsoft Edge";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
       'sec-ch-ua-mobile': '?0',
       'sec-ch-ua-platform': 'Windows',
-      'sec-fetch-dest': 'document',
+      'sec-fetch-dest': 'image',
       'sec-fetch-mode': 'navigate',
       'sec-fetch-site': 'none',
       'sec-fetch-user': '?1',
-      'upgrade-insecure-requests': 1
+      'upgrade-insecure-requests': 1,
+
+      // accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+      // 'accept-encoding': 'gzip, deflate, br, zstd',
+      // 'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8',
+      // 'cache-control': 'no-cache',
+      // cookie: 'HstCfa4856860=1718931316306; c_ref_4856860=https%3A%2F%2Fwww.google.com%2F; HstCmu4856860=1746127855603; __PPU_puid=16604914642370422902; HstCnv4856860=23; cf_clearance=UhJ20wYN87Ld9ykXPBYieuC_rBnl9gv2OfrPF1obK8E-1748174320-1.2.1.1-so574CV6jiv1.7Vz3ANXSC13FwAFiMSRk1CN.6eJObhykfm.fK1n.l1gC_Hf7ofhB5IsGmmjBQoT.FSsFY0kGwmu6fbkTro3Pk6.exxZmcDYZS_FHaXcmCnvJ7ry_UrrquQcV8C0IVwIAo.EcBmvtPLKotthoTo525s7eTGCU2Ei1hAqSbaGhDazOwDeMsYakIYudwwWgKjb1K7fcg3mJ45zioh1FTmEJ1u5lao_eqyyMP_PZvU0p80HdZvpWDJEloFsmEQ00_pu6xs6M7y8Tzgw9dlhOK1gICrF5yJpTus3J.zPbaLyj.VN_RT2921__DOfhfVoDZSaPxmTizkHNiuKHpH3oorq2e4DUccxyK8; HstCla4856860=1748174344065; HstPn4856860=9; HstPt4856860=912; HstCns4856860=55; bnState_1930038={"impressions":689,"delayStarted":0}; UGVyc2lzdFN0b3JhZ2U=%7B%22CAIFRQ%22%3A%22ADPSIAAAAAAAAAABADDEtAAAAAAAAAAB%22%2C%22CAIFRT%22%3A%22ADPSIAAAAABoM%252FVQADDEtAAAAABoM%252FVQ%22%2C%22MTIFRQ%22%3A%22AEZHwQAAAAAAAAABAEKcNQAAAAAAAAAB%22%2C%22MTIFRT%22%3A%22AEZHwQAAAABoM%252FVQAEKcNQAAAABoM%252FVQ%22%7D; bnState_1930039={"impressions":451,"delayStarted":0}',
+      // pragma: 'no-cache',
+      // priority: 'u=0, i',
+      // 'sec-ch-ua': '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"',
+      // 'sec-ch-ua-mobile': '?0',
+      // 'sec-ch-ua-platform': "Windows",
+      // 'sec-fetch-dest': 'document',
+      // 'sec-fetch-mode': 'navigate',
+      // 'sec-fetch-site': 'none',
+      // 'sec-fetch-user': '?1',
+      // 'upgrade-insecure-requests': 1,
+      // 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36'
     },
     ...option
   }
@@ -164,7 +186,7 @@ const filterPath2 = path => {
     .replace(/玩拍/g, '旅拍')
     .replace(/(主题|旅拍)/g, '$1 ')
 
-    .replace(/第(\d+)期|第(\d+)|(\d+)期|vol\.?(\d+)|no\.?(\d+)/gi, (...ret) => ` No.${(ret[1] || ret[2] || ret[3] || ret[4] || ret[5]).padStart(3, '0')} `)
+    .replace(/第(\d+)期|第(\d+)|(\d+)期|vol\.?\s*(\d+)|no\.?\s*(\d+)/gi, (...ret) => ` No.${(ret[1] || ret[2] || ret[3] || ret[4] || ret[5]).padStart(3, '0')} `)
 
     .replace(/y?(\d{2,4})[ .](\d{1,2})[ .](\d{1,2})/ig, (...ret) => {
       const [_, y,m,d] = ret
@@ -486,7 +508,11 @@ function getLocal({ path = LOCAL_DATA_PATH, defineData = '' }) {
     fs.writeFileSync(path, data)
     return defineData
   } else {
-    return require(_path.resolve(path))
+    try {
+      return require(_path.resolve(path))
+    } catch (error) {
+      return defineData
+    }
   }
 }
 
@@ -826,4 +852,5 @@ module.exports = {
   filterPath2,
   checkDir,
   logName,
+  dateFormat,
 }

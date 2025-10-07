@@ -19,7 +19,7 @@ function transformerHandler(list, path) {
     const file = list[i]
     // 是目标类型文件
     const { ext, name } = _path.parse(file)
-    if (['.WEBP', '.webp'].includes(ext)) {
+    if (['.webp'].includes(ext.toLocaleLowerCase())) {
       const newFileName = {
         name,
         mid: '',
@@ -39,7 +39,7 @@ function transformerHandler(list, path) {
       // 转换
       convertWebp2Jpg(_path.join(path, file), _path.join(path, newFile))
         .then(() => {
-          console.log(`| 转换成功 | ${dirName} | ${++index}(${i}/${len}) | ${file} | ${newFile} |`)
+          console.log(`| 转换成功 | ${dirName} | ${++index}(${i + 1}/${len}) | ${file} | ${newFile} |`)
 
           FS.appendFileSync(`./LOG/${logName}`, `| 成功 | ${dirName} | ${file} | ${newFile} |` + '\n')
           // 删除原文件

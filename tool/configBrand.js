@@ -17,7 +17,7 @@ module.exports = [
   },
   {
     res: 'XIUREN秀人网',
-    reg: /XIUREN\s?秀人[网摄影写真像]*|秀人[网摄影]*\s?XIUREN[网艺术图私房影像写真]*|秀人(影像|写真)?|XIUREN/ig,
+    reg: /XIUREN\s?秀人[网摄影写真像]*|秀人[网摄影]*\s?XIUREN[网艺术图私房影像写真]*|秀人(网|影像|写真)?|XIUREN/ig,
   },
   {
     res: 'IMiss爱蜜社',

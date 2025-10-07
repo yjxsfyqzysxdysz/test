@@ -9,6 +9,7 @@ function walk(path) {
   // 同步读取文件
   const add = `${ROOT_PATH}/${path}${SUFFIX_PATH}`
   if (!fs.existsSync(add)) {
+    // return []
     fs.mkdirSync(add)
   }
   const files = fs.readdirSync(add)

@@ -19,7 +19,7 @@ const {
   specifyFilter,
   getFullResData,
 } = require('./utils')
-const { LIST, MT_LIST } = getLocal({ path: _path.resolve(LOCAL_DATA_PATH), defineData: { LIST: [], MT_LIST: [] }})
+const { LIST, MT_LIST } = getLocal({ path: _path.resolve(LOCAL_DATA_PATH), defineData: { LIST: [{ "path": "81万张机构高清写真套图列表", "list": [] }], MT_LIST: [] }})
 
 const arg = process.argv.slice(2)
 if (!arg.length) {

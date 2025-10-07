@@ -71,6 +71,8 @@ const IGNORE_URL = [
   "https://image.acg.lol/file/2025/03/05/c8771bcccbb2c2d7394e36fca60e292a.webp",
   "https://image.acg.lol/file/2025/03/08/629b5815a49e0d654043bdc29690cd07.webp",
   'https://66img.cc/i/2025/04/15/67fdc312b9cc3.jpg',
+  "https://thumbsnap.com/i/Gy8kW5ax.png",
+  "https://thumbsnap.com/i/XnJPsttL.png",
 ]
 
 const REGEXP_RULER = {
