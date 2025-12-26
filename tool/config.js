@@ -73,6 +73,9 @@ const IGNORE_URL = [
   'https://66img.cc/i/2025/04/15/67fdc312b9cc3.jpg',
   "https://thumbsnap.com/i/Gy8kW5ax.png",
   "https://thumbsnap.com/i/XnJPsttL.png",
+  "https://23img.com/i/2025/10/18/lze6pe.png",
+  "https://23img.com/i/2025/11/21/5e50s6.png",
+  "https://23img.com/i/2025/11/21/5e4phy.png",
 ]
 
 const REGEXP_RULER = {

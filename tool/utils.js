@@ -159,6 +159,7 @@ const filterPath = path => {
     .replace(REGEXP_RULER.regLeftSquareBrackets, '[')
     .replace(REGEXP_RULER.regSymbol, ' ')
     .replace(REGEXP_RULER.regEmoji, '')
+    // ❤️
     // .replace(REGEXP_RULER.regNumber, '')
     .replace(/(\.|\s){2,}/g, '$1')
     .trim()
@@ -345,7 +346,7 @@ function FSsearchDir(path, status = false) {
  */
 function FSsave(data = jsonData, path = LOCAL_DATA_PATH) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, JSON.stringify(data, null, 2), err => {
+    fs.writeFile(path, typeof(data) === 'string' ? data : JSON.stringify(data, null, 2), err => {
       if (err) {
         console.log(setLogColor('red'), '[ERROR]', '保存到本地文件失败', err)
         reject(err)

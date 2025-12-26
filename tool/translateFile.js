@@ -33,7 +33,7 @@ function transformerHandler(list, path) {
           newFileName.mid++
         }
       }
-      const newFile = `${newFileName.name}${newFileName.mid}.${newFileName.ext}`
+      const newFile = `${newFileName.name}${newFileName.mid !== '' ? '_' : '' }${newFileName.mid}.${newFileName.ext}`
 
       list.push(newFile)
       // 转换

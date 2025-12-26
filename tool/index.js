@@ -44,7 +44,7 @@ if (!isFinite(event)) {
           console.log(setLogColor('red'), '[ERROR] 没有 title')
           return
         }
-        URLList.length && saveLocal({ path: title || path, list: URLList, index: INDEX })
+        URLList.length && saveLocal({ path: title || path, list: URLList, index: Math.max(LIST.length - 1, 0) })
       }
       break
     case 'savemt': // 将 mt 获取的 url 保存到本地文件

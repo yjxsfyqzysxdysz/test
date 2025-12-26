@@ -62,17 +62,8 @@ const logName = `LOG_${dateFormat()}.log`
 // "https://youwu.im/albums/f89fc09466f332ee52ddbcd92ad93c89", "秀人网 Vol. 4596 可乐Vicky"
 // "https://youwu.im/albums/1c0e2346c5221edec7257354e91ec7e3", "秀人网 Vol. 4484 可乐Vicky"
 // "https://youwu.im/albums/a6a0db28f02bfff11aabad6fa0afd12f", "秀人网 Vol. 4073 可乐Vicky"
-// "https://youwu.im/albums/5b343b0ef0716085543bef2c2f659506", "秀人网 Vol. 4019 可乐Vicky"
-// "https://youwu.im/albums/5a49fc6cbe5287472b1201aa066c00b9", "秀人网 Vol. 3967 可乐Vicky"
-// "https://youwu.im/albums/52b08e4043c8d0a8edbca689612a1274", "秀人网 Vol. 3924 可乐Vicky"
-// "https://youwu.im/albums/22a2975302d14c50f4aa44a436db88a4", "秀人网 Vol. 3890 可乐Vicky"
-// "https://youwu.im/albums/09e5a05a5cac2292e00fe9de9da8e237", "秀人网 Vol. 3858 可乐Vicky"
-// "https://youwu.im/albums/a7b64318115a9de0ccb2f80628695286", "秀人网 Vol. 3821 可乐Vicky"
-// "https://youwu.im/albums/2face1f4a2e471f31e7017f9a16c6602", "秀人网 Vol. 3493 可乐Vicky"
-// "https://youwu.im/albums/fb401f93d01bb6ff544cac233d8384fd", "秀人网 Vol. 2299 可乐Vicky"
-// "https://youwu.im/albums/0638e9c3191dadf74a8d552046916ac0", "秀人网 Vol. 2280 可乐Vicky"
 
-let url = 'https://youwu.im/albums/0638e9c3191dadf74a8d552046916ac0'
+let url = 'https://youwu.im/albums/a6a0db28f02bfff11aabad6fa0afd12f'
 
 url = url.replace(/\s?/g, '')
 if (!(/^https?:[/]{2}/.test(url))) return console.log(setLogColor('red'), '[ERROR] 不是 http 开头')
