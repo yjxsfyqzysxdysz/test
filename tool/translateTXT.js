@@ -18,7 +18,8 @@ txtData = txtData
   .replace(new RegExp('	', 'g'), '')
 txtData = findAllMatchIndices(txtData, '<input', '>')
 txtData = findAllMatchIndices(txtData, '<div id="ad_interthread">', '</div>')
-txtData = findAllMatchIndices(txtData, '<div class="mainbox viewthread">', '<font face="宋体 ">', '', new RegExp(/(?<=<strong><font color="Red">)(.+)(?=<\/font><\/strong>)/g))
+// txtData = findAllMatchIndices(txtData, '<div class="mainbox viewthread">', '<font face="宋体 ">', '', new RegExp(/(?<=<strong><font color="Red">)(.+)(?=<\/font><\/strong>)/g))
+txtData = findAllMatchIndices(txtData, '<div class="mainbox viewthread">', 'class="t_msgfont noSelect">', '', new RegExp(/(?<=<strong><font color="Red">)(.+)(?=<\/font><\/strong>)/g))
 txtData = findAllMatchIndices(txtData, '</font>', '<!--tea.monkeye.cn ADD {-->')
 txtData = findAllMatchIndices(txtData, '<!--tea.monkeye.cn }-->', '</div>')
 
@@ -74,7 +75,7 @@ txtData = txtData
   .replace(new RegExp('％', 'g'), '%')
   .replace(new RegExp(/[＊□]/, 'g'), '*')
   .replace(new RegExp('＋', 'g'), '+')
-  .replace(new RegExp(/[─―]/, 'g'), '—')
+  .replace(new RegExp(/[─―－]/, 'g'), '—')
   .replace(new RegExp(/[ｘ×]/, 'g'), 'x')
   .replace(new RegExp(/[　]/, 'g'), ' ')
   .replace(new RegExp('&nbsp;', 'g'), ' ')

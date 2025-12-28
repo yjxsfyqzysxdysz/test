@@ -1,3 +1,5 @@
+# 解析微信缓存图片
+
 import os
 # 图片字节头信息，
 # [0][1]为jpg头信息，
@@ -71,5 +73,5 @@ def find_datfile(dir_path):
           decode_dat(file_path, file_name)
 
 # 请输入需要解密微信dat文件的目录:
-path = "C:\\Users\\"
+path = "f:\\2024-09"
 find_datfile(path)
