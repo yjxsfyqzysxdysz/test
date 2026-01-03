@@ -16,6 +16,7 @@ txtData = txtData
   .replace(new RegExp('<form method="post" name="modactions">', 'g'), '')
   .replace(new RegExp('</form>', 'g'), '')
   .replace(new RegExp('	', 'g'), '')
+  .replace(new RegExp('<font face="宋体 ">', 'g'), '')
 txtData = findAllMatchIndices(txtData, '<input', '>')
 txtData = findAllMatchIndices(txtData, '<div id="ad_interthread">', '</div>')
 // txtData = findAllMatchIndices(txtData, '<div class="mainbox viewthread">', '<font face="宋体 ">', '', new RegExp(/(?<=<strong><font color="Red">)(.+)(?=<\/font><\/strong>)/g))
@@ -73,6 +74,7 @@ txtData = txtData
   .replace(new RegExp('（', 'g'), '(')
   .replace(new RegExp('）', 'g'), ')')
   .replace(new RegExp('％', 'g'), '%')
+  .replace(new RegExp('∶', 'g'), '：')
   .replace(new RegExp(/[＊□]/, 'g'), '*')
   .replace(new RegExp('＋', 'g'), '+')
   .replace(new RegExp(/[─―－]/, 'g'), '—')
@@ -83,7 +85,7 @@ txtData = txtData
 // 格式转换
 txtData = txtData
   .replace(/(?<=第)([零一二三四五六七八九十百千\d]+) ?章([：:、 ]+)/g, '$1章 ')
-  .replace(/(?<=[\u4e00-\u9fa5，.。…\d：a-z》()（）「」」『』【】<>《》!?'、%——…；°:;~+/·])(\n|\r|\r\n)(?=[\u4e00-\u9fa5，.。…\d：a-z》()（）「」」『』【】<>《》!?'、%——…；°:;~+/·])/ig, '')
+  .replace(/(?<=[\u4e00-\u9fa5，.。…\d：a-z》()（）「」」『』【】<>《》!?'、%——┅；°:;~+/·])(\n|\r|\r\n)(?=[\u4e00-\u9fa5，.。…\d：a-z》()（）「」」『』【】<>《》!?'、%——┅；°:;~+/·])/ig, '')
   .replace(/ +(第 ?[零一二三四五六七八九十百千\d]+ ?[章集][：:]?)/g, '$1')
   .replace(/ {3,}/g, '  ')
   .replace(/  \(([零一二三四五六七八九十百千]+)\)/g, '第$1章')
